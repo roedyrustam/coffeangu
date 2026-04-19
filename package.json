@@ -12,6 +12,22 @@
   },
   "private": false,
   "packageManager": "npm@10.9.2",
+  "files": [
+    "src",
+    "public",
+    "angular.json",
+    "tsconfig.json",
+    "tsconfig.app.json",
+    "package.json",
+    "README.md",
+    "BLUEPRINT.md",
+    "PRD.md",
+    "ngsw-config.json",
+    "firebase.json",
+    ".firebaserc",
+    ".prettierrc",
+    ".editorconfig"
+  ],
   "dependencies": {
     "@angular/common": "^19.1.0",
     "@angular/compiler": "^19.1.0",
@@ -44,7 +60,6 @@
     "vitest": "^2.1.0"
   },
   "description": "CaffeeScore is a premium, enterprise-grade digital cupping form designed to modernize the specialty coffee evaluation process. Completely replacing standard paper workflows, it enforces the strict guidelines of the **SCA 2025 Coffee Value Assessment (CVA)** protocol while operating seamlessly without an internet connection in farms or roasting laboratories.",
-  "main": "index.js",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/roedyrustam/coffeangu.git"
