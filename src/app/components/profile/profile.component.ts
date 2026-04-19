@@ -274,14 +274,11 @@ export class ProfileComponent implements OnInit {
   sessionToDelete: CuppingSession | null = null;
 
   ngOnInit() {
-    const userId = this.auth.getUserId();
-    if (!userId) {
-      this.router.navigate(['/login']);
-      return;
-    }
-
-    this.cuppings$ = this.refreshTrigger.pipe(
-      switchMap(() => this.cuppingService.getUserCuppings(userId))
+    this.cuppings$ = this.auth.user$.pipe(
+      filter(user => !!user),
+      switchMap(user => this.refreshTrigger.pipe(
+        switchMap(() => this.cuppingService.getUserCuppings(user!.uid))
+      ))
     );
 
     this.stats$ = this.cuppings$.pipe(
