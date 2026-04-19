@@ -15,6 +15,7 @@ export interface CuppingSession {
   id?: string;
   beanName: string;
   type: string; // Arabica, Robusta, etc.
+  origin?: string;
   roastery: string;
   productionDate: string;
   postHarvest: string;
