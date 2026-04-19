@@ -4,6 +4,7 @@ import { CuppingFormComponent } from './components/cupping-form/cupping-form.com
 import { CuppingResultComponent } from './components/cupping-result/cupping-result.component';
 import { CommunityBoardComponent } from './components/community-board/community-board.component';
 import { LoginComponent } from './components/auth/login/login.component';
+import { ProfileComponent } from './components/profile/profile.component';
 import { authGuard } from './guards/auth.guard';
 
 export const routes: Routes = [
@@ -12,5 +13,6 @@ export const routes: Routes = [
   { path: 'cupping', component: CuppingFormComponent, canActivate: [authGuard] },
   { path: 'community', component: CommunityBoardComponent },
   { path: 'result/:id', component: CuppingResultComponent, canActivate: [authGuard] },
+  { path: 'profile', component: ProfileComponent, canActivate: [authGuard] },
   { path: '**', redirectTo: '' }
 ];

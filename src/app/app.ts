@@ -39,6 +39,12 @@ import { CommonModule } from '@angular/common';
                   <p class="user-email">{{ auth.currentUser()?.email }}</p>
                 </div>
                 <div class="menu-divider"></div>
+                
+                <a routerLink="/profile" (click)="showUserMenu.set(false)" class="menu-item">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+                  {{ t('PROFILE_TITLE') }}
+                </a>
+
                 <button (click)="auth.logout(); showUserMenu.set(false)" class="logout-btn">
                   <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
                   {{ t('BTN_LOGOUT') }}
@@ -292,6 +298,25 @@ import { CommonModule } from '@angular/common';
       height: 1px;
       background: var(--glass-border);
       margin: 15px 0;
+    }
+    .menu-item {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 12px;
+      color: var(--text-dim);
+      text-decoration: none !important;
+      font-size: 0.85rem;
+      font-weight: 700;
+      border-radius: 8px;
+      transition: all 0.3s;
+      margin-bottom: 8px;
+      border: 1px solid transparent;
+    }
+    .menu-item:hover {
+      background: var(--surface-hover);
+      color: var(--primary-color);
+      border-color: var(--glass-border);
     }
     .logout-btn {
       width: 100%;

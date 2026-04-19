@@ -51,5 +51,16 @@
   "FILTER_ALL": "Semua Proses",
   "SORT_NEWEST": "Terbaru",
   "SORT_TOP_RATED": "Skor Tertinggi",
-  "STATS_COMMUNITY_HEALTH": "Wawasan Palate Global"
+  "STATS_COMMUNITY_HEALTH": "Wawasan Palate Global",
+  "PROFILE_TITLE": "Profil Cupper",
+  "PERSONAL_STATS": "Statistik Anda",
+  "TOTAL_SESSIONS": "Total Sesi",
+  "AVG_SCORE": "Rata-rata Skor",
+  "FAVORITE_PROCESS": "Proses Favorit",
+  "PERSONAL_HISTORY": "Riwayat Cupping",
+  "BTN_EDIT": "Ubah",
+  "BTN_DELETE": "Hapus",
+  "CONFIRM_DELETE_TITLE": "Hapus Sesi?",
+  "CONFIRM_DELETE_DESC": "Tindakan ini tidak dapat dibatalkan. Semua data sensori untuk sesi ini akan dihapus secara permanen.",
+  "EMPTY_HISTORY_DESC": "Anda belum mencatat sesi cupping apapun."
 }

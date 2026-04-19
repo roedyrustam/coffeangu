@@ -376,6 +376,10 @@ export class CommunityBoardComponent implements OnInit {
           c.beanName.toLowerCase().includes(q) || 
           c.roastery.toLowerCase().includes(q)
         );
+      }),
+      catchError(err => {
+        console.error('Discovery Feed Error:', err);
+        return of([]);
       })
     );
   }

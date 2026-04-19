@@ -1,14 +1,15 @@
-import { Component, inject } from '@angular/core';
+import { Component, inject, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { TranslationService } from '../../services/translation.service';
 import { FormsModule } from '@angular/forms';
-import { Router } from '@angular/router';
+import { Router, ActivatedRoute } from '@angular/router';
 import { CuppingService } from '../../services/cupping.service';
 import { CuppingSession, SensoryScores } from '../../models/cupping.model';
 import { FlavorPickerComponent } from '../flavor-picker/flavor-picker.component';
 
 @Component({
   selector: 'app-cupping-form',
+  // ... template and styles truncated ...
   standalone: true,
   imports: [CommonModule, FormsModule, FlavorPickerComponent],
   template: `
@@ -661,17 +662,32 @@ import { FlavorPickerComponent } from '../flavor-picker/flavor-picker.component'
     .label-text { font-size: 1rem; }
   `]
 })
-export class CuppingFormComponent {
+export class CuppingFormComponent implements OnInit {
   private cuppingService = inject(CuppingService);
   private router = inject(Router);
+  private route = inject(ActivatedRoute);
   private ts = inject(TranslationService);
   t = this.ts.t();
 
-  showGuide = true;
-  loading = false;
-  isScanning = false;
-  scannerStatus = '';
+  isEditMode = false;
+  editId: string | null = null;
+
   showFlavorPicker = false;
+
+  async ngOnInit() {
+    this.editId = this.route.snapshot.queryParamMap.get('edit');
+    if (this.editId) {
+      this.isEditMode = true;
+      this.showGuide = false;
+      const session = await this.cuppingService.getCuppingById(this.editId);
+      if (session) {
+        this.session = { ...session };
+      } else {
+        alert('Session not found');
+        this.router.navigate(['/profile']);
+      }
+    }
+  }
 
   async processImage(event: Event) {
     const input = event.target as HTMLInputElement;
@@ -796,8 +812,13 @@ export class CuppingFormComponent {
   async submit() {
     this.loading = true;
     try {
-      const docRef = await this.cuppingService.addCupping(this.session);
-      this.router.navigate(['/result', docRef.id]);
+      if (this.isEditMode && this.editId) {
+        await this.cuppingService.updateCupping(this.editId, this.session);
+        this.router.navigate(['/result', this.editId]);
+      } else {
+        const docRef = await this.cuppingService.addCupping(this.session);
+        this.router.navigate(['/result', docRef.id]);
+      }
     } catch (e) {
       console.error(e);
       alert('Error saving cupping session');

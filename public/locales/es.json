@@ -51,5 +51,16 @@
   "FILTER_ALL": "Todos los Procesos",
   "SORT_NEWEST": "Más Recientes",
   "SORT_TOP_RATED": "Puntuación Más Alta",
-  "STATS_COMMUNITY_HEALTH": "Perspectivas del Paladar Global"
+  "STATS_COMMUNITY_HEALTH": "Perspectivas del Paladar Global",
+  "PROFILE_TITLE": "Perfil de Cupper",
+  "PERSONAL_STATS": "Tus Estadísticas",
+  "TOTAL_SESSIONS": "Sesiones Totales",
+  "AVG_SCORE": "Puntuación Promedio",
+  "FAVORITE_PROCESS": "Proceso Favorito",
+  "PERSONAL_HISTORY": "Historial de Cupping",
+  "BTN_EDIT": "Editar",
+  "BTN_DELETE": "Eliminar",
+  "CONFIRM_DELETE_TITLE": "¿Eliminar Sesión?",
+  "CONFIRM_DELETE_DESC": "Esta acción tidak dapat dibatalkan. Todos los datos sensoriales de esta sesión se eliminarán de forma permanente.",
+  "EMPTY_HISTORY_DESC": "Aún no has registrado ninguna sesión de cupping."
 }

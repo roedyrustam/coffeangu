@@ -51,5 +51,16 @@
   "FILTER_ALL": "All Process",
   "SORT_NEWEST": "Newest First",
   "SORT_TOP_RATED": "Highest Score",
-  "STATS_COMMUNITY_HEALTH": "Global Palate Insights"
+  "STATS_COMMUNITY_HEALTH": "Global Palate Insights",
+  "PROFILE_TITLE": "Cupper Profile",
+  "PERSONAL_STATS": "Your Stats",
+  "TOTAL_SESSIONS": "Total Sessions",
+  "AVG_SCORE": "Average Score",
+  "FAVORITE_PROCESS": "Favorite Process",
+  "PERSONAL_HISTORY": "Cupping History",
+  "BTN_EDIT": "Edit",
+  "BTN_DELETE": "Delete",
+  "CONFIRM_DELETE_TITLE": "Delete Session?",
+  "CONFIRM_DELETE_DESC": "This action cannot be undone. All sensory data for this session will be permanently removed.",
+  "EMPTY_HISTORY_DESC": "You haven't recorded any cupping sessions yet."
 }

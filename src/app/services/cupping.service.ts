@@ -1,6 +1,6 @@
 import { Injectable, inject } from '@angular/core';
-import { Firestore, collection, collectionData, addDoc, query, orderBy, limit, doc, getDoc, updateDoc, where, increment, arrayUnion } from '@angular/fire/firestore';
-import { Storage, ref, uploadBytes, getDownloadURL } from '@angular/fire/storage';
+import { Firestore, collection, collectionData, addDoc, query, orderBy, limit, doc, getDoc, updateDoc, where, increment, arrayUnion, deleteDoc } from '@angular/fire/firestore';
+import { Storage, ref, uploadBytes, getDownloadURL, deleteObject } from '@angular/fire/storage';
 import { Observable, of } from 'rxjs';
 import { CuppingSession } from '../models/cupping.model';
 import { AuthService } from './auth.service';
@@ -93,6 +93,20 @@ export class CuppingService {
   async updateCupping(id: string, data: Partial<CuppingSession>) {
     const docRef = doc(this.firestore, 'cuppings', id);
     return updateDoc(docRef, data);
+  }
+
+  async deleteCupping(id: string) {
+    const docRef = doc(this.firestore, 'cuppings', id);
+    
+    // Attempt to delete associated share image if it exists
+    try {
+      const storageRef = ref(this.storage, `shares/${id}.png`);
+      await deleteObject(storageRef);
+    } catch (e) {
+      // Ignore if image doesn't exist
+    }
+
+    return deleteDoc(docRef);
   }
 
   async uploadShareImage(sessionId: string, blob: Blob): Promise<string> {
