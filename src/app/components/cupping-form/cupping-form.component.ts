@@ -1,5 +1,4 @@
 import { Component, inject } from '@angular/core';
-import * as Tesseract from 'tesseract.js';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
@@ -624,6 +623,7 @@ export class CuppingFormComponent {
     const file = input.files[0];
 
     try {
+      const Tesseract = await import('tesseract.js');
       const result = await Tesseract.recognize(file, 'eng', {
         logger: m => {
           if (m.status === 'recognizing text') {
