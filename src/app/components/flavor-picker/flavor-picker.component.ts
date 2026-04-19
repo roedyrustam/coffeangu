@@ -75,8 +75,8 @@ import { SCA_FLAVOR_WHEEL, FlavorNode } from '../../models/flavor-wheel.data';
     .picker-overlay {
       position: fixed;
       inset: 0;
-      background: rgba(10, 10, 10, 0.9);
-      backdrop-filter: blur(15px);
+      background: rgba(0, 0, 0, 0.95);
+      backdrop-filter: blur(20px);
       z-index: 2000;
       display: flex;
       align-items: center;
@@ -86,81 +86,101 @@ import { SCA_FLAVOR_WHEEL, FlavorNode } from '../../models/flavor-wheel.data';
     .picker-modal {
       background: var(--surface-color);
       width: 100%;
-      max-width: 800px;
-      height: 85vh;
-      border-radius: 30px;
+      max-width: 900px;
+      height: 90vh;
+      border-radius: var(--radius-lg);
       border: 1px solid var(--glass-border);
       display: flex;
       flex-direction: column;
       overflow: hidden;
-      box-shadow: 0 40px 100px -20px rgba(0,0,0,0.8);
+      box-shadow: 0 40px 120px -20px rgba(0,0,0,0.9);
+      position: relative;
+    }
+    .picker-modal::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      border-radius: var(--radius-lg);
+      padding: 1px;
+      background: linear-gradient(135deg, rgba(189, 142, 98, 0.3), transparent);
+      -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+      mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+      -webkit-mask-composite: xor;
+      mask-composite: exclude;
+      pointer-events: none;
     }
     .picker-header {
-      padding: 30px;
-      background: rgba(255,255,255,0.02);
+      padding: 40px;
+      background: rgba(0,0,0,0.2);
       border-bottom: 1px solid var(--glass-border);
     }
     .header-main {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      margin-bottom: 15px;
+      margin-bottom: 20px;
     }
     .header-main h2 {
-      font-size: 2rem;
-      color: var(--primary-color);
+      font-size: 2.5rem;
+      background: var(--primary-gradient);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
       margin: 0;
     }
     .btn-close {
       background: var(--surface-hover);
       border: 1px solid var(--glass-border);
       color: var(--text-dim);
-      width: 44px;
-      height: 44px;
-      border-radius: 50%;
+      width: 50px;
+      height: 50px;
+      border-radius: 100px;
       cursor: pointer;
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 1.2rem;
+      font-size: 1.4rem;
       transition: all 0.3s;
     }
     .btn-close:hover {
-      background: #e63946;
-      color: white;
-      border-color: #e63946;
+      background: var(--primary-gradient);
+      color: #0c0c0e;
+      border-color: transparent;
+      transform: rotate(90deg);
     }
     .breadcrumb {
       display: flex;
-      gap: 8px;
-      font-size: 0.9rem;
+      gap: 12px;
+      font-size: 0.95rem;
       color: var(--text-dim);
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 1px;
     }
     .crumb {
       cursor: pointer;
-      transition: color 0.2s;
+      transition: color 0.3s;
       display: flex;
       align-items: center;
-      gap: 8px;
+      gap: 12px;
     }
     .crumb:hover { color: var(--primary-color); }
-    .crumb.active { color: var(--text-main); font-weight: 600; }
-    .chevron { opacity: 0.5; }
+    .crumb.active { color: var(--text-main); font-weight: 900; }
+    .chevron { opacity: 0.5; font-size: 1.2rem; }
 
     .picker-content {
       flex: 1;
-      padding: 30px;
+      padding: 40px;
       overflow-y: auto;
     }
     .grid-layout {
       display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
-      gap: 20px;
+      grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+      gap: 25px;
     }
     .flavor-card {
       position: relative;
-      height: 120px;
-      border-radius: 20px;
+      height: 140px;
+      border-radius: var(--radius-md);
       background: var(--surface-hover);
       border: 2px solid transparent;
       cursor: pointer;
@@ -168,122 +188,134 @@ import { SCA_FLAVOR_WHEEL, FlavorNode } from '../../models/flavor-wheel.data';
       display: flex;
       align-items: center;
       justify-content: center;
-      padding: 15px;
-      transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+      padding: 20px;
+      transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
     }
     .flavor-card:hover {
-      transform: translateY(-5px);
+      transform: translateY(-8px);
     }
     .card-bg {
       position: absolute;
       inset: 0;
-      opacity: 0.1;
-      transition: opacity 0.3s;
+      opacity: 0.15;
+      transition: opacity 0.4s;
     }
     .flavor-card:hover .card-bg {
-      opacity: 0.2;
+      opacity: 0.3;
     }
     .card-name {
       position: relative;
       z-index: 2;
-      font-weight: 700;
+      font-weight: 800;
       text-align: center;
-      font-size: 1rem;
+      font-size: 1.1rem;
       color: var(--text-main);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
     }
     .card-count {
       position: absolute;
-      bottom: 12px;
-      right: 12px;
-      font-size: 0.7rem;
+      bottom: 15px;
+      right: 15px;
+      font-size: 0.75rem;
       color: var(--text-dim);
-      font-weight: 600;
+      font-weight: 800;
       text-transform: uppercase;
     }
     .back-card {
       background: transparent;
       border: 2px dashed var(--glass-border);
       flex-direction: column;
-      gap: 8px;
+      gap: 10px;
     }
-    .back-card .icon { font-size: 1.5rem; color: var(--text-dim); }
+    .back-card .icon { font-size: 2rem; color: var(--text-dim); }
     .flavor-card.selected {
       background: var(--surface-color);
       border-width: 3px;
     }
     .flavor-card.selected .card-bg {
-      opacity: 0.4;
+      opacity: 0.5;
     }
     .selection-indicator {
       position: absolute;
-      top: 10px;
-      right: 10px;
-      background: var(--primary-color);
-      color: white;
-      width: 24px;
-      height: 24px;
+      top: 15px;
+      right: 15px;
+      background: var(--primary-gradient);
+      color: #0c0c0e;
+      width: 28px;
+      height: 28px;
       border-radius: 50%;
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 0.8rem;
+      font-size: 0.9rem;
+      font-weight: 900;
+      box-shadow: 0 4px 10px var(--primary-glow);
     }
 
     .picker-footer {
-      padding: 30px;
-      background: rgba(255,255,255,0.03);
+      padding: 40px;
+      background: rgba(0,0,0,0.3);
       border-top: 1px solid var(--glass-border);
       display: flex;
       justify-content: space-between;
       align-items: center;
-      gap: 30px;
+      gap: 40px;
     }
     .selected-summary {
       flex: 1;
     }
     .summary-label {
       display: block;
-      font-size: 0.75rem;
+      font-size: 0.8rem;
       color: var(--text-dim);
       text-transform: uppercase;
       letter-spacing: 2px;
-      margin-bottom: 12px;
+      margin-bottom: 15px;
+      font-weight: 800;
     }
     .mini-chips {
       display: flex;
       flex-wrap: wrap;
-      gap: 8px;
+      gap: 10px;
     }
     .mini-chip {
-      background: var(--surface-hover);
-      border: 1px solid var(--glass-border);
-      padding: 6px 12px;
+      background: var(--primary-gradient);
+      padding: 8px 18px;
       border-radius: 100px;
-      font-size: 0.8rem;
-      color: var(--primary-color);
-      font-weight: 600;
+      font-size: 0.85rem;
+      color: #0c0c0e;
+      font-weight: 800;
       cursor: pointer;
       display: flex;
       align-items: center;
-      gap: 6px;
+      gap: 8px;
+      box-shadow: 0 4px 12px var(--primary-glow);
+      transition: all 0.3s;
     }
-    .mini-chip:hover { border-color: #e63946; color: #e63946; }
-    .remove { font-size: 0.7rem; opacity: 0.5; }
-    .placeholder { color: var(--text-dim); font-size: 0.9rem; font-style: italic; }
+    .mini-chip:hover {
+      transform: scale(1.05);
+      background: var(--accent-neon);
+    }
+    .remove { font-size: 0.8rem; opacity: 0.7; }
+    .placeholder { color: var(--text-dim); font-size: 1rem; font-style: italic; }
     
     .btn-primary {
-      padding: 15px 40px;
+      padding: 0 50px;
       border-radius: 100px;
-      height: 55px;
-      font-weight: 700;
-      box-shadow: 0 10px 20px -5px var(--primary-glow);
+      height: 60px;
+      font-weight: 900;
+      text-transform: uppercase;
+      letter-spacing: 2px;
     }
 
-    @media (max-width: 600px) {
+    @media (max-width: 640px) {
       .picker-modal { height: 100vh; border-radius: 0; }
-      .grid-layout { grid-template-columns: repeat(2, 1fr); }
-      .picker-footer { flex-direction: column; align-items: stretch; gap: 20px; }
-      .btn-primary { width: 100%; }
+      .grid-layout { grid-template-columns: repeat(2, 1fr); gap: 15px; }
+      .picker-content { padding: 20px; }
+      .picker-header { padding: 20px; }
+      .picker-footer { flex-direction: column; align-items: stretch; gap: 25px; padding: 20px; }
+      .header-main h2 { font-size: 1.8rem; }
     }
   `]
 })

@@ -37,14 +37,15 @@ import { RouterOutlet, RouterLink, RouterLinkActive } from '@angular/router';
   `,
   styles: [`
     .main-nav {
-      backdrop-filter: blur(20px);
-      -webkit-backdrop-filter: blur(20px);
-      background: rgba(18, 18, 18, 0.85);
+      backdrop-filter: blur(25px);
+      -webkit-backdrop-filter: blur(25px);
+      background: rgba(12, 12, 14, 0.7);
       border-bottom: 1px solid var(--glass-border);
       position: sticky;
       top: 0;
-      z-index: 100;
-      height: 80px;
+      z-index: 1000;
+      height: 90px;
+      transition: all 0.4s;
     }
     .nav-content {
       max-width: 1200px;
@@ -53,48 +54,74 @@ import { RouterOutlet, RouterLink, RouterLinkActive } from '@angular/router';
       display: flex;
       justify-content: space-between;
       align-items: center;
-      padding: 0 20px;
+      padding: 0 30px;
     }
     .brand {
       text-decoration: none;
+      display: flex;
+      align-items: center;
+      gap: 12px;
     }
     .brand h1 {
-      color: var(--primary-color);
-      text-shadow: none;
-      font-size: 1.8rem;
+      background: var(--primary-gradient);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      font-size: 2.2rem;
       margin: 0;
+      font-weight: 800;
     }
     .nav-links {
       display: flex;
-      gap: 30px;
+      gap: 40px;
     }
     .nav-links a {
       color: var(--text-dim);
       text-decoration: none;
-      font-size: 0.9rem;
-      font-weight: 600;
-      transition: color 0.2s;
+      font-size: 0.85rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 2px;
+      transition: all 0.3s;
+      position: relative;
+      padding: 8px 0;
+    }
+    .nav-links a::after {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      width: 0;
+      height: 2px;
+      background: var(--primary-gradient);
+      transition: width 0.3s;
+    }
+    .nav-links a:hover::after, .nav-links a.active::after {
+      width: 100%;
     }
     .nav-links a:hover, .nav-links a.active {
-      color: var(--primary-color);
+      color: var(--text-main);
     }
     main {
-      min-height: calc(100vh - 160px);
+      min-height: calc(100vh - 180px);
+      max-width: 1400px;
+      margin: 0 auto;
     }
     .mobile-bottom-nav {
       display: none;
       position: fixed;
-      bottom: 0;
-      left: 0;
-      right: 0;
-      height: 70px;
-      background: rgba(12, 12, 12, 0.9);
-      backdrop-filter: blur(20px);
-      border-top: 1px solid var(--glass-border);
+      bottom: 20px;
+      left: 20px;
+      right: 20px;
+      height: 75px;
+      background: rgba(22, 22, 26, 0.95);
+      backdrop-filter: blur(25px);
+      border: 1px solid var(--glass-border);
+      border-radius: 40px;
       z-index: 1000;
       justify-content: space-around;
       align-items: center;
-      padding: 0 10px;
+      padding: 0 20px;
+      box-shadow: 0 10px 40px rgba(0,0,0,0.5);
     }
     .bottom-nav-link {
       display: flex;
@@ -103,41 +130,40 @@ import { RouterOutlet, RouterLink, RouterLinkActive } from '@angular/router';
       justify-content: center;
       color: var(--text-dim);
       text-decoration: none;
-      font-size: 0.7rem;
-      gap: 5px;
-      transition: color 0.2s;
+      font-size: 0.75rem;
+      font-weight: 600;
+      gap: 4px;
+      transition: all 0.3s;
     }
     .bottom-nav-link svg {
-      opacity: 0.7;
-      transition: opacity 0.2s;
+      opacity: 0.6;
+      transition: all 0.3s;
     }
     .bottom-nav-link.active {
       color: var(--primary-color);
     }
     .bottom-nav-link.active svg {
       opacity: 1;
+      transform: translateY(-2px);
+      stroke: var(--primary-color);
     }
     .main-footer {
-      height: 80px;
+      height: 100px;
       display: flex;
       align-items: center;
       justify-content: center;
       border-top: 1px solid var(--glass-border);
       color: var(--text-dim);
-      font-size: 0.8rem;
+      font-size: 0.85rem;
+      letter-spacing: 1px;
     }
     @media (max-width: 768px) {
-      .nav-links {
-        display: none;
-      }
-      .mobile-bottom-nav {
-        display: flex;
-      }
-      main {
-        padding-bottom: 80px;
-      }
+      .main-nav { height: 80px; }
+      .nav-links { display: none; }
+      .mobile-bottom-nav { display: flex; }
+      main { padding-bottom: 100px; }
       .main-footer {
-        padding-bottom: 70px;
+        padding-bottom: 100px;
         height: 150px;
         align-items: flex-start;
         padding-top: 40px;

@@ -10,7 +10,7 @@
     "test": "ng test",
     "serve:ssr:coffeescore": "node dist/coffeescore/server/server.mjs"
   },
-  "private": false,
+  "private": true,
   "packageManager": "npm@10.9.2",
   "files": [
     "src",
