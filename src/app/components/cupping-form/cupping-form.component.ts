@@ -1,5 +1,6 @@
 import { Component, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { TranslationService } from '../../services/translation.service';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { CuppingService } from '../../services/cupping.service';

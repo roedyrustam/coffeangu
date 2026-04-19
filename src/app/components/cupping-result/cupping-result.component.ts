@@ -1,8 +1,9 @@
-import { Component, OnInit, inject, PLATFORM_ID, AfterViewInit } from '@angular/core';
+import { Component, OnInit, inject, PLATFORM_ID, AfterViewInit, signal } from '@angular/core';
 import { CommonModule, isPlatformBrowser } from '@angular/common';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import { Meta, Title } from '@angular/platform-browser';
 import { CuppingService } from '../../services/cupping.service';
+import { TranslationService } from '../../services/translation.service';
 import { CuppingSession } from '../../models/cupping.model';
 import html2canvas from 'html2canvas';
 import { Chart, RadarController, RadialLinearScale, PointElement, LineElement, Filler, Tooltip, Legend } from 'chart.js';
@@ -349,9 +350,7 @@ Chart.register(RadarController, RadialLinearScale, PointElement, LineElement, Fi
       height: 70px;
       font-size: 1.2rem;
       letter-spacing: 2px;
-    }
       text-transform: uppercase;
-      letter-spacing: 2px;
     }
     .social-actions {
        margin-top: 30px;
