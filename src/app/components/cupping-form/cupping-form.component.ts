@@ -1,4 +1,5 @@
 import { Component, inject } from '@angular/core';
+import * as Tesseract from 'tesseract.js';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
@@ -58,6 +59,14 @@ import { CuppingSession, SensoryScores } from '../../models/cupping.model';
         
         <form #cuppingForm="ngForm" (ngSubmit)="cuppingForm.valid && submit()">
           <section class="basic-info">
+            <div class="ocr-section animate-fade">
+              <input type="file" #fileInput accept="image/*" capture="environment" style="display: none" (change)="processImage($event)">
+              <button type="button" class="btn-secondary w-full" (click)="fileInput.click()" [disabled]="isScanning" style="margin-top: 0; margin-bottom: 25px; display: flex; justify-content: center; align-items: center; gap: 12px; padding: 14px; background: rgba(255,255,255,0.03); border: 1px dashed var(--glass-border); color: var(--primary-color);">
+                <span style="font-size: 1.4rem;">📷</span>
+                <span *ngIf="!isScanning" style="font-size: 0.95rem; font-weight: 500;">Pindai Stiker Kemasan (AI Autofill)</span>
+                <span *ngIf="isScanning" style="font-size: 0.95rem; font-weight: 500;">{{ scannerStatus }}</span>
+              </button>
+            </div>
             <div class="input-group">
               <label>Bean Name <span class="required">*</span></label>
               <input [(ngModel)]="session.beanName" name="beanName" #beanName="ngModel" placeholder="e.g. Ethiopia Yirgacheffe" required>
@@ -471,6 +480,67 @@ export class CuppingFormComponent {
 
   showGuide = true;
   loading = false;
+  isScanning = false;
+  scannerStatus = '';
+
+  async processImage(event: Event) {
+    const input = event.target as HTMLInputElement;
+    if (!input.files || input.files.length === 0) return;
+    
+    this.isScanning = true;
+    this.scannerStatus = 'Memuat Engine AI...';
+    const file = input.files[0];
+
+    try {
+      const result = await Tesseract.recognize(file, 'eng', {
+        logger: m => {
+          if (m.status === 'recognizing text') {
+            this.scannerStatus = `Memindai Label... ${Math.round(m.progress * 100)}%`;
+          } else if (m.status.includes('loading')) {
+            this.scannerStatus = 'Mempersiapkan Model Neural (Offline)';
+          }
+        }
+      });
+      
+      const text = result.data.text.toLowerCase();
+      this.scannerStatus = 'Sinkronisasi Data...';
+      
+      // Heuristic parsing
+      const lines = result.data.text.split('\n').map((l: string) => l.trim()).filter((l: string) => l.length > 2);
+      
+      if (lines.length > 0) {
+        if (!this.session.beanName) {
+           this.session.beanName = lines[0];
+        }
+      }
+
+      if (text.includes('arabica')) this.session.type = 'Arabica';
+      else if (text.includes('robusta')) this.session.type = 'Robusta';
+      else if (text.includes('liberica')) this.session.type = 'Liberica';
+
+      if (text.includes('wash') || text.includes('washed')) this.session.postHarvest = 'Wash';
+      else if (text.includes('natural') || text.includes('dry')) this.session.postHarvest = 'Natural';
+      else if (text.includes('honey')) this.session.postHarvest = 'Honey';
+      else if (text.includes('anaerobic')) this.session.postHarvest = 'Anaerobic';
+      
+      const origins = ['ethiopia', 'colombia', 'brazil', 'indonesia', 'kenya', 'rwanda', 'panama', 'costa rica', 'sumatra', 'jawa', 'gayo'];
+      for (const origin of origins) {
+        if (text.includes(origin)) {
+          this.session.origin = origin.charAt(0).toUpperCase() + origin.slice(1);
+          break;
+        }
+      }
+
+    } catch (err) {
+      console.error('OCR Error:', err);
+      alert('Gagal mendeteksi teks. Pastikan gambar stiker jelas dan terang.');
+    } finally {
+      this.isScanning = false;
+      this.scannerStatus = '';
+      input.value = '';
+    }
+  }
+
   scoreKeys: (keyof SensoryScores)[] = [
     'fragranceAroma', 'flavor', 'aftertaste', 'acidity', 
     'body', 'balance', 'uniformity', 'cleanCup', 'sweetness', 'overall'
