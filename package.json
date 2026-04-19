@@ -10,7 +10,7 @@
     "test": "ng test",
     "serve:ssr:coffeescore": "node dist/coffeescore/server/server.mjs"
   },
-  "private": true,
+  "private": false,
   "packageManager": "npm@10.9.2",
   "dependencies": {
     "@angular/common": "^19.1.0",
