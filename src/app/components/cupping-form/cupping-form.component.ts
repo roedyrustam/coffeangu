@@ -5,13 +5,15 @@ import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { CuppingService } from '../../services/cupping.service';
 import { CuppingSession, SensoryScores } from '../../models/cupping.model';
+import { FlavorPickerComponent } from '../flavor-picker/flavor-picker.component';
 
 @Component({
   selector: 'app-cupping-form',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, FlavorPickerComponent],
   template: `
     <div class="guide-container animate-fade" *ngIf="showGuide">
+      <!-- ... existing guide template ... -->
       <div class="glass-card guide-card">
         <h2 class="brand-font" style="margin-bottom: 10px; color: var(--primary-color); font-size: 2.2rem;">SCA Cupping Protocol</h2>
         <p class="guide-desc">Pastikan panel dan instrumen telah disiapkan sesuai dengan standar resmi Specialty Coffee Association (SCA).</p>
@@ -59,6 +61,7 @@ import { CuppingSession, SensoryScores } from '../../models/cupping.model';
         
         <form #cuppingForm="ngForm" (ngSubmit)="cuppingForm.valid && submit()">
           <section class="basic-info">
+            <!-- OCR Section -->
             <div class="ocr-section animate-fade">
               <input type="file" #fileInput accept="image/*" capture="environment" style="display: none" (change)="processImage($event)">
               <button type="button" class="btn-secondary w-full" (click)="fileInput.click()" [disabled]="isScanning" style="margin-top: 0; margin-bottom: 25px; display: flex; justify-content: center; align-items: center; gap: 12px; padding: 14px; background: rgba(255,255,255,0.03); border: 1px dashed var(--glass-border); color: var(--primary-color);">
@@ -67,6 +70,7 @@ import { CuppingSession, SensoryScores } from '../../models/cupping.model';
                 <span *ngIf="isScanning" style="font-size: 0.95rem; font-weight: 500;">{{ scannerStatus }}</span>
               </button>
             </div>
+            <!-- Input Groups -->
             <div class="input-group">
               <label>Bean Name <span class="required">*</span></label>
               <input [(ngModel)]="session.beanName" name="beanName" #beanName="ngModel" placeholder="e.g. Ethiopia Yirgacheffe" required>
@@ -96,6 +100,7 @@ import { CuppingSession, SensoryScores } from '../../models/cupping.model';
                 <option value="Other">Other</option>
               </select>
             </div>
+            <!-- ... more basic info ... -->
             <div class="input-group">
               <label>Metode Seduh</label>
               <select [(ngModel)]="session.brewMethod" name="brewMethod">
@@ -142,16 +147,24 @@ import { CuppingSession, SensoryScores } from '../../models/cupping.model';
             </div>
           </section>
 
+          <!-- NEW FLAVOR PICKER SECTION -->
           <section class="cva-section">
-            <h2 class="section-badge">Flavor Profile (SCA Wheel)</h2>
-            <div class="flavor-chips">
-               <button type="button" 
-                  *ngFor="let cat of flavorCategories" 
-                  class="chip" 
-                  [class.active]="isFlavorSelected(cat)"
-                  (click)="toggleFlavor(cat)">
-                  {{ cat }}
-               </button>
+            <div class="section-title-row">
+              <h2 class="section-badge">Flavor Profile</h2>
+              <button type="button" class="btn-wheel-open" (click)="showFlavorPicker = true">
+                <span class="wheel-icon">🛞</span> Wheel Picker
+              </button>
+            </div>
+            
+            <div class="flavor-display">
+              <div class="flavor-chips" *ngIf="session.flavorNotes.length > 0">
+                 <div *ngFor="let note of session.flavorNotes" class="chip active" (click)="toggleFlavor(note)">
+                    {{ note }} <span class="remove-x">✕</span>
+                 </div>
+              </div>
+              <div class="empty-flavor" *ngIf="session.flavorNotes.length === 0" (click)="showFlavorPicker = true">
+                <p>Klik tombol roda untuk menganalisis profil rasa...</p>
+              </div>
             </div>
           </section>
 
@@ -200,6 +213,14 @@ import { CuppingSession, SensoryScores } from '../../models/cupping.model';
         </form>
       </div>
     </div>
+
+    <!-- Flavor Picker Modal -->
+    <app-flavor-picker 
+      *ngIf="showFlavorPicker" 
+      [selectedNotes]="session.flavorNotes"
+      (notesChanged)="session.flavorNotes = $event; updateTotal()"
+      (close)="showFlavorPicker = false">
+    </app-flavor-picker>
   `,
   styles: [`
     .guide-container {
@@ -290,8 +311,28 @@ import { CuppingSession, SensoryScores } from '../../models/cupping.model';
       display: flex;
       justify-content: space-between;
       align-items: center;
-      margin-bottom: calc(var(--spacing-unit) * 3);
+      margin-bottom: calc(var(--spacing-unit) * 4);
     }
+    .btn-wheel-open {
+      background: var(--surface-hover);
+      border: 1px solid var(--primary-color);
+      color: var(--primary-color);
+      padding: 8px 16px;
+      border-radius: 100px;
+      font-size: 0.85rem;
+      font-weight: 700;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      transition: all 0.3s;
+    }
+    .btn-wheel-open:hover {
+      background: var(--primary-color);
+      color: white;
+      box-shadow: 0 5px 15px var(--primary-glow);
+    }
+    .wheel-icon { font-size: 1.2rem; }
     .range-info {
       font-size: 0.75rem;
       color: var(--text-dim);
@@ -300,6 +341,24 @@ import { CuppingSession, SensoryScores } from '../../models/cupping.model';
       border-radius: 6px;
       font-weight: 600;
     }
+    .flavor-display {
+      background: rgba(255,255,255,0.02);
+      border: 1px solid var(--glass-border);
+      border-radius: var(--radius-md);
+      padding: 20px;
+      min-height: 100px;
+    }
+    .empty-flavor {
+      height: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      color: var(--text-dim);
+      font-style: italic;
+      font-size: 0.9rem;
+    }
+    .remove-x { font-size: 0.7rem; opacity: 0.6; margin-left: 5px; }
     .score-card {
       background: var(--surface-color);
       padding: calc(var(--spacing-unit) * 2.5);
@@ -361,7 +420,7 @@ import { CuppingSession, SensoryScores } from '../../models/cupping.model';
       background: var(--primary-color);
       padding: 6px 18px;
       border-radius: 6px;
-      margin-bottom: calc(var(--spacing-unit) * 4);
+      margin: 0;
     }
     .cva-section {
       margin-top: calc(var(--spacing-unit) * 6);
@@ -410,14 +469,6 @@ import { CuppingSession, SensoryScores } from '../../models/cupping.model';
       padding: calc(var(--spacing-unit) * 4);
       border-radius: var(--radius-lg);
       border: 1px solid var(--primary-glow);
-    }
-    .score-card {
-      background: var(--surface-color);
-      color: var(--text-main);
-      padding: calc(var(--spacing-unit) * 2.5);
-      border-radius: var(--radius-md);
-      border: 1px solid var(--glass-border);
-      box-shadow: 0 4px 15px rgba(0,0,0,0.02);
     }
     
     /* Custom Range Slider Styling */
@@ -482,6 +533,7 @@ export class CuppingFormComponent {
   loading = false;
   isScanning = false;
   scannerStatus = '';
+  showFlavorPicker = false;
 
   async processImage(event: Event) {
     const input = event.target as HTMLInputElement;
@@ -505,7 +557,6 @@ export class CuppingFormComponent {
       const text = result.data.text.toLowerCase();
       this.scannerStatus = 'Sinkronisasi Data...';
       
-      // Heuristic parsing
       const lines = result.data.text.split('\n').map((l: string) => l.trim()).filter((l: string) => l.length > 2);
       
       if (lines.length > 0) {
@@ -577,11 +628,6 @@ export class CuppingFormComponent {
     timestamp: null
   };
 
-  flavorCategories = [
-    'Floral', 'Fruity', 'Sour/Fermented', 'Green/Vegetative', 
-    'Roasted', 'Spices', 'Nutty/Cocoa', 'Sweet', 'Other'
-  ];
-
   toggleFlavor(category: string) {
     const index = this.session.flavorNotes.indexOf(category);
     if (index > -1) {
@@ -589,10 +635,6 @@ export class CuppingFormComponent {
     } else {
       this.session.flavorNotes.push(category);
     }
-  }
-
-  isFlavorSelected(category: string) {
-    return this.session.flavorNotes.includes(category);
   }
 
   stepScore(key: keyof SensoryScores, delta: number) {
@@ -604,7 +646,7 @@ export class CuppingFormComponent {
   }
 
   updateTotal() {
-    const sum = Object.values(this.session.scores).reduce((a, b) => a + b, 0);
+    const sum = Object.values(this.session.scores).reduce((a, b: any) => a + b, 0);
     this.session.finalScore = sum - this.session.defects;
   }
 
