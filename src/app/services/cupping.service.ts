@@ -30,13 +30,31 @@ export class CuppingService {
     return collectionData(q, { idField: 'id' }) as Observable<CuppingSession[]>;
   }
 
-  getPublicCuppings(): Observable<CuppingSession[]> {
-    const q = query(
-      this.cuppingCollection, 
-      where('isPublic', '==', true),
-      orderBy('timestamp', 'desc'), 
-      limit(50)
-    );
+  getPublicCuppings(options?: { 
+    process?: string, 
+    origin?: string, 
+    sortBy?: 'timestamp' | 'finalScore' | 'likesCount',
+    order?: 'asc' | 'desc',
+    limit?: number
+  }): Observable<CuppingSession[]> {
+    let constraints = [where('isPublic', '==', true)];
+    
+    if (options?.process) {
+      constraints.push(where('postHarvest', '==', options.process));
+    }
+    
+    if (options?.origin) {
+      constraints.push(where('origin', '==', options.origin));
+    }
+    
+    const sortBy = options?.sortBy || 'timestamp';
+    const order = options?.order || 'desc';
+    constraints.push(orderBy(sortBy, order));
+    
+    const qLimit = options?.limit || 50;
+    constraints.push(limit(qLimit));
+
+    const q = query(this.cuppingCollection, ...constraints);
     return collectionData(q, { idField: 'id' }) as Observable<CuppingSession[]>;
   }
 

@@ -43,6 +43,13 @@
   "LABEL_NAME": "Nombre completo",
   "LABEL_EMAIL": "Correo electrónico",
   "LABEL_PASSWORD": "Contraseña",
-  "PLACEHOLDER_NAME": "ej. John Doe",
-  "OR_CONTINUE_WITH": "O continuar con"
+  "PLACEHOLDER_NAME": "ej. Juan Pérez",
+  "OR_CONTINUE_WITH": "O continuar con",
+  "DISCOVERY_TITLE": "Descubrimiento Comunitario",
+  "DISCOVERY_SUBTITLE": "Explorando el mundo global del café de especialidad, una taza a la vez.",
+  "SEARCH_PLACEHOLDER": "Buscar por nombre de café o tostador...",
+  "FILTER_ALL": "Todos los Procesos",
+  "SORT_NEWEST": "Más Recientes",
+  "SORT_TOP_RATED": "Puntuación Más Alta",
+  "STATS_COMMUNITY_HEALTH": "Perspectivas del Paladar Global"
 }

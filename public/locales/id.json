@@ -43,6 +43,13 @@
   "LABEL_NAME": "Nama Lengkap",
   "LABEL_EMAIL": "Alamat Email",
   "LABEL_PASSWORD": "Kata Sandi",
-  "PLACEHOLDER_NAME": "misal: John Doe",
-  "OR_CONTINUE_WITH": "Atau lanjut dengan"
+  "PLACEHOLDER_NAME": "misal: Budi Santoso",
+  "OR_CONTINUE_WITH": "Atau lanjut dengan",
+  "DISCOVERY_TITLE": "Community Discovery",
+  "DISCOVERY_SUBTITLE": "Menjelajahi dunia kopi spesialti global, satu cangkir setiap kalinya.",
+  "SEARCH_PLACEHOLDER": "Cari berdasarkan nama kopi atau roastery...",
+  "FILTER_ALL": "Semua Proses",
+  "SORT_NEWEST": "Terbaru",
+  "SORT_TOP_RATED": "Skor Tertinggi",
+  "STATS_COMMUNITY_HEALTH": "Wawasan Palate Global"
 }

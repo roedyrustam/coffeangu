@@ -44,5 +44,12 @@
   "LABEL_EMAIL": "Email Address",
   "LABEL_PASSWORD": "Password",
   "PLACEHOLDER_NAME": "e.g. John Doe",
-  "OR_CONTINUE_WITH": "Or continue with"
+  "OR_CONTINUE_WITH": "Or continue with",
+  "DISCOVERY_TITLE": "Community Discovery",
+  "DISCOVERY_SUBTITLE": "Exploring the global world of specialty coffee, one cup at a time.",
+  "SEARCH_PLACEHOLDER": "Search by bean name or roastery...",
+  "FILTER_ALL": "All Process",
+  "SORT_NEWEST": "Newest First",
+  "SORT_TOP_RATED": "Highest Score",
+  "STATS_COMMUNITY_HEALTH": "Global Palate Insights"
 }

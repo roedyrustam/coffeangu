@@ -80,18 +80,18 @@ Chart.register(RadarController, RadialLinearScale, PointElement, LineElement, Fi
            <div class="intensity-viz">
               <span class="section-label">{{ t('INTENSITY_TITLE') }}</span>
               <div class="intensity-bars-row">
-                 <div class="int-bar-item">
-                    <label>{{ t('ACIDITY') }}</label>
-                    <div class="int-track"><div class="int-fill" [style.width.%]="session.intensities.acidity * 10"></div></div>
-                 </div>
-                 <div class="int-bar-item">
-                    <label>{{ t('BODY') }}</label>
-                    <div class="int-track"><div class="int-fill" [style.width.%]="session.intensities.body * 10"></div></div>
-                 </div>
-                 <div class="int-bar-item">
-                    <label>{{ t('SWEETNESS') }}</label>
-                    <div class="int-track"><div class="int-fill" [style.width.%]="session.intensities.sweetness * 10"></div></div>
-                 </div>
+                  <div class="int-bar-item">
+                     <label>{{ t('ACIDITY') }}</label>
+                     <div class="int-track"><div class="int-fill" [style.width.%]="(session?.intensities?.acidity || 0) * 10"></div></div>
+                  </div>
+                  <div class="int-bar-item">
+                     <label>{{ t('BODY') }}</label>
+                     <div class="int-track"><div class="int-fill" [style.width.%]="(session?.intensities?.body || 0) * 10"></div></div>
+                  </div>
+                  <div class="int-bar-item">
+                     <label>{{ t('SWEETNESS') }}</label>
+                     <div class="int-track"><div class="int-fill" [style.width.%]="(session?.intensities?.sweetness || 0) * 10"></div></div>
+                  </div>
               </div>
            </div>
         </section>
