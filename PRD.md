@@ -26,8 +26,8 @@
 - **Goal:** Firebase Local Persistance caches forms inside browser IndexedDB. Angular Service Worker caches the JS engine and UI components. All features must be usable locally, utilizing an auto-sync engine logic upon reconnection.
 
 ## 4. UI/UX Specifications
-- **Theme:** "Premium Dark" (`#121212` Root, `#1e1e1e` Component Surface). 
-- **Typography:** Inter & Outfit (Google Fonts).
+- **Theme:** "Obsidian & Radiant Ember" 2026 Edition (`#0c0c0e` Root).
+- **Typography:** Outfit (Primary) & Playfair Display (Accent/Scores).
 - **Responsive Target:** Mobile Vertical (iPhone/Android) and Tablet Landscape (Data-density visualization).
 
 ## 5. Success Metrics

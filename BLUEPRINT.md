@@ -1,13 +1,14 @@
-# CaffeeScore v1.0.0 Blueprint
+# CaffeeScore v1.1.0 Blueprint
 
 ## 1. System Architecture
 CaffeeScore is a modern web application built on **Angular 19** utilizing Server-Side Rendering (SSR) optionally, but fundamentally designed as an **Offline-First Progressive Web App (PWA)**. 
 
 ### Core Tech Stack:
 - **Framework**: Angular 19 (Standalone Components)
-- **Styling**: Pure CSS3 variables with highly customized "Premium Dark" theme.
+- **Styling**: Pure CSS3 variables with the **2026 Obsidian & Radiant Ember** design system.
 - **Backend/Database**: Firebase V11 (Firestore)
-- **Visualization**: Chart.js 4 (Radar Chart) -> `ng2-charts` wrapper implicitly / native.
+- **Visualization**: Chart.js 4 (Radar Chart) + html2canvas for image snapshots.
+- **OCR Engine**: Tesseract.js (loaded dynamically to support SSR pre-rendering).
 - **Offline Persistence**: `@angular/pwa` Service Workers + IndexedDB Firestore LocalCache.
 
 ## 2. Directory Structure
@@ -37,5 +38,6 @@ CaffeeScore/
 5. **Data Visualization**: `CuppingResultComponent` fetches the unified object, recalculates the final average, and orchestrates Chart.js to map radar vertices over an HSL-calculated dark background.
 
 ## 4. Key Design Decisions
-- **Premium Dark Palette**: `#121212` background, `#1e1e1e` surfaces. Selected specifically to reduce cupper eye strain inside bright/flashy laboratories or dimly lit roasteries.
+- **Obsidian & Radiant Ember Palette**: `#0c0c0e` background, `#161618` surfaces. Bronze gradients (`#bd8e62` to `#e5bc7d`) for primary actions. Acid Lime (`#d4e157`) for success and specialty indicators.
+- **Dynamic Module Loading**: Tesseract.js is imported dynamically inside interaction methods to prevent `__dirname` resolution errors in Vite-based Angular SSR environments.
 - **SCA 2025 Value Assessment Protocol**: Follows the strict 4-minute steep / 8.25g golden ratio workflow before data entry begins.
