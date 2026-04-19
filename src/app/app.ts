@@ -1,6 +1,7 @@
-import { Component, inject } from '@angular/core';
+import { Component, inject, signal } from '@angular/core';
 import { RouterOutlet, RouterLink, RouterLinkActive } from '@angular/router';
 import { TranslationService } from './services/translation.service';
+import { AuthService } from './services/auth.service';
 import { CommonModule } from '@angular/common';
 
 @Component({
@@ -21,6 +22,29 @@ import { CommonModule } from '@angular/common';
             <a routerLink="/" class="nav-link" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}">{{ t('NAV_HOME') }}</a>
             <a routerLink="/cupping" class="nav-link" routerLinkActive="active">{{ t('NAV_NEW') }}</a>
             <a routerLink="/community" class="nav-link" routerLinkActive="active">{{ t('NAV_COMMUNITY') }}</a>
+            
+            <ng-container *ngIf="!auth.currentUser()">
+              <a routerLink="/login" class="btn-primary login-btn">{{ t('BTN_LOGIN') }}</a>
+            </ng-container>
+
+            <div class="user-profile" *ngIf="auth.currentUser()">
+              <div class="avatar" (click)="showUserMenu.set(!showUserMenu())">
+                <span *ngIf="!auth.currentUser()?.photoURL">{{ auth.currentUser()?.displayName?.charAt(0) || 'U' }}</span>
+                <img *ngIf="auth.currentUser()?.photoURL" [src]="auth.currentUser()?.photoURL" alt="Profile">
+              </div>
+              
+              <div class="user-menu glass-card" *ngIf="showUserMenu()">
+                <div class="menu-header">
+                  <p class="user-name">{{ auth.currentUser()?.displayName }}</p>
+                  <p class="user-email">{{ auth.currentUser()?.email }}</p>
+                </div>
+                <div class="menu-divider"></div>
+                <button (click)="auth.logout(); showUserMenu.set(false)" class="logout-btn">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+                  {{ t('BTN_LOGOUT') }}
+                </button>
+              </div>
+            </div>
           </div>
         </div>
       </div>
@@ -42,6 +66,10 @@ import { CommonModule } from '@angular/common';
       <a routerLink="/cupping" class="bottom-nav-link" routerLinkActive="active">
         <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="M12 5v14"/></svg>
         <span>{{ t('NAV_NEW') }}</span>
+      </a>
+      <a [routerLink]="auth.currentUser() ? '/profile' : '/login'" class="bottom-nav-link" routerLinkActive="active">
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+        <span>{{ auth.currentUser() ? 'Profile' : t('BTN_LOGIN') }}</span>
       </a>
     </nav>
 
@@ -200,6 +228,96 @@ import { CommonModule } from '@angular/common';
       font-size: 0.85rem;
       letter-spacing: 1px;
     }
+    .user-profile {
+      position: relative;
+      display: flex;
+      align-items: center;
+    }
+    .avatar {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      background: var(--primary-gradient);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      border: 2px solid var(--glass-border);
+      overflow: hidden;
+      transition: all 0.3s;
+    }
+    .avatar:hover {
+      transform: scale(1.1);
+      border-color: var(--primary-color);
+    }
+    .avatar span {
+      color: #0c0c0e;
+      font-weight: 800;
+      font-size: 1.1rem;
+    }
+    .avatar img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+    .user-menu {
+      position: absolute;
+      top: 55px;
+      right: 0;
+      width: 240px;
+      padding: 20px;
+      z-index: 1001;
+      animation: fadeIn 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    .menu-header {
+      margin-bottom: 15px;
+    }
+    .user-name {
+      font-weight: 800;
+      color: var(--text-main);
+      font-size: 0.95rem;
+      margin-bottom: 4px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .user-email {
+      font-size: 0.75rem;
+      color: var(--text-dim);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .menu-divider {
+      height: 1px;
+      background: var(--glass-border);
+      margin: 15px 0;
+    }
+    .logout-btn {
+      width: 100%;
+      background: transparent;
+      border: 1px solid var(--danger);
+      color: var(--danger);
+      padding: 10px;
+      border-radius: 8px;
+      font-size: 0.8rem;
+      font-weight: 700;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      transition: all 0.3s;
+    }
+    .logout-btn:hover {
+      background: var(--danger);
+      color: white;
+    }
+    .login-btn {
+      padding: 10px 24px;
+      font-size: 0.75rem;
+      text-decoration: none;
+    }
     @media (max-width: 768px) {
       .main-nav { height: 80px; }
       .nav-links { display: none; }
@@ -216,5 +334,7 @@ import { CommonModule } from '@angular/common';
 })
 export class App {
   ts = inject(TranslationService);
+  auth = inject(AuthService);
   t = this.ts.t();
+  showUserMenu = signal(false);
 }

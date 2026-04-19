@@ -34,5 +34,15 @@
   "COMMUNITY_DESC": "Menjelajahi dunia kopi spesialti global, satu cangkir demi satu cangkir.",
   "BTN_LIKE": "Suka",
   "BTN_SAVE_LIST": "Simpan",
-  "LOADING_COMMUNITY": "Menemukan sesi kopi..."
+  "LOADING_COMMUNITY": "Menjelajahi sesi kopi...",
+  "BTN_LOGIN": "Masuk",
+  "BTN_SIGNUP": "Daftar",
+  "BTN_LOGOUT": "Keluar",
+  "LOGIN_TITLE": "Selamat Datang",
+  "LOGIN_SUBTITLE": "Masuk untuk menyinkronkan data cupping Anda",
+  "LABEL_NAME": "Nama Lengkap",
+  "LABEL_EMAIL": "Alamat Email",
+  "LABEL_PASSWORD": "Kata Sandi",
+  "PLACEHOLDER_NAME": "misal: John Doe",
+  "OR_CONTINUE_WITH": "Atau lanjut dengan"
 }

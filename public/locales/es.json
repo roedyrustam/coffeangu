@@ -34,5 +34,15 @@
   "COMMUNITY_DESC": "Explorando el mundo global del café de especialidad, taza a taza.",
   "BTN_LIKE": "Me gusta",
   "BTN_SAVE_LIST": "Guardar",
-  "LOADING_COMMUNITY": "Descubriendo sesiones de café..."
+  "LOADING_COMMUNITY": "Descubriendo sesiones de café...",
+  "BTN_LOGIN": "Iniciar sesión",
+  "BTN_SIGNUP": "Registrarse",
+  "BTN_LOGOUT": "Cerrar sesión",
+  "LOGIN_TITLE": "Bienvenido de nuevo",
+  "LOGIN_SUBTITLE": "Inicia sesión para sincronizar tu inteligencia de catación",
+  "LABEL_NAME": "Nombre completo",
+  "LABEL_EMAIL": "Correo electrónico",
+  "LABEL_PASSWORD": "Contraseña",
+  "PLACEHOLDER_NAME": "ej. John Doe",
+  "OR_CONTINUE_WITH": "O continuar con"
 }

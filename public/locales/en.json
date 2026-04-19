@@ -34,5 +34,15 @@
   "COMMUNITY_DESC": "Exploring the global world of specialty coffee, one cup at a time.",
   "BTN_LIKE": "Like",
   "BTN_SAVE_LIST": "Save",
-  "LOADING_COMMUNITY": "Discovering coffee sessions..."
+  "LOADING_COMMUNITY": "Discovering coffee sessions...",
+  "BTN_LOGIN": "Login",
+  "BTN_SIGNUP": "Sign Up",
+  "BTN_LOGOUT": "Logout",
+  "LOGIN_TITLE": "Welcome Back",
+  "LOGIN_SUBTITLE": "Sign in to synchronize your cupping intelligence",
+  "LABEL_NAME": "Full Name",
+  "LABEL_EMAIL": "Email Address",
+  "LABEL_PASSWORD": "Password",
+  "PLACEHOLDER_NAME": "e.g. John Doe",
+  "OR_CONTINUE_WITH": "Or continue with"
 }

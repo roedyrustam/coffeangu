@@ -1,8 +1,9 @@
 import { Injectable, inject } from '@angular/core';
 import { Firestore, collection, collectionData, addDoc, query, orderBy, limit, doc, getDoc, updateDoc, where, increment, arrayUnion } from '@angular/fire/firestore';
 import { Storage, ref, uploadBytes, getDownloadURL } from '@angular/fire/storage';
-import { Observable } from 'rxjs';
+import { Observable, of } from 'rxjs';
 import { CuppingSession } from '../models/cupping.model';
+import { AuthService } from './auth.service';
 
 @Injectable({
   providedIn: 'root'
@@ -10,10 +11,22 @@ import { CuppingSession } from '../models/cupping.model';
 export class CuppingService {
   private firestore = inject(Firestore);
   private storage = inject(Storage);
+  private auth = inject(AuthService);
   private cuppingCollection = collection(this.firestore, 'cuppings');
 
   getLatestCuppings(): Observable<CuppingSession[]> {
     const q = query(this.cuppingCollection, orderBy('timestamp', 'desc'), limit(20));
+    return collectionData(q, { idField: 'id' }) as Observable<CuppingSession[]>;
+  }
+
+  getUserCuppings(userId: string): Observable<CuppingSession[]> {
+    if (!userId) return of([]);
+    const q = query(
+      this.cuppingCollection, 
+      where('userId', '==', userId),
+      orderBy('timestamp', 'desc'), 
+      limit(50)
+    );
     return collectionData(q, { idField: 'id' }) as Observable<CuppingSession[]>;
   }
 
@@ -28,8 +41,10 @@ export class CuppingService {
   }
 
   async addCupping(session: CuppingSession) {
+    const userId = this.auth.getUserId();
     return addDoc(this.cuppingCollection, {
       ...session,
+      userId,
       isPublic: session.isPublic || false,
       likesCount: 0,
       savedBy: [],
