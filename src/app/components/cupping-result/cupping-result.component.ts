@@ -439,7 +439,7 @@ export class CuppingResultComponent implements OnInit, AfterViewInit {
               color: '#8e8e93',
               font: {
                 size: 12,
-                weight: '700',
+                weight: 'bold',
                 family: "'Outfit', sans-serif"
               }
             },
