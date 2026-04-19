@@ -199,14 +199,22 @@ import { FlavorPickerComponent } from '../flavor-picker/flavor-picker.component'
 
           <div class="final-score-bar" [class.specialty]="session.finalScore >= 80">
             <div class="score-label">
-              <span>Total Cupping Score</span>
-              <small *ngIf="session.finalScore >= 80">Specialty Grade</small>
+              <span>{{ t('FINAL_SCORE') }}</span>
+              <small *ngIf="session.finalScore >= 80">{{ t('SPECIALTY_GRADE') }}</small>
             </div>
             <span class="final-value">{{ session.finalScore | number:'1.2-2' }}</span>
           </div>
 
+          <div class="form-options">
+            <label class="checkbox-container">
+              <input type="checkbox" [(ngModel)]="session.isPublic" name="isPublic">
+              <span class="checkmark"></span>
+              <span class="label-text">Publish to Community Board</span>
+            </label>
+          </div>
+
           <button type="submit" class="btn-primary w-full" [disabled]="loading || cuppingForm.invalid">
-            <span *ngIf="!loading">{{ cuppingForm.invalid ? 'Fill required fields' : 'Save & Publish Score' }}</span>
+            <span *ngIf="!loading">{{ cuppingForm.invalid ? 'Fill required fields' : t('BTN_SAVE') }}</span>
             <span *ngIf="loading">Publishing...</span>
           </button>
         </form>
@@ -602,11 +610,61 @@ import { FlavorPickerComponent } from '../flavor-picker/flavor-picker.component'
       color: var(--text-dim);
       margin-top: 8px;
     }
+    .form-options {
+       margin: 40px 0;
+       padding-bottom: 20px;
+       border-bottom: 1px solid var(--glass-border);
+    }
+    .checkbox-container {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+      cursor: pointer;
+      user-select: none;
+      font-weight: 700;
+      color: var(--text-main);
+    }
+    .checkbox-container input {
+      position: absolute;
+      opacity: 0;
+      cursor: pointer;
+    }
+    .checkmark {
+      height: 28px;
+      width: 28px;
+      background-color: var(--surface-hover);
+      border: 2px solid var(--glass-border);
+      border-radius: 8px;
+      position: relative;
+      transition: all 0.3s;
+    }
+    .checkmark:after {
+      content: "";
+      position: absolute;
+      display: none;
+      left: 9px;
+      top: 5px;
+      width: 6px;
+      height: 12px;
+      border: solid #0c0c0e;
+      border-width: 0 3px 3px 0;
+      transform: rotate(45deg);
+    }
+    .checkbox-container input:checked ~ .checkmark {
+      background-color: var(--primary-color);
+      border-color: var(--primary-color);
+    }
+    .checkbox-container input:checked ~ .checkmark:after {
+      display: block;
+    }
+    .label-text { font-size: 1rem; }
   `]
 })
 export class CuppingFormComponent {
   private cuppingService = inject(CuppingService);
   private router = inject(Router);
+  private ts = inject(TranslationService);
+  t = this.ts.t();
 
   showGuide = true;
   loading = false;

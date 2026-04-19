@@ -15,7 +15,7 @@ Chart.register(RadarController, RadialLinearScale, PointElement, LineElement, Fi
   imports: [CommonModule, RouterLink],
   template: `
     <div class="result-container animate-fade" *ngIf="session">
-      <div class="glass-card result-card" id="result-card">
+      <div class="glass-card result-card" id="result-card" [class.radiant-theme]="selectedTheme() === 'radiant'">
         <header class="result-header">
           <div class="badge">{{ session.type }}</div>
           <h1 class="brand-font">{{ session.beanName }}</h1>
@@ -24,29 +24,40 @@ Chart.register(RadarController, RadialLinearScale, PointElement, LineElement, Fi
 
         <section class="score-display">
           <div class="score-circle">
-            <span class="label">Final Score</span>
+            <span class="label">{{ t('FINAL_SCORE') }}</span>
             <span class="value">{{ session.finalScore | number:'1.2-2' }}</span>
           </div>
           <div class="rating-label" [class.specialty]="session.finalScore >= 80">
             {{ getRating(session.finalScore) }}
           </div>
+
+          <div class="social-actions" *ngIf="session.id">
+            <button class="social-btn like-btn" (click)="onLike()" [disabled]="hasLiked">
+              <span class="icon">{{ hasLiked ? '❤️' : '🤍' }}</span>
+              <span class="count">{{ session.likesCount || 0 }}</span>
+            </button>
+            <button class="social-btn save-btn" (click)="onSave()" [disabled]="hasSaved">
+              <span class="icon">{{ hasSaved ? '🔖' : '🔖' }}</span>
+              <span>{{ hasSaved ? 'Saved' : t('BTN_SAVE_LIST') }}</span>
+            </button>
+          </div>
         </section>
 
         <section class="metadata-grid">
           <div class="meta-item">
-            <span class="meta-label">Pasca Panen</span>
+            <span class="meta-label">{{ t('POST_HARVEST') }}</span>
             <span class="meta-value">{{ session.postHarvest }}</span>
           </div>
           <div class="meta-item">
-            <span class="meta-label">Metode Seduh</span>
+            <span class="meta-label">{{ t('BREW_METHOD') }}</span>
             <span class="meta-value">{{ session.brewMethod }}</span>
           </div>
           <div class="meta-item">
-            <span class="meta-label">Penguji</span>
+            <span class="meta-label">{{ t('CUPPER_NAME') }}</span>
             <span class="meta-value">{{ session.cupperName || 'Anonymous' }}</span>
           </div>
           <div class="meta-item">
-            <span class="meta-label">Tanggal</span>
+            <span class="meta-label">Date</span>
             <span class="meta-value">{{ session.productionDate | date }}</span>
           </div>
         </section>
@@ -59,25 +70,25 @@ Chart.register(RadarController, RadialLinearScale, PointElement, LineElement, Fi
 
         <section class="cva-result-section">
            <div class="flavor-profile" *ngIf="session.flavorNotes && session.flavorNotes.length > 0">
-              <span class="section-label">Flavor Profile</span>
+              <span class="section-label">{{ t('FLAVOR_PROFILE') }}</span>
               <div class="result-chips">
                  <span class="result-chip" *ngFor="let note of session.flavorNotes">{{ note }}</span>
               </div>
            </div>
 
            <div class="intensity-viz">
-              <span class="section-label">Intensity Profile</span>
+              <span class="section-label">{{ t('INTENSITY_TITLE') }}</span>
               <div class="intensity-bars-row">
                  <div class="int-bar-item">
-                    <label>Acidity</label>
+                    <label>{{ t('ACIDITY') }}</label>
                     <div class="int-track"><div class="int-fill" [style.width.%]="session.intensities.acidity * 10"></div></div>
                  </div>
                  <div class="int-bar-item">
-                    <label>Body</label>
+                    <label>{{ t('BODY') }}</label>
                     <div class="int-track"><div class="int-fill" [style.width.%]="session.intensities.body * 10"></div></div>
                  </div>
                  <div class="int-bar-item">
-                    <label>Sweetness</label>
+                    <label>{{ t('SWEETNESS') }}</label>
                     <div class="int-track"><div class="int-fill" [style.width.%]="session.intensities.sweetness * 10"></div></div>
                  </div>
               </div>
@@ -85,7 +96,7 @@ Chart.register(RadarController, RadialLinearScale, PointElement, LineElement, Fi
         </section>
 
         <section class="sensory-summary">
-           <span class="section-label">Affective Assessment (Quality)</span>
+           <span class="section-label">{{ t('QUALITY_TITLE') }}</span>
            <div class="sensory-bars">
               <div class="bar-item" *ngFor="let item of sensoryItems">
                  <div class="bar-header">
@@ -100,10 +111,18 @@ Chart.register(RadarController, RadialLinearScale, PointElement, LineElement, Fi
         </section>
 
         <footer class="actions">
+          <div class="template-selector">
+             <span>Template:</span>
+             <button (click)="setTheme('obsidian')" [class.active]="selectedTheme() === 'obsidian'">Obsidian</button>
+             <button (click)="setTheme('radiant')" [class.active]="selectedTheme() === 'radiant'">Radiant</button>
+          </div>
+          <div class="share-options" *ngIf="session.isPublic">
+             <span class="share-hint">Sharing technical assessment to {{ t('NAV_COMMUNITY') }}</span>
+          </div>
           <button class="btn-primary share-btn" (click)="share()">
-            <span class="icon">Share Results</span>
+            <span class="icon">Share Graphic</span>
           </button>
-          <a routerLink="/" class="back-link">Back to Dashboard</a>
+          <a routerLink="/" class="back-link">{{ t('NAV_HOME') }}</a>
         </footer>
       </div>
     </div>
@@ -331,17 +350,114 @@ Chart.register(RadarController, RadialLinearScale, PointElement, LineElement, Fi
       font-size: 1.2rem;
       letter-spacing: 2px;
     }
-    .back-link {
-      color: var(--text-dim);
-      text-decoration: none;
-      font-size: 1rem;
-      font-weight: 700;
       text-transform: uppercase;
       letter-spacing: 2px;
+    }
+    .social-actions {
+       margin-top: 30px;
+       display: flex;
+       justify-content: center;
+       gap: 15px;
+    }
+    .social-btn {
+       background: var(--surface-hover);
+       border: 1px solid var(--glass-border);
+       color: var(--text-main);
+       padding: 10px 20px;
+       border-radius: 100px;
+       font-size: 0.9rem;
+       font-weight: 700;
+       cursor: pointer;
+       display: flex;
+       align-items: center;
+       gap: 10px;
+       transition: all 0.3s;
+    }
+    .social-btn:hover:not(:disabled) {
+       background: rgba(255,255,255,0.05);
+       transform: scale(1.05);
+    }
+    .social-btn:disabled {
+       opacity: 0.6;
+       cursor: default;
+    }
+    .like-btn.active {
+       color: #ff4757;
+       border-color: #ff4757;
+    }
+    .share-options {
+       margin-bottom: 20px;
+       text-align: center;
+    }
+    .share-hint {
+       font-size: 0.8rem;
+       color: var(--primary-color);
+       font-weight: 800;
+       text-transform: uppercase;
+       letter-spacing: 1px;
+    }
+    .template-selector {
+       display: flex;
+       align-items: center;
+       justify-content: center;
+       gap: 15px;
+       margin-bottom: 30px;
+       font-size: 0.8rem;
+       font-weight: 700;
+       color: var(--text-dim);
+       text-transform: uppercase;
+       letter-spacing: 1px;
+    }
+    .template-selector button {
+       background: transparent;
+       border: 1px solid var(--glass-border);
+       color: var(--text-dim);
+       padding: 5px 15px;
+       border-radius: 6px;
+       cursor: pointer;
+       font-weight: 800;
+       font-size: 0.7rem;
+       transition: all 0.3s;
+    }
+    .template-selector button.active {
+       background: var(--primary-color);
+       color: #0c0c0e;
+       border-color: transparent;
     }
     .loading-state, .error-state {
       text-align: center;
       margin-top: 150px;
+    }
+
+    /* Radiant Theme Overrides */
+    .radiant-theme {
+      background: #fdfdfd;
+      color: #0c0c0e;
+      border-color: #e5bc7d;
+    }
+    .radiant-theme .brand-font {
+       background: linear-gradient(135deg, #8b5e34, #bd8e62);
+       -webkit-background-clip: text;
+       -webkit-text-fill-color: transparent;
+    }
+    .radiant-theme .roastery, .radiant-theme .meta-label, .radiant-theme .section-label {
+       color: #634326;
+    }
+    .radiant-theme .meta-value {
+       color: #0c0c0e;
+    }
+    .radiant-theme .metadata-grid, .radiant-theme .chart-section, .radiant-theme .sensory-summary {
+       background: rgba(189, 142, 98, 0.05);
+       border-color: rgba(189, 142, 98, 0.2);
+    }
+    .radiant-theme .score-circle {
+       box-shadow: 0 20px 40px rgba(189, 142, 98, 0.4);
+    }
+    .radiant-theme .bar-bg, .radiant-theme .int-track {
+       background: rgba(189, 142, 98, 0.15);
+    }
+    .radiant-theme .rating-label {
+       color: #8b5e34;
     }
   `]
 })
@@ -351,11 +467,57 @@ export class CuppingResultComponent implements OnInit, AfterViewInit {
   private meta = inject(Meta);
   private title = inject(Title);
   private platformId = inject(PLATFORM_ID);
+  private ts = inject(TranslationService);
+  t = this.ts.t();
   
   session: CuppingSession | null = null;
   error = false;
   sensoryItems: any[] = [];
   generatingScreenshot = false;
+  hasLiked = false;
+  hasSaved = false;
+  selectedTheme = signal<'obsidian' | 'radiant'>('obsidian');
+
+  setTheme(theme: 'obsidian' | 'radiant') {
+    this.selectedTheme.set(theme);
+    // Re-initialize chart to match theme colors if needed (optional)
+  }
+
+  private getDeviceId() {
+    if (isPlatformBrowser(this.platformId)) {
+      let id = localStorage.getItem('device_id');
+      if (!id) {
+        id = Math.random().toString(36).substring(7);
+        localStorage.setItem('device_id', id);
+      }
+      return id;
+    }
+    return 'ssr-bot';
+  }
+
+  async onLike() {
+    if (!this.session?.id || this.hasLiked) return;
+    try {
+      await this.cuppingService.likeSession(this.session.id);
+      this.hasLiked = true;
+      if (this.session) this.session.likesCount = (this.session.likesCount || 0) + 1;
+      localStorage.setItem(`liked_${this.session.id}`, 'true');
+    } catch (e) {
+      console.error(e);
+    }
+  }
+
+  async onSave() {
+    if (!this.session?.id || this.hasSaved) return;
+    try {
+      const deviceId = this.getDeviceId();
+      await this.cuppingService.saveSession(this.session.id, deviceId);
+      this.hasSaved = true;
+      localStorage.setItem(`saved_${this.session.id}`, 'true');
+    } catch (e) {
+      console.error(e);
+    }
+  }
 
   ngOnInit() {
     const id = this.route.snapshot.paramMap.get('id');
@@ -374,6 +536,8 @@ export class CuppingResultComponent implements OnInit, AfterViewInit {
         this.prepareSensoryItems();
         this.updateMetaTags();
         if (isPlatformBrowser(this.platformId)) {
+          this.hasLiked = localStorage.getItem(`liked_${id}`) === 'true';
+          this.hasSaved = localStorage.getItem(`saved_${id}`) === 'true';
           setTimeout(() => this.initChart(), 0);
         }
       } else {

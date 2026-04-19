@@ -1,17 +1,27 @@
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { RouterOutlet, RouterLink, RouterLinkActive } from '@angular/router';
+import { TranslationService } from './services/translation.service';
+import { CommonModule } from '@angular/common';
 
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [RouterOutlet, RouterLink, RouterLinkActive],
+  imports: [RouterOutlet, RouterLink, RouterLinkActive, CommonModule],
   template: `
     <nav class="main-nav">
       <div class="nav-content">
-        <a routerLink="/" class="brand brand-font">CaffeeScore</a>
-        <div class="nav-links">
-          <a routerLink="/" class="nav-link" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}">Dashboard</a>
-          <a routerLink="/cupping" class="nav-link" routerLinkActive="active">New Session</a>
+        <a routerLink="/" class="brand brand-font">{{ t('APP_TITLE') }}</a>
+        <div class="nav-right">
+          <div class="lang-switcher">
+            <button (click)="ts.setLocale('en')" [class.active]="ts.currentLocale() === 'en'">EN</button>
+            <button (click)="ts.setLocale('id')" [class.active]="ts.currentLocale() === 'id'">ID</button>
+            <button (click)="ts.setLocale('es')" [class.active]="ts.currentLocale() === 'es'">ES</button>
+          </div>
+          <div class="nav-links">
+            <a routerLink="/" class="nav-link" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}">{{ t('NAV_HOME') }}</a>
+            <a routerLink="/cupping" class="nav-link" routerLinkActive="active">{{ t('NAV_NEW') }}</a>
+            <a routerLink="/community" class="nav-link" routerLinkActive="active">{{ t('NAV_COMMUNITY') }}</a>
+          </div>
         </div>
       </div>
     </nav>
@@ -23,11 +33,15 @@ import { RouterOutlet, RouterLink, RouterLinkActive } from '@angular/router';
     <nav class="mobile-bottom-nav">
       <a routerLink="/" class="bottom-nav-link" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}">
         <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
-        <span>Home</span>
+        <span>{{ t('NAV_HOME') }}</span>
+      </a>
+      <a routerLink="/community" class="bottom-nav-link" routerLinkActive="active">
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
+        <span>{{ t('NAV_DISCOVER') }}</span>
       </a>
       <a routerLink="/cupping" class="bottom-nav-link" routerLinkActive="active">
         <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="M12 5v14"/></svg>
-        <span>New</span>
+        <span>{{ t('NAV_NEW') }}</span>
       </a>
     </nav>
 
@@ -55,6 +69,35 @@ import { RouterOutlet, RouterLink, RouterLinkActive } from '@angular/router';
       justify-content: space-between;
       align-items: center;
       padding: 0 30px;
+    }
+    .nav-right {
+      display: flex;
+      align-items: center;
+      gap: 50px;
+    }
+    .lang-switcher {
+      display: flex;
+      gap: 8px;
+    }
+    .lang-switcher button {
+      background: transparent;
+      border: 1px solid var(--glass-border);
+      color: var(--text-dim);
+      padding: 4px 10px;
+      font-size: 0.65rem;
+      font-weight: 900;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: all 0.3s;
+    }
+    .lang-switcher button:hover {
+      color: var(--text-main);
+      border-color: var(--text-dim);
+    }
+    .lang-switcher button.active {
+      background: var(--primary-color);
+      color: #0c0c0e;
+      border-color: transparent;
     }
     .brand {
       text-decoration: none;
@@ -172,5 +215,6 @@ import { RouterOutlet, RouterLink, RouterLinkActive } from '@angular/router';
   `]
 })
 export class App {
-  name = 'CaffeeScore';
+  ts = inject(TranslationService);
+  t = this.ts.t();
 }

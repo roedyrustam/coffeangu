@@ -2,6 +2,7 @@ import { Component, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { CuppingService } from '../../services/cupping.service';
+import { TranslationService } from '../../services/translation.service';
 import { toSignal } from '@angular/core/rxjs-interop';
 
 @Component({
@@ -11,28 +12,28 @@ import { toSignal } from '@angular/core/rxjs-interop';
   template: `
     <div class="dashboard-container animate-fade">
       <header class="hero">
-        <h1 class="brand-font">CaffeeScore</h1>
-        <p>Global Coffee Cupping Intelligence</p>
+        <h1 class="brand-font">{{ t('APP_TITLE') }}</h1>
+        <p>{{ t('HERO_SUBTITLE') }}</p>
         <div class="actions">
-          <button class="btn-primary" routerLink="/cupping">New Cupping Session</button>
+          <button class="btn-primary" routerLink="/cupping">{{ t('BTN_NEW_SESSION') }}</button>
         </div>
       </header>
 
       <section class="stats-grid">
         <div class="glass-card stat-card">
-          <span class="stat-label">Total Sessions</span>
+          <span class="stat-label">{{ t('STAT_TOTAL_SESSIONS') }}</span>
           <div class="stat-value">{{ cuppings()?.length || 0 }}</div>
         </div>
         <div class="glass-card stat-card">
-          <span class="stat-label">Avg Global Score</span>
+          <span class="stat-label">{{ t('STAT_AVG_SCORE') }}</span>
           <div class="stat-value">{{ calculateAvg() }}</div>
         </div>
       </section>
 
       <section class="recent-sessions">
         <div class="section-header">
-           <h2 class="section-title">Recent Public Scores</h2>
-           <span class="count-badge">{{ cuppings()?.length || 0 }} Entries</span>
+           <h2 class="section-title">{{ t('RECENT_SCORES') }}</h2>
+           <span class="count-badge">{{ cuppings()?.length || 0 }} {{ t('ENTRIES') }}</span>
         </div>
 
         <div class="sessions-list">
@@ -267,7 +268,9 @@ import { toSignal } from '@angular/core/rxjs-interop';
 })
 export class DashboardComponent {
   private cuppingService = inject(CuppingService);
+  private ts = inject(TranslationService);
   cuppings = toSignal(this.cuppingService.getLatestCuppings());
+  t = this.ts.t();
 
   calculateAvg() {
     const list = this.cuppings();
