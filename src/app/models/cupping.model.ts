@@ -32,6 +32,9 @@ export interface CuppingSession {
   defects: number;
   finalScore: number;
   notes?: string;
+  isPublic?: boolean;
+  likesCount?: number;
+  savedBy?: string[]; // Array of user IDs who bookmarked this
   timestamp: any;
 }
 
