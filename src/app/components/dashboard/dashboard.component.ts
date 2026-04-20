@@ -51,8 +51,8 @@ import { CuppingSession } from '../../models/cupping.model';
 
         <div class="sessions-list">
           <div *ngFor="let session of cuppings()" class="glass-card session-item" [routerLink]="['/result', session.id]">
-            <div class="session-image" *ngIf="session.productImageUrl">
-               <img [src]="session.productImageUrl" alt="Product Photo">
+            <div class="session-image">
+               <img [src]="session.productImageUrl || '/assets/default-coffee.png'" alt="Product Photo">
             </div>
             <div class="session-main">
               <div class="session-info">

@@ -24,8 +24,8 @@ Chart.register(RadarController, RadialLinearScale, PointElement, LineElement, Fi
           <p class="roastery">{{ session.roastery }}</p>
         </header>
 
-        <section class="product-visual" *ngIf="session.productImageUrl">
-           <img [src]="session.productImageUrl" alt="Product Photo" class="product-photo">
+        <section class="product-visual">
+           <img [src]="session.productImageUrl || '/assets/default-coffee.png'" alt="Product Photo" class="product-photo">
         </section>
 
         <section class="score-display">

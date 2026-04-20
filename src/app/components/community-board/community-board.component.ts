@@ -75,8 +75,8 @@ import { AuthService } from '../../services/auth.service';
           
           <div class="card-glow"></div>
 
-          <div class="card-image" *ngIf="session.productImageUrl">
-            <img [src]="session.productImageUrl" alt="Product Photo">
+          <div class="card-image">
+            <img [src]="session.productImageUrl || '/assets/default-coffee.png'" alt="Product Photo">
           </div>
           
           <div class="card-header">
