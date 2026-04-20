@@ -1,4 +1,4 @@
-import { Component, inject, OnInit } from '@angular/core';
+import { Component, inject, OnInit, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { TranslationService } from '../../services/translation.service';
 import { AuthService } from '../../services/auth.service';
@@ -917,8 +917,6 @@ export class CuppingFormComponent implements OnInit {
   productImagePreview: string | null = null;
   suggestions = signal<string[]>([]);
 
-  constructor(private cuppingService: CuppingService, private route: ActivatedRoute) {}
-
   ngOnInit() {
     this.checkSuggestions();
     this.editId = this.route.snapshot.queryParamMap.get('edit');
@@ -939,7 +937,7 @@ export class CuppingFormComponent implements OnInit {
     this.triggerHaptic();
   }
 
-  private triggerHaptic() {
+  triggerHaptic() {
     if ('vibrate' in navigator) {
       navigator.vibrate(10);
     }
@@ -955,28 +953,21 @@ export class CuppingFormComponent implements OnInit {
   }
 
   async loadSession() {
-      const session = await this.cuppingService.getCuppingById(this.editId!);
-      if (session) {
-        // Ownership check
-        if (session.userId !== this.auth.getUserId()) {
-          alert('Unauthorized: You can only edit your own sessions.');
-          this.router.navigate(['/']);
-          return;
-        }
-        this.session = { ...session };
-        if (this.session.productImageUrl) {
-          this.productImagePreview = this.session.productImageUrl;
-        }
-      } else {
-        alert('Session not found');
-        this.router.navigate(['/profile']);
+    const session = await this.cuppingService.getCuppingById(this.editId!);
+    if (session) {
+      // Ownership check
+      if (session.userId !== this.auth.getUserId()) {
+        alert('Unauthorized: You can only edit your own sessions.');
+        this.router.navigate(['/']);
+        return;
+      }
+      this.session = { ...session };
+      if (this.session.productImageUrl) {
+        this.productImagePreview = this.session.productImageUrl;
       }
     } else {
-      // New session: auto-fill cupper name from profile if available
-      const user = this.auth.currentUser();
-      if (user?.displayName) {
-        this.session.cupperName = user.displayName;
-      }
+      alert('Session not found');
+      this.router.navigate(['/profile']);
     }
   }
 

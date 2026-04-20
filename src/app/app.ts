@@ -427,6 +427,7 @@ import { CommonModule } from '@angular/common';
 })
 export class App {
   ts = inject(TranslationService);
+  auth = inject(AuthService);
   router = inject(Router);
   t = this.ts.t();
   showUserMenu = signal(false);
