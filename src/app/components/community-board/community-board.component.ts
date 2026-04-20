@@ -108,7 +108,12 @@ import { AuthService } from '../../services/auth.service';
           <div class="card-header">
             <div class="bean-main">
               <h3>{{ session.beanName }}</h3>
-              <p class="roastery">{{ session.roastery }}</p>
+              <p class="roastery">
+                {{ session.roastery }}
+                <span class="v-badge-small" *ngIf="session.isVerifiedRoastery">
+                   <svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+                </span>
+              </p>
             </div>
             <div class="score-display" [class.specialty]="session.finalScore >= 80" [class.specialty-pulse]="session.finalScore >= 85">
               <span class="num">{{ session.finalScore | number:'1.1-1' }}</span>

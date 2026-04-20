@@ -39,6 +39,9 @@ export interface CuppingSession {
   likedBy?: string[]; // Array of user IDs who liked this
   savedBy?: string[]; // Array of user IDs who bookmarked this
   timestamp: any;
+  teamId?: string;
+  isVerifiedRoastery?: boolean;
+  buyLink?: string;
 }
 
 export interface GlobalScore {

@@ -22,7 +22,12 @@ Chart.register(RadarController, RadialLinearScale, PointElement, LineElement, Fi
         <header class="result-header">
           <div class="badge">{{ session.type }}</div>
           <h1 class="brand-font">{{ session.beanName }}</h1>
-          <p class="roastery">{{ session.roastery }}</p>
+          <p class="roastery">
+            {{ session.roastery }}
+            <span class="v-badge-inline" *ngIf="team?.isVerified" title="Official Verified Roastery">
+               <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+            </span>
+          </p>
         </header>
 
         <section class="product-visual">
@@ -137,6 +142,17 @@ Chart.register(RadarController, RadialLinearScale, PointElement, LineElement, Fi
           <button class="btn-primary share-btn" (click)="share()">
             <span class="icon">Share Graphic</span>
           </button>
+          
+          <!-- Buy Link Section -->
+          <div class="commerce-bridge animate-slide-up" *ngIf="getBuyUrl()">
+             <a [href]="getBuyUrl()" target="_blank" class="btn-commerce">
+                <span class="c-label">Direct Commerce</span>
+                <span class="c-action">Buy This Bean 🛍️</span>
+                <div class="c-shine"></div>
+             </a>
+             <p class="c-hint" *ngIf="team?.isVerified">Sold officially by {{ session.roastery }} (Verified)</p>
+          </div>
+
           <a routerLink="/" class="back-link">{{ t('NAV_HOME') }}</a>
         </footer>
       </div>
@@ -493,12 +509,14 @@ export class CuppingResultComponent implements OnInit, AfterViewInit {
   private route = inject(ActivatedRoute);
   private cuppingService = inject(CuppingService);
   private meta = inject(Meta);
+  private teamService = inject(TeamService);
   private title = inject(Title);
   private platformId = inject(PLATFORM_ID);
   private ts = inject(TranslationService);
   t = this.ts.t();
   
   session: CuppingSession | null = null;
+  team: Team | null = null;
   error = false;
   sensoryItems: any[] = [];
   generatingScreenshot = false;
@@ -595,6 +613,9 @@ export class CuppingResultComponent implements OnInit, AfterViewInit {
         this.session = data;
         this.prepareSensoryItems();
         this.updateMetaTags();
+        if (data.teamId) {
+          this.teamService.getTeamById(data.teamId).subscribe(t => this.team = t);
+        }
         if (isPlatformBrowser(this.platformId)) {
           setTimeout(() => this.initChart(), 0);
         }
@@ -783,5 +804,9 @@ export class CuppingResultComponent implements OnInit, AfterViewInit {
         console.error('Clipboard failed', e);
       }
     }
+  }
+
+  getBuyUrl(): string | null {
+    return this.session?.buyLink || this.team?.shopUrl || null;
   }
 }

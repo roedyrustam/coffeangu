@@ -34,6 +34,13 @@ export class TeamService {
     );
   }
 
+  getTeamById(teamId: string): Observable<Team | null> {
+    const teamRef = doc(this.firestore, 'teams', teamId);
+    return from(getDoc(teamRef)).pipe(
+      map(snap => snap.exists() ? { id: snap.id, ...snap.data() } as Team : null)
+    );
+  }
+
   async createTeam(name: string): Promise<string> {
     const user = this.auth.currentUser();
     if (!user) throw new Error('Not authenticated');
@@ -106,5 +113,19 @@ export class TeamService {
     );
 
     return collectionData(sessionsQuery, { idField: 'id' }) as Observable<CuppingSession[]>;
+  }
+  
+  async updateTeamSettings(teamId: string, settings: Partial<Team>): Promise<void> {
+    const teamRef = doc(this.firestore, 'teams', teamId);
+    await updateDoc(teamRef, settings);
+  }
+
+  async verifyTeam(teamId: string): Promise<void> {
+    // Simulated verification delay
+    const teamRef = doc(this.firestore, 'teams', teamId);
+    await updateDoc(teamRef, { 
+      isVerified: true,
+      verifiedAt: new Date()
+    });
   }
 }

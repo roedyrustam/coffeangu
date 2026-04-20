@@ -231,11 +231,39 @@ Chart.register(RadarController, RadialLinearScale, PointElement, LineElement, Fi
                      <h4 class="t-bean">{{ s.beanName }}</h4>
                      <div class="t-score" [class.specialty]="s.finalScore >= 80">{{ s.finalScore | number:'1.1-1' }}</div>
                   </div>
-                  <div class="empty-state" *ngIf="tSessions.length === 0">
+                   <div class="empty-state" *ngIf="tSessions.length === 0">
                      <p>No team cuppings recorded yet.</p>
-                  </div>
-               </div>
-               <ng-template #loadingTeam><div class="spinner"></div></ng-template>
+                   </div>
+                </div>
+                <ng-template #loadingTeam><div class="spinner"></div></ng-template>
+                
+                <div class="verification-center glass-card animate-fade" *ngIf="isLead()">
+                    <div class="panel-header">
+                        <h3>Verified Roastery Settings</h3>
+                        <span class="v-status" [class.verified]="team()?.isVerified">
+                           {{ team()?.isVerified ? '✓ Verified' : 'Pending Verification' }}
+                        </span>
+                    </div>
+                    <p class="description">Verified roasteries get a blue checkmark on their sessions and the ability to add "Buy" links to their coffee beans.</p>
+                    
+                    <div class="shop-settings">
+                        <div class="form-group">
+                            <label>Default Shop URL</label>
+                            <div class="input-grid">
+                                <input type="url" [(ngModel)]="newShopUrl" [placeholder]="team()?.shopUrl || 'https://roastery.com/shop'">
+                                <button class="btn-primary" (click)="updateTeamShop()" [disabled]="processing()">
+                                    {{ processing() ? 'Saving...' : 'Save URL' }}
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="verification-action" *ngIf="!team()?.isVerified">
+                        <button class="btn-verified-apply" (click)="verifyRoastery()" [disabled]="processing()">
+                            {{ processing() ? 'Processing...' : 'Apply for Official Verification' }}
+                        </button>
+                    </div>
+                </div>
             </div>
           </div>
           
@@ -622,6 +650,7 @@ export class ProfileComponent implements OnInit {
 
   newName = this.auth.currentUser()?.displayName || '';
   newUsername = '';
+  newShopUrl = '';
   usernameStatus = signal<'available' | 'taken' | 'invalid' | 'checking' | null>(null);
   private usernameDebounce: any;
 
@@ -645,6 +674,7 @@ export class ProfileComponent implements OnInit {
       if (t) {
         this.teamMembers = this.teamService.getTeamMembers(t.members);
         this.teamSessions = this.teamService.getTeamSessions(t.members);
+        this.newShopUrl = t.shopUrl || '';
       }
     });
 
@@ -826,6 +856,40 @@ export class ProfileComponent implements OnInit {
       console.error(e);
       alert('Failed to delete session.');
     }
+  }
+
+  async updateTeamShop() {
+    const t = this.team();
+    if (!t?.id || !this.newShopUrl) return;
+    
+    this.processing.set(true);
+    try {
+      await this.teamService.updateTeamSettings(t.id, { shopUrl: this.newShopUrl });
+      alert('Shop URL updated!');
+    } catch (e) {
+      alert('Failed to update shop URL');
+    } finally {
+      this.processing.set(false);
+    }
+  }
+
+  async verifyRoastery() {
+    const t = this.team();
+    if (!t?.id) return;
+    
+    this.processing.set(true);
+    try {
+      await this.teamService.verifyTeam(t.id);
+      alert('Congratulations! Your roastery is now Verified.');
+    } catch (e) {
+      alert('Verification request failed');
+    } finally {
+      this.processing.set(false);
+    }
+  }
+
+  isLead() {
+    return this.team()?.leadUid === this.auth.currentUser()?.uid;
   }
 
   async logout() {

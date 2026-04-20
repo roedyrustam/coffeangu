@@ -181,13 +181,39 @@ export class CuppingService {
     return collectionData(q, { idField: 'id' }) as Observable<CuppingSession[]>;
   }
 
-  async addCupping(session: CuppingSession) {
     const userId = this.auth.getUserId();
     if (!userId) throw new Error('User not authenticated');
+
+    // Denormalization Logic for Teams
+    let teamId = undefined;
+    let isVerifiedRoastery = false;
+    let buyLink = session.buyLink;
+
+    try {
+      const profileSnap = await getDoc(doc(this.firestore, 'profiles', userId));
+      const profile = profileSnap.data() as UserProfile;
+      if (profile?.teamId) {
+        teamId = profile.teamId;
+        const teamSnap = await getDoc(doc(this.firestore, 'teams', teamId));
+        const team = teamSnap.data() as any;
+        if (team) {
+          isVerifiedRoastery = !!team.isVerified;
+          // Only override buyLink if session doesn't have a specific one and team has a default shop
+          if (!buyLink && team.shopUrl) {
+            buyLink = team.shopUrl;
+          }
+        }
+      }
+    } catch (e) {
+      console.warn('Roastery denormalization failed:', e);
+    }
 
     const cuppingDoc = await addDoc(this.cuppingCollection, {
       ...session,
       userId,
+      teamId,
+      isVerifiedRoastery,
+      buyLink,
       isPublic: session.isPublic || false,
       likesCount: 0,
       likedBy: [],

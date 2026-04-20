@@ -4,6 +4,9 @@ export interface Team {
   leadUid: string;
   members: string[]; // Array of UIDs
   createdAt: any;
+  isVerified?: boolean;
+  shopUrl?: string;
+  verifiedAt?: any;
 }
 
 export interface TeamMemberProfile {
