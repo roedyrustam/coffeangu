@@ -1,4 +1,4 @@
-import { Component, Input, Output, EventEmitter, signal, ElementRef, ViewChild, AfterViewInit, onCleanup, inject } from '@angular/core';
+import { Component, Input, Output, EventEmitter, signal, ElementRef, ViewChild, AfterViewInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { SCA_FLAVOR_WHEEL, FlavorNode } from '../../models/flavor-wheel.data';
 
@@ -42,7 +42,7 @@ import { SCA_FLAVOR_WHEEL, FlavorNode } from '../../models/flavor-wheel.data';
                 <g *ngFor="let cat of wheelData; let i = index">
                   <path [attr.d]="getArcPath(i, wheelData.length, 120, 240)"
                         [attr.fill]="cat.color"
-                        [class.active]="activeCategory() === cat"
+                        [class.active]="path().includes(cat)"
                         (click)="selectCategory(cat, $event)"
                         class="wheel-sector" />
                   <text [attr.transform]="getTextTransform(i, wheelData.length, 180)"
@@ -313,7 +313,7 @@ export class DynamicFlavorWheelComponent implements AfterViewInit {
     this.handleMove(event.clientX, event.clientY);
   };
 
-  private onTouchMove = (event: TouchMoveEvent | any) => {
+  private onTouchMove = (event: TouchEvent | any) => {
     if (!this.isDragging) return;
     const touch = event.touches[0];
     this.handleMove(touch.clientX, touch.clientY);
