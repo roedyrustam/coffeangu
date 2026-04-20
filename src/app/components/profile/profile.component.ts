@@ -10,6 +10,8 @@ import { Observable, BehaviorSubject, combineLatest } from 'rxjs';
 import { map, switchMap, take, filter, tap } from 'rxjs/operators';
 import { FormsModule } from '@angular/forms';
 import { UserProfile } from '../../models/user-profile.model';
+import { TeamService } from '../../services/team.service';
+import { Team, TeamMemberProfile } from '../../models/team.model';
 import { SensoryAvatarComponent } from '../sensory-avatar/sensory-avatar.component';
 import { Chart, RadarController, RadialLinearScale, PointElement, LineElement, Filler, Tooltip, Legend } from 'chart.js';
 
@@ -28,6 +30,11 @@ Chart.register(RadarController, RadialLinearScale, PointElement, LineElement, Fi
         </button>
         <button [class.active]="activeTab() === 'saved'" (click)="activeTab.set('saved')">
           {{ t('SAVED_SESSIONS') }}
+        </button>
+        <button [class.active]="activeTab() === 'team'" 
+                (click)="activeTab.set('team')" 
+                *ngIf="tier.id === 'roastery'">
+          🏢 {{ t('TEAM_MANAGEMENT') || 'Roastery Team' }}
         </button>
         <button class="settings-trigger" (click)="showSettings.set(true)">
           ⚙️ {{ t('BTN_SETTINGS') }}
@@ -168,6 +175,67 @@ Chart.register(RadarController, RadialLinearScale, PointElement, LineElement, Fi
                <p>No saved sessions yet. Discover some in the Community!</p>
                <button routerLink="/community" class="btn-primary">Go to Community</button>
             </div>
+          </div>
+        </div>
+
+        <!-- TEAM MANAGEMENT VIEW -->
+        <div class="team-view" *ngIf="activeTab() === 'team'">
+          <div class="team-header-row">
+            <h2 class="section-title">{{ team()?.name || 'Roastery Team' }}</h2>
+            <div class="team-actions" *ngIf="!team()">
+              <button class="btn-primary" (click)="onCreateTeam()">Create Roastery Team</button>
+            </div>
+          </div>
+
+          <div class="team-grid" *ngIf="team() as activeTeam">
+            <div class="team-panel glass-card">
+              <div class="panel-header">
+                <h3>Team Members</h3>
+                <button class="btn-icon" (click)="showInviteModal.set(true)">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="8.5" cy="7" r="4"/><line x1="20" y1="8" x2="20" y2="14"/><line x1="17" y1="11" x2="23" y2="11"/></svg>
+                </button>
+              </div>
+              <div class="member-list">
+                <div class="member-card" *ngFor="let member of teamMembers | async">
+                   <div class="mini-avatar">
+                     <img *ngIf="member.photoURL" [src]="member.photoURL" alt="Member">
+                     <span *ngIf="!member.photoURL">{{ member.displayName.charAt(0) }}</span>
+                   </div>
+                   <div class="member-info">
+                     <span class="m-name">{{ member.displayName }}</span>
+                     <span class="m-handle" *ngIf="member.username">@{{ member.username }}</span>
+                   </div>
+                   <button class="btn-icon delete" *ngIf="member.uid !== auth.currentUser()?.uid" (click)="removeMember(member.uid)">
+                     <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6L6 18M6 6l12 12"/></svg>
+                   </button>
+                </div>
+              </div>
+            </div>
+
+            <div class="team-feed-panel">
+               <h3>Team Pulse</h3>
+               <div class="team-feed" *ngIf="teamSessions | async as tSessions; else loadingTeam">
+                  <div class="t-session-card glass-card animate-fade" *ngFor="let s of tSessions" [routerLink]="['/result', s.id]">
+                     <div class="t-meta">
+                        <span class="t-cupper">{{ s.cupperName }}</span>
+                        <span class="t-date">{{ s.timestamp?.toDate() | date:'shortDate' }}</span>
+                     </div>
+                     <h4 class="t-bean">{{ s.beanName }}</h4>
+                     <div class="t-score" [class.specialty]="s.finalScore >= 80">{{ s.finalScore | number:'1.1-1' }}</div>
+                  </div>
+                  <div class="empty-state" *ngIf="tSessions.length === 0">
+                     <p>No team cuppings recorded yet.</p>
+                  </div>
+               </div>
+               <ng-template #loadingTeam><div class="spinner"></div></ng-template>
+            </div>
+          </div>
+          
+          <div class="empty-team-state" *ngIf="!team()">
+             <div class="empty-icon">🏢</div>
+             <h3>Ready to Scale Your Roastery?</h3>
+             <p>Create a team to synchronize data with your fellow cuppers and maintain quality consistency.</p>
+             <button class="btn-primary" (click)="onCreateTeam()">Initialize Command Center</button>
           </div>
         </div>
       </section>
@@ -435,6 +503,21 @@ Chart.register(RadarController, RadialLinearScale, PointElement, LineElement, Fi
     .empty-icon { font-size: 4rem; opacity: 0.2; margin-bottom: 20px; }
     .btn-primary { margin-top: 30px; padding: 15px 40px; border-radius: 100px; }
 
+    /* TEAM STYLES */
+    .team-grid { display: grid; grid-template-columns: 300px 1fr; gap: 30px; }
+    .team-panel, .team-feed-panel { padding: 25px; }
+    .panel-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+    .member-card { display: flex; align-items: center; gap: 15px; padding: 10px 0; border-bottom: 1px solid var(--glass-border); }
+    .mini-avatar { width: 40px; height: 40px; border-radius: 50%; background: var(--primary-color); display: flex; align-items: center; justify-content: center; font-weight: 800; color: #0c0c0e; }
+    .mini-avatar img { width: 100%; height: 100%; border-radius: 50%; object-fit: cover; }
+    .member-info { display: flex; flex-direction: column; flex-grow: 1; }
+    .m-name { font-weight: 700; }
+    .m-handle { font-size: 0.75rem; color: var(--text-dim); }
+    .t-session-card { padding: 20px; margin-bottom: 15px; display: flex; align-items: center; gap: 20px; cursor: pointer; }
+    .t-meta { font-size: 0.7rem; color: var(--text-dim); min-width: 80px; }
+    .t-bean { flex-grow: 1; }
+    .t-score { font-weight: 800; font-size: 1.2rem; }
+
     /* MODAL */
     .modal-overlay {
       position: fixed;
@@ -490,6 +573,7 @@ Chart.register(RadarController, RadialLinearScale, PointElement, LineElement, Fi
       .profile-header { flex-direction: column; text-align: center; padding: 40px; gap: 40px; }
       .user-info { flex-direction: column; gap: 20px; }
       .stats-grid { width: 100%; justify-content: center; }
+      .team-grid { grid-template-columns: 1fr; }
     }
     @media (max-width: 640px) {
       .history-card { flex-direction: column; align-items: flex-start; gap: 25px; }
@@ -502,11 +586,22 @@ export class ProfileComponent implements OnInit {
   protected auth = inject(AuthService);
   private cuppingService = inject(CuppingService);
   private membershipService = inject(MembershipService);
+  private teamService = inject(TeamService);
   private ts = inject(TranslationService);
   private router = inject(Router);
   protected t = this.ts.t();
   
+  activeTab = signal<'history' | 'saved' | 'team'>('history');
+  showSettings = signal(false);
+  showInviteModal = signal(false);
+  updating = signal(false);
+  processing = signal(false);
+
   membership$: Observable<TierDetails | null> = this.membershipService.getCurrentMembership();
+
+  team = signal<Team | null>(null);
+  teamMembers!: Observable<TeamMemberProfile[]>;
+  teamSessions!: Observable<CuppingSession[]>;
 
   private refreshTrigger = new BehaviorSubject<void>(undefined);
   
@@ -517,10 +612,6 @@ export class ProfileComponent implements OnInit {
   sessionToDelete: CuppingSession | null = null;
   private chart: any;
 
-  // New signals for Profile enhancement
-  activeTab = signal<'history' | 'saved'>('history');
-  showSettings = signal(false);
-  updating = signal(false);
   newName = this.auth.currentUser()?.displayName || '';
   newUsername = '';
   usernameStatus = signal<'available' | 'taken' | 'invalid' | 'checking' | null>(null);
@@ -540,6 +631,14 @@ export class ProfileComponent implements OnInit {
         switchMap(() => this.cuppingService.getSavedCuppings(user!.uid))
       ))
     );
+
+    this.teamService.getMyTeam().subscribe(t => {
+      this.team.set(t);
+      if (t) {
+        this.teamMembers = this.teamService.getTeamMembers(t.members);
+        this.teamSessions = this.teamService.getTeamSessions(t.members);
+      }
+    });
 
     this.profile$ = this.auth.user$.pipe(
       filter(user => !!user),
@@ -729,6 +828,43 @@ export class ProfileComponent implements OnInit {
   showUpgradeNotice() {
     if (confirm('🔒 Custom Export logic is only available for Pro members. Would you like to view our premium plans?')) {
       this.router.navigate(['/pricing']);
+    }
+  }
+
+  async onCreateTeam() {
+    const name = prompt('Enter your Roastery Name:', 'Epic Roastery');
+    if (name) {
+      this.processing.set(true);
+      try {
+        await this.teamService.createTeam(name);
+        this.refreshTrigger.next();
+      } catch (e) {
+        alert(e);
+      } finally {
+        this.processing.set(false);
+      }
+    }
+  }
+
+  async inviteMember() {
+    const handle = prompt('Enter user @handle to invite:');
+    if (handle && this.team()) {
+      try {
+        await this.teamService.addMemberByHandle(this.team()!.id!, handle);
+        alert('Member added successfully!');
+      } catch (e: any) {
+        alert(e.message || e);
+      }
+    }
+  }
+
+  async removeMember(uid: string) {
+    if (this.team() && confirm('Remove this member from team?')) {
+      try {
+        await this.teamService.removeMember(this.team()!.id!, uid);
+      } catch (e: any) {
+        alert(e.message || e);
+      }
     }
   }
 }

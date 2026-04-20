@@ -19,6 +19,7 @@ export interface UserProfile {
   avatarStage: AvatarStage;
   membership: 'classic' | 'pro' | 'roastery';
   subscriptionExpiry?: any;
+  teamId?: string;
   updatedAt: any;
 }
 

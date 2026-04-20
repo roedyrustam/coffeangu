@@ -1,6 +1,6 @@
 import { Component, OnInit, inject, PLATFORM_ID, AfterViewInit, signal } from '@angular/core';
 import { CommonModule, isPlatformBrowser } from '@angular/common';
-import { ActivatedRoute, RouterLink } from '@angular/router';
+import { ActivatedRoute, RouterLink, Router } from '@angular/router';
 import { Meta, Title } from '@angular/platform-browser';
 import { AuthService } from '../../services/auth.service';
 import { CuppingService } from '../../services/cupping.service';
