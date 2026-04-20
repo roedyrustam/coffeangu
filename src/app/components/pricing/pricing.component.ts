@@ -54,32 +54,33 @@ import { AuthService } from '../../services/auth.service';
         </div>
       </div>
 
-      <!-- PAYPAL CHECKOUT MODAL -->
-      <div class="modal-overlay" *ngIf="showModal()">
-        <div class="modal glass-card animate-scale checkout-modal">
-          <button class="close-btn" (click)="closeModal()">
-            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
-          </button>
+    </div>
+
+    <!-- PAYPAL CHECKOUT MODAL (outside pricing-container for proper centering) -->
+    <div class="modal-overlay" *ngIf="showModal()">
+      <div class="checkout-modal glass-card">
+        <button class="close-btn" (click)="closeModal()">
+          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+        </button>
+        
+        <div class="checkout-header">
+          <h3>{{ selectedTier()?.name }} Upgrade</h3>
+          <p>Complete your payment via PayPal's secure gateway</p>
+        </div>
+
+        <div class="paypal-wrapper">
+          <div id="paypal-container-{{ selectedButtonId() }}" class="paypal-container"></div>
           
-          <div class="checkout-header">
-            <h3>{{ selectedTier()?.name }} Upgrade</h3>
-            <p>Complete your payment via PayPal’s secure gateway</p>
+          <div class="sdk-loader" *ngIf="loadingSDK()">
+            <div class="spinner-small"></div>
+            <span>Securing Connection...</span>
           </div>
+        </div>
 
-          <div class="paypal-wrapper">
-            <div id="paypal-container-{{ selectedButtonId() }}" class="paypal-container"></div>
-            
-            <div class="sdk-loader" *ngIf="loadingSDK()">
-              <div class="spinner-small"></div>
-              <span>Securing Connection...</span>
-            </div>
-          </div>
-
-          <div class="checkout-footer">
-            <div class="secure-badge">
-              <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
-              Standard PayPal Encryption
-            </div>
+        <div class="checkout-footer">
+          <div class="secure-badge">
+            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+            Standard PayPal Encryption
           </div>
         </div>
       </div>
@@ -155,7 +156,12 @@ import { AuthService } from '../../services/auth.service';
     /* MODAL */
     .modal-overlay {
       position: fixed;
-      inset: 0;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      width: 100vw;
+      height: 100vh;
       background: rgba(0,0,0,0.92);
       backdrop-filter: blur(25px);
       z-index: 3000;
@@ -163,13 +169,22 @@ import { AuthService } from '../../services/auth.service';
       align-items: center;
       justify-content: center;
       padding: 20px;
+      box-sizing: border-box;
     }
     .checkout-modal {
       width: 100%;
       max-width: 420px;
       padding: 40px;
       position: relative;
+      margin: auto;
+      overflow: visible;
+      box-sizing: border-box;
     }
+    /* Override global glass-card:hover transform */
+    .checkout-modal:hover {
+      transform: none !important;
+    }
+    .paypal-container { width: 100%; overflow: visible; }
     .close-btn {
       position: absolute;
       top: 20px;
@@ -194,7 +209,7 @@ import { AuthService } from '../../services/auth.service';
       justify-content: center;
       position: relative;
     }
-    .paypal-container { width: 100%; }
+
 
     .sdk-loader {
       display: flex;
