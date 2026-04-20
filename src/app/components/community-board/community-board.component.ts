@@ -315,13 +315,14 @@ import { AuthService } from '../../services/auth.service';
       gap: 40px;
     }
     .cupping-card {
-      padding: 40px;
+      padding: 32px;
       position: relative;
       overflow: hidden;
       display: flex;
       flex-direction: column;
-      gap: 25px;
+      gap: 20px;
       height: 100%;
+      min-height: 520px;
     }
     .card-glow {
       position: absolute;
@@ -337,11 +338,12 @@ import { AuthService } from '../../services/auth.service';
     .cupping-card:hover .card-glow { opacity: 0.5; }
 
     .card-image {
-      width: calc(100% + 80px);
-      margin: -40px -40px 20px -40px;
+      width: calc(100% + 64px);
+      margin: -32px -32px 10px -32px;
       height: 200px;
       overflow: hidden;
       border-bottom: 1px solid var(--glass-border);
+      aspect-ratio: 16 / 9;
     }
     .card-image img {
       width: 100%;
@@ -354,8 +356,26 @@ import { AuthService } from '../../services/auth.service';
     }
     
     .card-header { display: flex; justify-content: space-between; align-items: flex-start; z-index: 1; }
-    .bean-main h3 { font-size: 1.6rem; margin-bottom: 6px; font-weight: 800; }
-    .roastery { font-size: 0.8rem; color: var(--text-dim); text-transform: uppercase; letter-spacing: 2px; }
+    .bean-main h3 { 
+      font-size: 1.5rem; 
+      margin-bottom: 4px; 
+      font-weight: 800;
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+      line-height: 1.2;
+      height: 3.6rem; /* Ensures consistent vertical space for 2 lines */
+    }
+    .roastery { 
+      font-size: 0.75rem; 
+      color: var(--text-dim); 
+      text-transform: uppercase; 
+      letter-spacing: 2px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
     
     .score-display {
       background: var(--surface-hover);
@@ -458,29 +478,25 @@ import { AuthService } from '../../services/auth.service';
       .hero-content { margin-bottom: 40px; }
       .filters-row { flex-direction: column; gap: 25px; align-items: flex-start; }
     }
-    @media (max-width: 640px) {
-      .community-container { padding: 15px; }
-      .brand-font { font-size: 3rem; }
-      .feed-grid { grid-template-columns: repeat(2, 1fr); gap: 15px; }
-      .cupping-card { padding: 20px; gap: 15px; }
+    @media (max-width: 768px) {
+      .feed-grid { grid-template-columns: repeat(2, 1fr); gap: 20px; }
+      .discovery-hero { padding: 40px; }
+      .brand-font { font-size: 3.5rem; }
+    }
+    @media (max-width: 540px) {
+      .community-container { padding: 20px; }
+      .feed-grid { grid-template-columns: 1fr; gap: 24px; }
+      .cupping-card { padding: 24px; min-height: auto; }
       .card-image {
-        width: calc(100% + 40px);
-        margin: -20px -20px 10px -20px;
-        height: 130px;
+        width: calc(100% + 48px);
+        margin: -24px -24px 15px -24px;
+        height: 180px;
       }
-      .bean-main h3 { font-size: 1rem; }
-      .roastery { font-size: 0.65rem; letter-spacing: 1px; }
-      .score-display { width: 42px; height: 42px; border-radius: 10px; }
-      .score-display .num { font-size: 1rem; }
-      .sensory-strip { gap: 8px; flex-wrap: wrap; }
-      .sensory-badge { padding: 5px 10px; font-size: 0.7rem; }
-      .flavor-cloud { gap: 5px; }
-      .flavor-tag { font-size: 0.65rem; padding: 3px 8px; }
-      .card-footer { padding-top: 15px; }
-      .mini-avatar { width: 24px; height: 24px; font-size: 0.65rem; }
-      .cupper-info .name { font-size: 0.7rem; }
-      .stat-item { font-size: 0.7rem; gap: 4px; }
-      .stat-item svg { width: 14px; height: 14px; }
+      .bean-main h3 { font-size: 1.4rem; height: auto; -webkit-line-clamp: 3; }
+      .roastery { font-size: 0.7rem; }
+      .score-display { width: 50px; height: 50px; }
+      .score-display .num { font-size: 1.1rem; }
+      .card-footer { padding-top: 20px; }
     }
     @media (max-width: 380px) {
       .feed-grid { grid-template-columns: 1fr; }
