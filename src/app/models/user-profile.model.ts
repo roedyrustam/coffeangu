@@ -9,6 +9,7 @@ export interface Badge {
 export interface UserProfile {
   uid: string;
   displayName: string;
+  username?: string;
   photoURL?: string;
   totalSessions: number;
   totalCuppingHours: number;

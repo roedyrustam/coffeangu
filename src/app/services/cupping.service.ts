@@ -15,6 +15,7 @@ export class CuppingService {
   private auth = inject(AuthService);
   private cuppingCollection = collection(this.firestore, 'cuppings');
   private profilesCollection = collection(this.firestore, 'profiles');
+  private usernamesCollection = collection(this.firestore, 'usernames');
 
   getUserProfile(userId: string): Observable<UserProfile | null> {
     const docRef = doc(this.firestore, 'profiles', userId);
@@ -32,6 +33,53 @@ export class CuppingService {
   getPublicProfiles(limitCount: number = 10): Observable<UserProfile[]> {
     const q = query(this.profilesCollection, orderBy('xp', 'desc'), limit(limitCount));
     return collectionData(q, { idField: 'uid' }) as Observable<UserProfile[]>;
+  }
+
+  async isUsernameAvailable(username: string): Promise<boolean> {
+    const handle = username.toLowerCase().replace('@', '');
+    const docRef = doc(this.firestore, 'usernames', handle);
+    const snap = await getDoc(docRef);
+    return !snap.exists();
+  }
+
+  async getProfileByHandle(handle: string): Promise<UserProfile | null> {
+    const username = handle.toLowerCase().replace('@', '');
+    const userRef = doc(this.firestore, 'usernames', username);
+    const userSnap = await getDoc(userRef);
+    
+    if (userSnap.exists()) {
+      const uid = userSnap.data()['uid'];
+      const profileSnap = await getDoc(doc(this.firestore, 'profiles', uid));
+      return profileSnap.exists() ? (profileSnap.data() as UserProfile) : null;
+    }
+    return null;
+  }
+
+  async updateUsername(uid: string, newUsername: string) {
+    const profileRef = doc(this.firestore, 'profiles', uid);
+    const profileSnap = await getDoc(profileRef);
+    if (!profileSnap.exists()) throw new Error('Profile not found');
+
+    const profile = profileSnap.data() as UserProfile;
+    const oldUsername = profile.username?.toLowerCase().replace('@', '');
+    const cleanNewUsername = newUsername.toLowerCase().replace('@', '');
+
+    if (oldUsername === cleanNewUsername) return;
+
+    // 1. Check uniqueness
+    const isAvailable = await this.isUsernameAvailable(cleanNewUsername);
+    if (!isAvailable) throw new Error('Username already taken');
+
+    // 2. Claim new username
+    await setDoc(doc(this.firestore, 'usernames', cleanNewUsername), { uid });
+
+    // 3. Update profile
+    await updateDoc(profileRef, { username: `@${cleanNewUsername}` });
+
+    // 4. Release old username if exists
+    if (oldUsername) {
+      await deleteDoc(doc(this.firestore, 'usernames', oldUsername));
+    }
   }
 
   async ensureUserProfile(userId: string, displayName: string, photoURL?: string) {

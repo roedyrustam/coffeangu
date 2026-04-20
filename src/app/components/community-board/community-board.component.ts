@@ -50,7 +50,7 @@ import { AuthService } from '../../services/auth.service';
           <div class="cupper-profile-card glass-card animate-fade" 
                *ngFor="let cupper of cuppers; let i = index"
                [style.animation-delay]="i * 0.1 + 's'"
-               [routerLink]="['/u', cupper.uid]">
+               [routerLink]="['/u', cupper.username || cupper.uid]">
              <div class="cupper-avatar">
                <img *ngIf="cupper.photoURL" [src]="cupper.photoURL" [alt]="cupper.displayName">
                <span *ngIf="!cupper.photoURL">{{ cupper.displayName.charAt(0) }}</span>

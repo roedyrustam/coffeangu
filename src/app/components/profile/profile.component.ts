@@ -167,9 +167,24 @@ Chart.register(RadarController, RadialLinearScale, PointElement, LineElement, Fi
       <div class="modal-overlay" *ngIf="showSettings()">
         <div class="modal glass-card animate-scale">
           <h3>{{ t('BTN_SETTINGS') }}</h3>
-          <div class="form-group" style="text-align: left; margin: 30px 0;">
+          <div class="form-group" style="text-align: left; margin: 20px 0;">
             <label>{{ t('LABEL_NAME') }}</label>
             <input type="text" [(ngModel)]="newName" placeholder="Display Name">
+          </div>
+          <div class="form-group" style="text-align: left; margin: 20px 0;">
+            <label>Username / Handle (@)</label>
+            <input type="text" 
+                   [(ngModel)]="newUsername" 
+                   (ngModelChange)="checkUsername($event)"
+                   placeholder="e.g. coffee_guru"
+                   style="text-transform: lowercase;">
+            <p class="input-hint" 
+               [style.color]="usernameStatus() === 'available' ? 'var(--primary-color)' : 'var(--danger)'"
+               *ngIf="usernameStatus()">
+               {{ usernameStatus() === 'checking' ? 'Checking...' : 
+                  usernameStatus() === 'available' ? '✓ Handle is available' : 
+                  usernameStatus() === 'taken' ? '✗ Already taken' : '✗ Invalid handle' }}
+            </p>
           </div>
           <div class="modal-actions">
              <button class="btn-secondary" (click)="showSettings.set(false)" [disabled]="updating()">Cancel</button>
@@ -481,6 +496,9 @@ export class ProfileComponent implements OnInit {
   showSettings = signal(false);
   updating = signal(false);
   newName = this.auth.currentUser()?.displayName || '';
+  newUsername = '';
+  usernameStatus = signal<'available' | 'taken' | 'invalid' | 'checking' | null>(null);
+  private usernameDebounce: any;
 
   ngOnInit() {
     this.cuppings$ = this.auth.user$.pipe(
@@ -504,6 +522,9 @@ export class ProfileComponent implements OnInit {
         if (!profile && this.auth.currentUser()) {
            const user = this.auth.currentUser()!;
            this.cuppingService.ensureUserProfile(user.uid, user.displayName || 'User', user.photoURL || undefined);
+        }
+        if (profile && !this.newUsername) {
+          this.newUsername = profile.username?.replace('@', '') || '';
         }
       })
     );
@@ -586,15 +607,48 @@ export class ProfileComponent implements OnInit {
   async updateProfile() {
     const user = this.auth.currentUser();
     if (!user || !this.newName.trim()) return;
+    
     this.updating.set(true);
     try {
-      await this.auth.updateDisplayName(this.newName);
+      // Update Display Name in Auth
+      if (this.newName !== user.displayName) {
+        await this.auth.updateDisplayName(this.newName);
+      }
+
+      // Update Username in Firestore
+      if (this.newUsername.trim()) {
+        const clean = this.newUsername.toLowerCase().replace('@', '');
+        await this.cuppingService.updateUsername(user.uid, clean);
+      }
+
       this.showSettings.set(false);
-    } catch (e) {
-      alert('Failed to update profile');
+      this.refreshTrigger.next();
+    } catch (e: any) {
+      alert(e.message || 'Failed to update profile');
     } finally {
       this.updating.set(false);
     }
+  }
+
+  checkUsername(val: string) {
+    if (!val || val.length < 3) {
+      this.usernameStatus.set('invalid');
+      return;
+    }
+
+    const clean = val.toLowerCase().replace('@', '');
+    if (!/^[a-z0-9_]+$/.test(clean)) {
+      this.usernameStatus.set('invalid');
+      return;
+    }
+
+    this.usernameStatus.set('checking');
+    if (this.usernameDebounce) clearTimeout(this.usernameDebounce);
+    
+    this.usernameDebounce = setTimeout(async () => {
+      const isAvailable = await this.cuppingService.isUsernameAvailable(clean);
+      this.usernameStatus.set(isAvailable ? 'available' : 'taken');
+    }, 500);
   }
 
   async onAvatarSelected(event: any) {

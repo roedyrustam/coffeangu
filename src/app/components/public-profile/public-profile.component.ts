@@ -178,17 +178,21 @@ export class PublicProfileComponent implements OnInit {
   private chart: any;
 
   ngOnInit() {
+    // Resolve profile first to get the UID if handle is used
     this.profile$ = this.route.paramMap.pipe(
       switchMap(params => {
         const id = params.get('id');
-        return id ? this.cuppingService.getUserProfile(id) : of(null);
+        if (!id) return of(null);
+        if (id.startsWith('@')) {
+          return this.cuppingService.getProfileByHandle(id);
+        }
+        return this.cuppingService.getUserProfile(id);
       })
     );
 
-    this.cuppings$ = this.route.paramMap.pipe(
-      switchMap(params => {
-        const id = params.get('id');
-        return id ? this.cuppingService.getPublicUserCuppings(id) : of([]);
+    this.cuppings$ = this.profile$.pipe(
+      switchMap(profile => {
+        return profile ? this.cuppingService.getPublicUserCuppings(profile.uid) : of([]);
       })
     );
 
