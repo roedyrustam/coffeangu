@@ -7,6 +7,8 @@ import { Router, ActivatedRoute } from '@angular/router';
 import { CuppingService } from '../../services/cupping.service';
 import { CuppingSession, SensoryScores } from '../../models/cupping.model';
 import { DynamicFlavorWheelComponent } from '../flavor-wheel/flavor-wheel.component';
+import { MembershipService } from '../../services/membership.service';
+import { toSignal } from '@angular/core/rxjs-interop';
 
 @Component({
   selector: 'app-cupping-form',
@@ -207,6 +209,30 @@ import { DynamicFlavorWheelComponent } from '../flavor-wheel/flavor-wheel.compon
                 <small *ngIf="session.finalScore >= 80" style="font-weight: 900; letter-spacing: 1px;">SPECIALTY GRADE</small>
               </div>
               <span class="final-value">{{ session.finalScore | number:'1.2-2' }}</span>
+            </div>
+          </section>
+
+          <!-- COMMERCE & PROMOTION SECTION (Premium) -->
+          <section class="form-section luxury-border" [class.locked]="!isPro()">
+            <div class="section-title-row">
+              <h3 class="section-title" style="margin-bottom:0">Commerce & Promotion</h3>
+              <span class="premium-badge" *ngIf="!isPro()">🔒 PRO</span>
+            </div>
+            
+            <p class="section-hint" *ngIf="!isPro()">Direct commerce links are available for verified roasteries and pro members.</p>
+            
+            <div class="input-group" [class.disabled-group]="!isPro()" (click)="!isPro() && goToPricing()">
+              <label>Direct Purchase Link (URL)</label>
+              <div class="premium-input-wrapper">
+                <input [(ngModel)]="session.buyLink" 
+                       name="buyLink" 
+                       placeholder="e.g. https://yourshop.com/product/..." 
+                       [disabled]="!isPro()"
+                       [readonly]="!isPro()">
+                <div class="lock-overlay" *ngIf="!isPro()">
+                  <span>Upgrade to Unlock Shop Links</span>
+                </div>
+              </div>
             </div>
           </section>
 
@@ -914,15 +940,64 @@ import { DynamicFlavorWheelComponent } from '../flavor-wheel/flavor-wheel.compon
     .photo-box:hover .photo-overlay {
       opacity: 1;
     }
+    .luxury-border {
+      border: 1px solid var(--glass-border);
+      transition: all 0.3s;
+    }
+    .luxury-border.locked {
+      background: rgba(189, 142, 98, 0.02);
+      border-style: dashed;
+    }
+    .premium-badge {
+      background: var(--primary-gradient);
+      color: #0c0c0e;
+      padding: 4px 10px;
+      border-radius: 4px;
+      font-size: 0.7rem;
+      font-weight: 900;
+      letter-spacing: 1px;
+    }
+    .section-hint {
+      font-size: 0.85rem;
+      color: var(--text-dim);
+      margin: 15px 0 25px;
+      line-height: 1.5;
+    }
+    .premium-input-wrapper {
+      position: relative;
+    }
+    .disabled-group {
+      cursor: pointer;
+      opacity: 0.7;
+    }
+    .lock-overlay {
+      position: absolute;
+      inset: 0;
+      background: rgba(0,0,0,0.4);
+      backdrop-filter: blur(2px);
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--primary-color);
+      font-size: 0.8rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      border: 1px solid rgba(189, 142, 98, 0.3);
+    }
   `]
 })
 export class CuppingFormComponent implements OnInit {
-  private cuppingService = inject(CuppingService);
+  private translationService = inject(TranslationService);
+  private auth = inject(AuthService);
   private router = inject(Router);
   private route = inject(ActivatedRoute);
-  private ts = inject(TranslationService);
-  private auth = inject(AuthService);
-  t = this.ts.t();
+  private cuppingService = inject(CuppingService);
+  private membershipService = inject(MembershipService);
+
+  isPro = toSignal(this.membershipService.isPro$(), { initialValue: false });
+  t = this.translationService.t();
 
   isEditMode = false;
   editId: string | null = null;
@@ -1191,5 +1266,11 @@ export class CuppingFormComponent implements OnInit {
 
   cancel() {
     this.router.navigate(['/profile']);
+  }
+
+  goToPricing() {
+    if (confirm('Direct commerce links are a Pro feature. Would you like to view our upgrade plans?')) {
+      this.router.navigate(['/pricing']);
+    }
   }
 }

@@ -186,7 +186,7 @@ export class CuppingService {
     const userId = this.auth.getUserId();
     if (!userId) throw new Error('User not authenticated');
 
-    // Denormalization Logic for Teams
+    // Denormalization Logic for Teams & Commerce Gating
     let teamId = undefined;
     let isVerifiedRoastery = false;
     let buyLink = session.buyLink;
@@ -194,6 +194,9 @@ export class CuppingService {
     try {
       const profileSnap = await getDoc(doc(this.firestore, 'profiles', userId));
       const profile = profileSnap.data() as UserProfile;
+      const isAdmin = profile?.membership === 'roastery';
+      const isPro = profile?.membership === 'pro' || isAdmin;
+
       if (profile?.teamId) {
         teamId = profile.teamId;
         const teamSnap = await getDoc(doc(this.firestore, 'teams', teamId));
@@ -206,6 +209,15 @@ export class CuppingService {
           }
         }
       }
+
+      // STRICT MONETIZATION GATE: Only Pro/Roastery can use custom buy links
+      // Classic users lose the buyLink unless it's a Roastery team default
+      if (!isPro && !isVerifiedRoastery) {
+        buyLink = undefined;
+      }
+
+      // Store isPro status for badges
+      (session as any).isPro = isPro;
     } catch (e) {
       console.warn('Roastery denormalization failed:', e);
     }
@@ -215,6 +227,7 @@ export class CuppingService {
       userId,
       teamId,
       isVerifiedRoastery,
+      isPro: (session as any).isPro,
       buyLink,
       isPublic: session.isPublic ?? true,
       likesCount: 0,

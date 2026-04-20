@@ -24,12 +24,14 @@ Chart.register(RadarController, RadialLinearScale, PointElement, LineElement, Fi
         <header class="result-header">
           <div class="badge">{{ session.type }}</div>
           <h1 class="brand-font">{{ session.beanName }}</h1>
-          <p class="roastery">
-            {{ session.roastery }}
-            <span class="v-badge-inline" *ngIf="team?.isVerified" title="Official Verified Roastery">
-               <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+          <div class="roastery-row">
+            <span class="roastery">{{ session.roastery }}</span>
+            <span class="verified-icon-result" *ngIf="session.isVerifiedRoastery || team?.isVerified" title="Verified Roastery">
+              <svg viewBox="0 0 24 24" width="20" height="20" fill="var(--primary-color)">
+                <path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10 10-4.5 10-10S17.5 2 12 2zm-1.9 14.7L6.4 13l1.5-1.5 2.2 2.2 4.8-4.8 1.5 1.5-6.3 6.3z"/>
+              </svg>
             </span>
-          </p>
+          </div>
         </header>
 
         <section class="product-visual">
@@ -72,7 +74,10 @@ Chart.register(RadarController, RadialLinearScale, PointElement, LineElement, Fi
           </div>
           <div class="meta-item">
             <span class="meta-label">{{ t('CUPPER_NAME') }}</span>
-            <span class="meta-value author-link" [routerLink]="['/u', session.userId]">{{ session.cupperName || 'Anonymous' }}</span>
+            <div class="cupper-link-row">
+              <span class="meta-value author-link" [routerLink]="['/u', session.userId]">{{ session.cupperName || 'Anonymous' }}</span>
+              <span class="pro-tag-result" *ngIf="session.isPro">PRO</span>
+            </div>
           </div>
           <div class="meta-item">
             <span class="meta-label">Date</span>
@@ -145,14 +150,18 @@ Chart.register(RadarController, RadialLinearScale, PointElement, LineElement, Fi
             <span class="icon">Share Graphic</span>
           </button>
           
-          <!-- Buy Link Section -->
-          <div class="commerce-bridge animate-slide-up" *ngIf="getBuyUrl()">
-             <a [href]="getBuyUrl()" target="_blank" class="btn-commerce">
-                <span class="c-label">Direct Commerce</span>
-                <span class="c-action">Buy This Bean 🛍️</span>
-                <div class="c-shine"></div>
+          <!-- Buy Link Section (Monetized) -->
+          <div class="commerce-bridge-luxury animate-slide-up" *ngIf="getBuyUrl()">
+             <a [href]="getBuyUrl()" target="_blank" class="btn-commerce-luxury">
+                <div class="c-content">
+                  <span class="c-label">Official Commerce</span>
+                  <span class="c-action">Acquire This Coffee Bean 🛍️</span>
+                </div>
+                <div class="c-arrow">
+                  <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="3"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+                </div>
              </a>
-             <p class="c-hint" *ngIf="team?.isVerified">Sold officially by {{ session.roastery }} (Verified)</p>
+             <p class="c-hint-luxury" *ngIf="session.isVerifiedRoastery || team?.isVerified">Directly from the Verified Roastery</p>
           </div>
 
           <a routerLink="/" class="back-link">{{ t('NAV_HOME') }}</a>
@@ -453,6 +462,60 @@ Chart.register(RadarController, RadialLinearScale, PointElement, LineElement, Fi
        color: var(--text-dim);
        text-transform: uppercase;
        letter-spacing: 1px;
+    }
+
+    .roastery-row { display: flex; align-items: center; justify-content: center; gap: 10px; }
+    .verified-icon-result { display: flex; align-items: center; filter: drop-shadow(0 0 5px rgba(189, 142, 98, 0.3)); }
+    .cupper-link-row { display: flex; align-items: center; gap: 10px; }
+    .pro-tag-result {
+      font-size: 0.55rem;
+      font-weight: 900;
+      background: var(--primary-gradient);
+      color: #0c0c0e;
+      padding: 2px 6px;
+      border-radius: 4px;
+      letter-spacing: 0.5px;
+    }
+
+    .commerce-bridge-luxury {
+      margin: 40px 0;
+      width: 100%;
+    }
+    .btn-commerce-luxury {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: var(--primary-gradient);
+      padding: 24px 35px;
+      border-radius: 24px;
+      text-decoration: none;
+      color: #0c0c0e;
+      transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+      border: 1px solid rgba(255,255,255,0.2);
+      box-shadow: 0 15px 40px rgba(189, 142, 98, 0.4);
+    }
+    .btn-commerce-luxury:hover {
+      transform: translateY(-8px) scale(1.02);
+      box-shadow: 0 25px 60px rgba(189, 142, 98, 0.6);
+    }
+    .c-content { text-align: left; }
+    .c-label { 
+      display: block; 
+      font-size: 0.75rem; 
+      font-weight: 800; 
+      text-transform: uppercase; 
+      letter-spacing: 2px; 
+      margin-bottom: 4px;
+      opacity: 0.8;
+    }
+    .c-action { font-size: 1.4rem; font-weight: 950; font-family: var(--font-brand); }
+    .c-hint-luxury { 
+      margin-top: 15px; 
+      font-size: 0.8rem; 
+      font-weight: 700; 
+      color: var(--primary-color); 
+      text-transform: uppercase; 
+      letter-spacing: 1px;
     }
     .template-selector button {
        background: transparent;

@@ -108,12 +108,14 @@ import { AuthService } from '../../services/auth.service';
           <div class="card-header">
             <div class="bean-main">
               <h3>{{ session.beanName }}</h3>
-              <p class="roastery">
-                {{ session.roastery }}
-                <span class="v-badge-small" *ngIf="session.isVerifiedRoastery">
-                   <svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+              <div class="roastery-row">
+                <span class="roastery">{{ session.roastery }}</span>
+                <span class="verified-icon" *ngIf="session.isVerifiedRoastery" title="Verified Roastery">
+                  <svg viewBox="0 0 24 24" width="14" height="14" fill="var(--primary-color)">
+                    <path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10 10-4.5 10-10S17.5 2 12 2zm-1.9 14.7L6.4 13l1.5-1.5 2.2 2.2 4.8-4.8 1.5 1.5-6.3 6.3z"/>
+                  </svg>
                 </span>
-              </p>
+              </div>
             </div>
             <div class="score-display" [class.specialty]="session.finalScore >= 80" [class.specialty-pulse]="session.finalScore >= 85">
               <span class="num">{{ session.finalScore | number:'1.1-1' }}</span>
@@ -150,9 +152,20 @@ import { AuthService } from '../../services/auth.service';
 
           <footer class="card-footer">
             <div class="cupper-info" [routerLink]="['/u', session.userId]" (click)="$event.stopPropagation()">
-              <div class="mini-avatar">{{ (session.cupperName || 'A').charAt(0) }}</div>
+              <div class="avatar-wrapper">
+                <div class="mini-avatar">{{ (session.cupperName || 'A').charAt(0) }}</div>
+                <div class="pro-dot" *ngIf="session.isPro" title="Pro Member"></div>
+              </div>
               <span class="name">{{ session.cupperName || 'Anonymous Cupper' }}</span>
+              <span class="pro-tag" *ngIf="session.isPro">PRO</span>
             </div>
+
+            <!-- VISIT SHOP BUTTON (Premium Commerce) -->
+            <button class="btn-shop" *ngIf="session.buyLink" (click)="$event.stopPropagation(); window.open(session.buyLink, '_blank')">
+              <span class="icon">🛒</span>
+              <span>Visit Shop</span>
+            </button>
+
             <div class="social-stats">
               <div class="social-proof" *ngIf="session.likesCount">
                 ❤️ {{ session.likesCount }} users liked this results
@@ -434,7 +447,52 @@ import { AuthService } from '../../services/auth.service';
       font-weight: 900;
       font-size: 0.8rem;
     }
+    .avatar-wrapper { position: relative; }
+    .pro-dot {
+      position: absolute;
+      bottom: -2px;
+      right: -2px;
+      width: 12px;
+      height: 12px;
+      background: #00ff00;
+      border: 2px solid var(--surface-color);
+      border-radius: 50%;
+      box-shadow: 0 0 5px rgba(0,255,0,0.5);
+    }
     .cupper-info .name { font-size: 0.85rem; font-weight: 700; color: var(--text-main); }
+    .pro-tag {
+      font-size: 0.55rem;
+      font-weight: 900;
+      background: var(--primary-gradient);
+      color: #0c0c0e;
+      padding: 2px 6px;
+      border-radius: 4px;
+      letter-spacing: 0.5px;
+      margin-left: 5px;
+    }
+    .roastery-row { display: flex; align-items: center; gap: 6px; }
+    .verified-icon { display: flex; align-items: center; }
+
+    .btn-shop {
+      background: var(--primary-gradient);
+      border: none;
+      color: #0c0c0e;
+      padding: 8px 16px;
+      border-radius: 100px;
+      font-size: 0.75rem;
+      font-weight: 800;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      cursor: pointer;
+      transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+      border: 1px solid rgba(255,255,255,0.2);
+    }
+    .btn-shop:hover {
+      transform: scale(1.05) translateY(-2px);
+      box-shadow: 0 5px 15px rgba(189, 142, 98, 0.4);
+    }
+    .btn-shop .icon { font-size: 1rem; }
     .social-stats { display: flex; flex-direction: column; gap: 12px; width: 100%; border-top: 1px solid var(--glass-border); padding-top: 20px; }
     .social-proof { font-size: 0.7rem; font-weight: 700; color: var(--primary-color); background: rgba(189, 142, 98, 0.05); padding: 8px; border-radius: 8px; text-align: center; width: 100%; }
     .actions-row { display: flex; justify-content: space-between; align-items: center; width: 100%; }

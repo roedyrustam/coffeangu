@@ -57,8 +57,24 @@ Chart.register(RadarController, RadialLinearScale, PointElement, LineElement, Fi
               <input type="file" #avatarInput style="display: none" (change)="onAvatarSelected($event)" accept="image/*">
             </div>
             <div class="user-details">
-              <h1 class="brand-font">{{ auth.currentUser()?.displayName }}</h1>
+              <div class="name-row">
+                <h1 class="brand-font">{{ auth.currentUser()?.displayName }}</h1>
+                <span class="verified-badge-large" *ngIf="tier.id === 'roastery' && (team()?.isVerified)" title="Verified Roastery">
+                  <svg viewBox="0 0 24 24" width="24" height="24" fill="var(--primary-color)">
+                    <path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10 10-4.5 10-10S17.5 2 12 2zm-1.9 14.7L6.4 13l1.5-1.5 2.2 2.2 4.8-4.8 1.5 1.5-6.3 6.3z"/>
+                  </svg>
+                </span>
+                <span class="pro-label" *ngIf="tier.id === 'pro'">PRO</span>
+              </div>
               <p class="email">{{ auth.currentUser()?.email }}</p>
+
+              <!-- DIRECT COMMERCE FOR ROASTERIES -->
+              <div class="header-actions" *ngIf="tier.id === 'roastery' && team()?.shopUrl">
+                <a [href]="team()?.shopUrl" target="_blank" class="btn-commerce-primary">
+                  <span class="icon">🛒</span>
+                  <span>Visit Roastery Shop</span>
+                </a>
+              </div>
               
               <app-sensory-avatar *ngIf="profile$ | async as profile" [profile]="profile"></app-sensory-avatar>
             </div>
@@ -471,6 +487,41 @@ Chart.register(RadarController, RadialLinearScale, PointElement, LineElement, Fi
     .tier-pill .dot { width: 6px; height: 6px; border-radius: 50%; }
     .upgrade-link { background: transparent; border: none; color: var(--primary-color); font-size: 0.75rem; font-weight: 800; cursor: pointer; text-decoration: underline; text-underline-offset: 4px; }
     .upgrade-link:hover { color: var(--text-main); }
+
+    .name-row { display: flex; align-items: center; gap: 15px; flex-wrap: wrap; }
+    .verified-badge-large { 
+      filter: drop-shadow(0 0 5px rgba(189, 142, 98, 0.5));
+      display: flex;
+    }
+    .pro-label {
+      font-size: 0.75rem;
+      font-weight: 900;
+      background: var(--primary-gradient);
+      color: #0c0c0e;
+      padding: 4px 12px;
+      border-radius: 6px;
+      letter-spacing: 1px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+    }
+    .header-actions { margin-top: 20px; }
+    .btn-commerce-primary {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      background: var(--primary-gradient);
+      color: #0c0c0e;
+      padding: 12px 30px;
+      border-radius: 100px;
+      font-weight: 800;
+      text-decoration: none;
+      font-size: 0.9rem;
+      transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+      border: 1px solid rgba(255,255,255,0.2);
+    }
+    .btn-commerce-primary:hover {
+      transform: translateY(-3px) scale(1.05);
+      box-shadow: 0 10px 25px rgba(189, 142, 98, 0.5);
+    }
 
     .feed-section { margin-top: 50px; }
     .section-title { font-size: 2rem; margin-bottom: 40px; font-weight: 800; position: relative; display: inline-block; }

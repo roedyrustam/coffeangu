@@ -59,6 +59,14 @@ export class MembershipService {
     );
   }
 
+  isPro$(): Observable<boolean> {
+    return this.getCurrentMembership().pipe(map(m => m ? (m.id === 'pro' || m.id === 'roastery') : false));
+  }
+
+  isRoastery$(): Observable<boolean> {
+    return this.getCurrentMembership().pipe(map(m => m?.id === 'roastery' || false));
+  }
+
   async upgradeMembership(tierId: 'pro' | 'roastery'): Promise<void> {
     const user = this.auth.currentUser();
     if (!user) throw new Error('Not authenticated');

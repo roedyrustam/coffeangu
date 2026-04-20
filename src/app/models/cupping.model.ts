@@ -41,6 +41,7 @@ export interface CuppingSession {
   timestamp: any;
   teamId?: string;
   isVerifiedRoastery?: boolean;
+  isPro?: boolean;
   buyLink?: string;
 }
 
