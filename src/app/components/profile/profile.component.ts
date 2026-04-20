@@ -57,7 +57,7 @@ Chart.register(RadarController, RadialLinearScale, PointElement, LineElement, Fi
             </div>
           </div>
 
-          <div class="stats-area">
+          <div class="stats-area" *ngIf="stats$ | async as stats">
             <!-- Badges Section -->
             <div class="badges-section" *ngIf="profile$ | async as profile">
               <span class="section-label">Unlocked Achievements</span>
