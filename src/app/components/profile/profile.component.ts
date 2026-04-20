@@ -8,6 +8,8 @@ import { CuppingSession } from '../../models/cupping.model';
 import { Observable, BehaviorSubject, combineLatest } from 'rxjs';
 import { map, switchMap, take, filter, tap } from 'rxjs/operators';
 import { FormsModule } from '@angular/forms';
+import { UserProfile } from '../../models/user-profile.model';
+import { SensoryAvatarComponent } from '../sensory-avatar/sensory-avatar.component';
 import { Chart, RadarController, RadialLinearScale, PointElement, LineElement, Filler, Tooltip, Legend } from 'chart.js';
 
 Chart.register(RadarController, RadialLinearScale, PointElement, LineElement, Filler, Tooltip, Legend);
@@ -15,7 +17,7 @@ Chart.register(RadarController, RadialLinearScale, PointElement, LineElement, Fi
 @Component({
   selector: 'app-profile',
   standalone: true,
-  imports: [CommonModule, RouterLink, FormsModule],
+  imports: [CommonModule, RouterLink, FormsModule, SensoryAvatarComponent],
   template: `
     <div class="profile-container animate-fade">
       <!-- Tab Control -->
@@ -49,13 +51,26 @@ Chart.register(RadarController, RadialLinearScale, PointElement, LineElement, Fi
             <div class="user-details">
               <h1 class="brand-font">{{ auth.currentUser()?.displayName }}</h1>
               <p class="email">{{ auth.currentUser()?.email }}</p>
-              <div class="cupper-rank" *ngIf="stats$ | async as stats">
-                <span class="rank-label">{{ getRank(stats.total) }}</span>
-              </div>
+              
+              <!-- New Sensory Avatar Integration -->
+              <app-sensory-avatar *ngIf="profile$ | async as profile" [profile]="profile"></app-sensory-avatar>
             </div>
           </div>
-  
-          <div class="stats-grid" *ngIf="stats$ | async as stats">
+
+          <div class="stats-area">
+            <!-- Badges Section -->
+            <div class="badges-section" *ngIf="profile$ | async as profile">
+              <span class="section-label">Unlocked Achievements</span>
+              <div class="badge-row">
+                <div class="badge-item" *ngFor="let badge of profile.badges" [title]="badge.description">
+                  <span class="badge-icon">{{ badge.icon }}</span>
+                  <span class="badge-name">{{ badge.name }}</span>
+                </div>
+                <div class="badge-placeholder" *ngIf="profile.badges.length === 0">
+                  Cup more coffee to unlock badges!
+                </div>
+              </div>
+            </div>
             <div class="signature-section">
                <span class="section-label">Sensory Fingerprint</span>
                <div class="chart-container">
@@ -405,6 +420,34 @@ Chart.register(RadarController, RadialLinearScale, PointElement, LineElement, Fi
     .btn-danger { background: var(--danger); color: white; border: none; padding: 12px 30px; border-radius: 100px; font-weight: 700; cursor: pointer; }
     .btn-secondary { background: var(--surface-hover); color: var(--text-main); border: 1px solid var(--glass-border); padding: 12px 30px; border-radius: 100px; font-weight: 700; cursor: pointer; }
 
+    .badges-section {
+      margin-top: 30px;
+      text-align: left;
+    }
+    .badge-row {
+      display: flex;
+      gap: 15px;
+      margin-top: 15px;
+      flex-wrap: wrap;
+    }
+    .badge-item {
+      background: rgba(255,255,255,0.05);
+      border: 1px solid var(--glass-border);
+      padding: 10px 15px;
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      transition: all 0.3s;
+    }
+    .badge-item:hover {
+      background: var(--surface-hover);
+      transform: translateY(-3px);
+    }
+    .badge-icon { font-size: 1.2rem; }
+    .badge-name { font-size: 0.75rem; font-weight: 800; text-transform: uppercase; letter-spacing: 1px; color: var(--primary-color); }
+    .badge-placeholder { font-size: 0.8rem; color: var(--text-dim); font-style: italic; }
+
     @media (max-width: 900px) {
       .profile-header { flex-direction: column; text-align: center; padding: 40px; gap: 40px; }
       .user-info { flex-direction: column; gap: 20px; }
@@ -428,6 +471,7 @@ export class ProfileComponent implements OnInit {
   
   cuppings$!: Observable<CuppingSession[]>;
   savedCuppings$!: Observable<CuppingSession[]>;
+  profile$!: Observable<UserProfile | null>;
   stats$!: Observable<{ total: number, avg: number, favoriteProcess: string, averages: any }>;
   sessionToDelete: CuppingSession | null = null;
   private chart: any;
@@ -451,6 +495,17 @@ export class ProfileComponent implements OnInit {
       switchMap(user => this.refreshTrigger.pipe(
         switchMap(() => this.cuppingService.getSavedCuppings(user!.uid))
       ))
+    );
+
+    this.profile$ = this.auth.user$.pipe(
+      filter(user => !!user),
+      switchMap(user => this.cuppingService.getUserProfile(user!.uid)),
+      tap(profile => {
+        if (!profile && this.auth.currentUser()) {
+           const user = this.auth.currentUser()!;
+           this.cuppingService.ensureUserProfile(user.uid, user.displayName || 'User', user.photoURL || undefined);
+        }
+      })
     );
 
     this.stats$ = this.cuppings$.pipe(

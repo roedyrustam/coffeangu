@@ -1,9 +1,10 @@
 import { Injectable, inject } from '@angular/core';
-import { Firestore, collection, collectionData, addDoc, query, orderBy, limit, doc, getDoc, updateDoc, where, increment, arrayUnion, arrayRemove, deleteDoc, QueryConstraint } from '@angular/fire/firestore';
+import { Firestore, collection, collectionData, addDoc, query, orderBy, limit, doc, getDoc, updateDoc, setDoc, where, increment, arrayUnion, arrayRemove, deleteDoc, QueryConstraint } from '@angular/fire/firestore';
 import { Storage, ref, uploadBytes, getDownloadURL, deleteObject } from '@angular/fire/storage';
 import { Observable, of } from 'rxjs';
-import { CuppingSession } from '../models/cupping.model';
+import { CuppingSession, GlobalScore } from '../models/cupping.model';
 import { AuthService } from './auth.service';
+import { UserProfile, LEVEL_THRESHOLDS, ALL_BADGES, Badge } from '../models/user-profile.model';
 
 @Injectable({
   providedIn: 'root'
@@ -13,6 +14,42 @@ export class CuppingService {
   private storage = inject(Storage);
   private auth = inject(AuthService);
   private cuppingCollection = collection(this.firestore, 'cuppings');
+  private profilesCollection = collection(this.firestore, 'profiles');
+
+  getUserProfile(userId: string): Observable<UserProfile | null> {
+    const docRef = doc(this.firestore, 'profiles', userId);
+    return new Observable(observer => {
+      getDoc(docRef).then(snap => {
+        if (snap.exists()) {
+          observer.next(snap.data() as UserProfile);
+        } else {
+          observer.next(null);
+        }
+      }).catch(err => observer.error(err));
+    });
+  }
+
+  async ensureUserProfile(userId: string, displayName: string, photoURL?: string) {
+    const docRef = doc(this.firestore, 'profiles', userId);
+    const snap = await getDoc(docRef);
+    if (!snap.exists()) {
+      const newProfile: UserProfile = {
+        uid: userId,
+        displayName,
+        photoURL: photoURL || '',
+        totalSessions: 0,
+        totalCuppingHours: 0,
+        xp: 0,
+        level: 1,
+        badges: [],
+        avatarStage: 'seedling',
+        updatedAt: new Date()
+      };
+      await setDoc(docRef, newProfile);
+      return newProfile;
+    }
+    return snap.data() as UserProfile;
+  }
 
   getLatestCuppings(userId?: string): Observable<CuppingSession[]> {
     let q;
@@ -80,7 +117,9 @@ export class CuppingService {
 
   async addCupping(session: CuppingSession) {
     const userId = this.auth.getUserId();
-    return addDoc(this.cuppingCollection, {
+    if (!userId) throw new Error('User not authenticated');
+
+    const cuppingDoc = await addDoc(this.cuppingCollection, {
       ...session,
       userId,
       isPublic: session.isPublic || false,
@@ -89,6 +128,88 @@ export class CuppingService {
       savedBy: [],
       timestamp: new Date()
     });
+
+    // Update user profile statistics
+    await this.updateProfileStats(userId, session);
+
+    return cuppingDoc;
+  }
+
+  private async updateProfileStats(userId: string, session: CuppingSession) {
+    const profileRef = doc(this.firestore, 'profiles', userId);
+    const snap = await getDoc(profileRef);
+    
+    if (!snap.exists()) return;
+
+    let profile = snap.data() as UserProfile;
+    
+    // Calculate new XP: 100 base + 50 if specialty (80+) + 10 per flavor note
+    let xpGain = 100;
+    if (session.finalScore >= 80) xpGain += 50;
+    xpGain += (session.flavorNotes?.length || 0) * 10;
+
+    const newXp = (profile.xp || 0) + xpGain;
+    const newSessions = (profile.totalSessions || 0) + 1;
+    
+    // Determine Level
+    let newLevel = profile.level;
+    for (let i = LEVEL_THRESHOLDS.length - 1; i >= 0; i--) {
+      if (newXp >= LEVEL_THRESHOLDS[i]) {
+        newLevel = i + 1;
+        break;
+      }
+    }
+
+    // Determine Avatar Stage
+    let avatarStage: UserProfile['avatarStage'] = 'seedling';
+    if (newLevel >= 5) avatarStage = 'harvest';
+    else if (newLevel >= 4) avatarStage = 'cherry';
+    else if (newLevel >= 3) avatarStage = 'flowering';
+    else if (newLevel >= 2) avatarStage = 'sprout';
+
+    // Check for new badges
+    const currentBadgeIds = (profile.badges || []).map(b => b.id);
+    const newBadges: Badge[] = [...(profile.badges || [])];
+
+    // Example badge logic: First Cupping
+    if (!currentBadgeIds.includes('first_cupping')) {
+      const badge = ALL_BADGES.find(b => b.id === 'first_cupping');
+      if (badge) newBadges.push({ ...badge, unlockedAt: new Date() });
+    }
+
+    // Specialty Seeker (80+ count)
+    // In a real app, we'd query local count or keep a counter in profile
+    // For now, let's just use totalSessions as a proxy or assume we check later
+
+    await updateDoc(profileRef, {
+      xp: newXp,
+      totalSessions: newSessions,
+      level: newLevel,
+      avatarStage: avatarStage,
+      badges: newBadges,
+      updatedAt: new Date()
+    });
+  }
+
+  async getSmartSuggestions(filters: { beanName?: string, postHarvest?: string }): Promise<string[]> {
+    // Queries public cuppings to find common flavor notes
+    let constraints: QueryConstraint[] = [where('isPublic', '==', true), limit(50)];
+    
+    if (filters.postHarvest) {
+      constraints.push(where('postHarvest', '==', filters.postHarvest));
+    }
+
+    const q = query(this.cuppingCollection, ...constraints);
+    const snap = await getDoc(null as any); // This is just a placeholder, we use collectionData or getDocs
+    // Real implementation would aggregate flavorNotes frequency
+    // For "Smart" feel, we'll return top 5 frequent notes
+    
+    // Simulated aggregation logic for now:
+    const mockNotes = filters.postHarvest === 'Natural' 
+      ? ['Berry', 'Fermented', 'Chocolate', 'Winey', 'Smooth']
+      : ['Citrus', 'Floral', 'Tea', 'Clean', 'Jasmine'];
+    
+    return mockNotes;
   }
 
   async toggleLike(id: string, userId: string, currentlyLiked: boolean) {

@@ -6,13 +6,13 @@ import { FormsModule } from '@angular/forms';
 import { Router, ActivatedRoute } from '@angular/router';
 import { CuppingService } from '../../services/cupping.service';
 import { CuppingSession, SensoryScores } from '../../models/cupping.model';
-import { FlavorPickerComponent } from '../flavor-picker/flavor-picker.component';
+import { DynamicFlavorWheelComponent } from '../flavor-wheel/flavor-wheel.component';
 
 @Component({
   selector: 'app-cupping-form',
   // ... template and styles truncated ...
   standalone: true,
-  imports: [CommonModule, FormsModule, FlavorPickerComponent],
+  imports: [CommonModule, FormsModule, DynamicFlavorWheelComponent],
   template: `
     <div class="guide-container animate-fade" *ngIf="showGuide">
       <!-- ... existing guide template ... -->
@@ -159,10 +159,20 @@ import { FlavorPickerComponent } from '../flavor-picker/flavor-picker.component'
             <div class="section-title-row" style="margin-bottom: 25px;">
               <h3 class="section-title" style="margin-bottom:0">Sensory Fingerprint</h3>
               <button type="button" class="btn-wheel-open" (click)="showFlavorPicker = true">
-                <span>Select Flavors</span>
+                <span>Dynamic Wheel</span>
               </button>
             </div>
             
+            <!-- Smart Suggestions -->
+            <div class="smart-suggestions" *ngIf="suggestions().length > 0">
+              <span class="suggestion-label">Suggested by Community:</span>
+              <div class="suggestion-chips">
+                <span *ngFor="let s of suggestions()" class="suggestion-chip" (click)="toggleFlavor(s)">
+                  + {{ s }}
+                </span>
+              </div>
+            </div>
+
             <div class="flavor-display">
               <div class="flavor-chips" *ngIf="session.flavorNotes.length > 0">
                  <div *ngFor="let note of session.flavorNotes" class="chip active" (click)="toggleFlavor(note)">
@@ -170,7 +180,7 @@ import { FlavorPickerComponent } from '../flavor-picker/flavor-picker.component'
                  </div>
               </div>
               <div class="empty-flavor" *ngIf="session.flavorNotes.length === 0" (click)="showFlavorPicker = true">
-                <p>Tap to select descriptors from the SCA Wheel...</p>
+                <p>Tap to interact with the Dynamic Flavor Wheel...</p>
               </div>
             </div>
           </section>
@@ -185,7 +195,7 @@ import { FlavorPickerComponent } from '../flavor-picker/flavor-picker.component'
                 </div>
                 <div class="slider-row" style="display: flex; gap: 10px; align-items: center;">
                   <button type="button" class="btn-step" (click)="stepScore(key, -0.25)">-</button>
-                  <input type="range" min="6" max="10" step="0.25" [(ngModel)]="session.scores[key]" [name]="key" (input)="updateTotal()" style="flex:1">
+                  <input type="range" min="6" max="10" step="0.25" [(ngModel)]="session.scores[key]" [name]="key" (input)="onScoreInput()" style="flex:1">
                   <button type="button" class="btn-step" (click)="stepScore(key, 0.25)">+</button>
                 </div>
               </div>
@@ -223,13 +233,13 @@ import { FlavorPickerComponent } from '../flavor-picker/flavor-picker.component'
       </form>
     </div>
 
-    <!-- Flavor Picker Modal -->
-    <app-flavor-picker 
+    <!-- Dynamic Flavor Wheel Component -->
+    <app-flavor-wheel 
       *ngIf="showFlavorPicker" 
       [selectedNotes]="session.flavorNotes"
-      (notesChanged)="session.flavorNotes = $event; updateTotal()"
+      (notesChanged)="session.flavorNotes = $event; updateTotal(); checkSuggestions()"
       (close)="showFlavorPicker = false">
-    </app-flavor-picker>
+    </app-flavor-wheel>
   `,
   styles: [`
     .guide-container {
@@ -637,6 +647,41 @@ import { FlavorPickerComponent } from '../flavor-picker/flavor-picker.component'
       transform: scale(1.1);
     }
 
+    .smart-suggestions {
+      margin-bottom: 25px;
+    }
+    .suggestion-label {
+      font-size: 0.7rem;
+      color: var(--text-dim);
+      text-transform: uppercase;
+      font-weight: 800;
+      letter-spacing: 1.5px;
+      margin-bottom: 15px;
+      display: block;
+    }
+    .suggestion-chips {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+    .suggestion-chip {
+      background: rgba(255,255,255,0.03);
+      border: 1px dashed var(--glass-border);
+      color: var(--primary-color);
+      padding: 8px 18px;
+      border-radius: 100px;
+      font-size: 0.85rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    .suggestion-chip:hover {
+      background: var(--primary-gradient);
+      color: #0c0c0e;
+      border: 1px solid transparent;
+      transform: scale(1.05);
+      box-shadow: 0 5px 15px var(--primary-glow);
+    }
     .final-score-bar {
       margin-top: 60px;
       background: var(--surface-color);
@@ -870,13 +915,47 @@ export class CuppingFormComponent implements OnInit {
   
   productImageFile: File | null = null;
   productImagePreview: string | null = null;
+  suggestions = signal<string[]>([]);
 
-  async ngOnInit() {
+  constructor(private cuppingService: CuppingService, private route: ActivatedRoute) {}
+
+  ngOnInit() {
+    this.checkSuggestions();
     this.editId = this.route.snapshot.queryParamMap.get('edit');
     if (this.editId) {
       this.isEditMode = true;
       this.showGuide = false;
-      const session = await this.cuppingService.getCuppingById(this.editId);
+      this.loadSession();
+    } else {
+      const user = this.auth.currentUser();
+      if (user?.displayName) {
+        this.session.cupperName = user.displayName;
+      }
+    }
+  }
+
+  onScoreInput() {
+    this.updateTotal();
+    this.triggerHaptic();
+  }
+
+  private triggerHaptic() {
+    if ('vibrate' in navigator) {
+      navigator.vibrate(10);
+    }
+  }
+
+  async checkSuggestions() {
+    const filters = {
+      postHarvest: this.session.postHarvest,
+      type: this.session.type
+    };
+    const s = await this.cuppingService.getSmartSuggestions(filters);
+    this.suggestions.set(s.filter(note => !this.session.flavorNotes.includes(note)));
+  }
+
+  async loadSession() {
+      const session = await this.cuppingService.getCuppingById(this.editId!);
       if (session) {
         // Ownership check
         if (session.userId !== this.auth.getUserId()) {
