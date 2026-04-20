@@ -12,14 +12,7 @@ import { routes } from './app.routes';
 import { provideClientHydration, withEventReplay } from '@angular/platform-browser';
 import { provideServiceWorker } from '@angular/service-worker';
 
-const firebaseConfig = {
-  projectId: "coffeescore-cupping-2024",
-  appId: "1:460876837418:web:0a9bd7f78677249402c953",
-  storageBucket: "coffeescore-cupping-2024.firebasestorage.app",
-  apiKey: "AIzaSyC2us3lAplvMGptl35GiGjMpE3YnSgxnZI",
-  authDomain: "coffeescore-cupping-2024.firebaseapp.com",
-  messagingSenderId: "460876837418"
-};
+import { environment } from '../environments/environment';
 
 export const appConfig: ApplicationConfig = {
   providers: [
@@ -27,7 +20,7 @@ export const appConfig: ApplicationConfig = {
     provideRouter(routes),
     provideFirebaseApp(() => {
       const apps = getApps();
-      return apps.length > 0 ? apps[0] : initializeApp(firebaseConfig);
+      return apps.length > 0 ? apps[0] : initializeApp(environment.firebase);
     }),
     provideAuth(() => getAuth()),
     provideFirestore(() => {
