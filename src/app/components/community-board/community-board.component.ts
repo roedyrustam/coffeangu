@@ -40,6 +40,32 @@ import { AuthService } from '../../services/auth.service';
         <div class="hero-visual"></div>
       </section>
 
+      <!-- FEATURED CUPPERS -->
+      <section class="featured-cuppers" *ngIf="topCuppers$ | async as cuppers">
+        <div class="section-header">
+           <h2 class="section-title">Global Experts</h2>
+           <span class="count-tag">{{ cuppers.length }} Active Professionals</span>
+        </div>
+        <div class="cuppers-scroll">
+          <div class="cupper-profile-card glass-card animate-fade" 
+               *ngFor="let cupper of cuppers; let i = index"
+               [style.animation-delay]="i * 0.1 + 's'"
+               [routerLink]="['/u', cupper.uid]">
+             <div class="cupper-avatar">
+               <img *ngIf="cupper.photoURL" [src]="cupper.photoURL" [alt]="cupper.displayName">
+               <span *ngIf="!cupper.photoURL">{{ cupper.displayName.charAt(0) }}</span>
+             </div>
+             <div class="cupper-meta">
+               <span class="cupper-name">{{ cupper.displayName }}</span>
+               <div class="cupper-level">
+                 <span class="lvl">LVL {{ cupper.level }}</span>
+                 <span class="stage">{{ cupper.avatarStage }}</span>
+               </div>
+             </div>
+          </div>
+        </div>
+      </section>
+
       <!-- SEARCH & FILTER BAR -->
       <div class="discovery-controls">
         <div class="search-box glass-card">
@@ -199,6 +225,23 @@ import { AuthService } from '../../services/auth.service';
     .stat-pill .lab { font-size: 0.75rem; font-weight: 800; text-transform: uppercase; color: var(--text-dim); letter-spacing: 1px; }
     .stat-pill.specialty { background: var(--primary-gradient); border: none; }
     .stat-pill.specialty .val, .stat-pill.specialty .lab { color: #0c0c0e; }
+
+    /* FEATURED CUPPERS STYLE */
+    .featured-cuppers { margin-bottom: 60px; }
+    .section-header { display: flex; align-items: center; gap: 20px; margin-bottom: 25px; }
+    .count-tag { font-size: 0.7rem; font-weight: 800; color: var(--primary-color); background: rgba(189, 142, 98, 0.1); padding: 4px 12px; border-radius: 6px; text-transform: uppercase; letter-spacing: 1px; }
+    .cuppers-scroll { display: flex; gap: 15px; overflow-x: auto; padding-bottom: 20px; scroll-snap-type: x mandatory; -webkit-overflow-scrolling: touch; }
+    .cuppers-scroll::-webkit-scrollbar { display: none; }
+    .cupper-profile-card { flex: 0 0 220px; padding: 20px; display: flex; align-items: center; gap: 15px; cursor: pointer; transition: all 0.4s; scroll-snap-align: start; }
+    .cupper-profile-card:hover { transform: translateY(-5px); border-color: var(--primary-color); background: var(--surface-hover); }
+    .cupper-avatar { width: 50px; height: 50px; border-radius: 16px; background: var(--primary-gradient); display: flex; align-items: center; justify-content: center; overflow: hidden; border: 1px solid var(--glass-border); }
+    .cupper-avatar img { width: 100%; height: 100%; object-fit: cover; }
+    .cupper-avatar span { font-weight: 900; color: #0c0c0e; font-size: 1.2rem; }
+    .cupper-meta { display: flex; flex-direction: column; }
+    .cupper-name { font-size: 0.95rem; font-weight: 800; color: var(--text-main); margin-bottom: 4px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 120px; }
+    .cupper-level { display: flex; gap: 8px; align-items: center; font-size: 0.65rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.5px; }
+    .cupper-level .lvl { color: var(--primary-color); }
+    .cupper-level .stage { color: var(--text-dim); opacity: 0.6; }
 
     /* CONTROLS STYLES */
     .discovery-controls {
@@ -450,6 +493,8 @@ export class CommunityBoardComponent implements OnInit {
   activeProcess = signal<string>('all');
   sortBy: 'timestamp' | 'finalScore' | 'likesCount' = 'timestamp';
   processes = ['Wash', 'Natural', 'Honey', 'Anaerobic'];
+
+  topCuppers$ = this.cuppingService.getPublicProfiles(12);
 
   private refreshTrigger = new BehaviorSubject<void>(undefined);
 

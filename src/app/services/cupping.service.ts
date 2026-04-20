@@ -29,6 +29,11 @@ export class CuppingService {
     });
   }
 
+  getPublicProfiles(limitCount: number = 10): Observable<UserProfile[]> {
+    const q = query(this.profilesCollection, orderBy('xp', 'desc'), limit(limitCount));
+    return collectionData(q, { idField: 'uid' }) as Observable<UserProfile[]>;
+  }
+
   async ensureUserProfile(userId: string, displayName: string, photoURL?: string) {
     const docRef = doc(this.firestore, 'profiles', userId);
     const snap = await getDoc(docRef);
