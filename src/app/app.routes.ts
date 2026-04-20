@@ -15,6 +15,7 @@ export const routes: Routes = [
   { path: 'community', component: CommunityBoardComponent },
   { path: 'result/:id', component: CuppingResultComponent, canActivate: [authGuard] },
   { path: 'profile', component: ProfileComponent, canActivate: [authGuard] },
+  { path: 'pricing', loadComponent: () => import('./components/pricing/pricing.component').then(m => m.PricingComponent) },
   { path: 'u/:id', component: PublicProfileComponent },
   { path: '**', redirectTo: '' }
 ];

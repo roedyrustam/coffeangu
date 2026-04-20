@@ -17,6 +17,8 @@ export interface UserProfile {
   level: number;
   badges: Badge[];
   avatarStage: AvatarStage;
+  membership: 'classic' | 'pro' | 'roastery';
+  subscriptionExpiry?: any;
   updatedAt: any;
 }
 

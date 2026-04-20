@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { RouterLink, Router } from '@angular/router';
 import { CuppingService } from '../../services/cupping.service';
 import { AuthService } from '../../services/auth.service';
+import { MembershipService, TierDetails } from '../../services/membership.service';
 import { TranslationService } from '../../services/translation.service';
 import { CuppingSession } from '../../models/cupping.model';
 import { Observable, BehaviorSubject, combineLatest } from 'rxjs';
@@ -19,7 +20,7 @@ Chart.register(RadarController, RadialLinearScale, PointElement, LineElement, Fi
   standalone: true,
   imports: [CommonModule, RouterLink, FormsModule, SensoryAvatarComponent],
   template: `
-    <div class="profile-container animate-fade">
+    <div class="profile-container animate-fade" *ngIf="membership$ | async as tier">
       <!-- Tab Control -->
       <div class="tab-control">
         <button [class.active]="activeTab() === 'history'" (click)="activeTab.set('history')">
@@ -52,9 +53,18 @@ Chart.register(RadarController, RadialLinearScale, PointElement, LineElement, Fi
               <h1 class="brand-font">{{ auth.currentUser()?.displayName }}</h1>
               <p class="email">{{ auth.currentUser()?.email }}</p>
               
-              <!-- New Sensory Avatar Integration -->
               <app-sensory-avatar *ngIf="profile$ | async as profile" [profile]="profile"></app-sensory-avatar>
             </div>
+          </div>
+
+          <div class="membership-status">
+            <div class="tier-pill" [style.border-color]="tier.color" [style.color]="tier.color">
+               <span class="dot" [style.background]="tier.color"></span>
+               {{ tier.name }}
+            </div>
+            <button class="upgrade-link" routerLink="/pricing" *ngIf="tier.id === 'classic'">
+               Upgrade to Pro
+            </button>
           </div>
 
           <div class="stats-area" *ngIf="stats$ | async as stats">
@@ -96,7 +106,12 @@ Chart.register(RadarController, RadialLinearScale, PointElement, LineElement, Fi
         <div class="history-view" *ngIf="activeTab() === 'history'">
           <div class="section-title-row" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 40px;">
             <h2 class="section-title" style="margin-bottom: 0;">{{ t('PERSONAL_HISTORY') }}</h2>
-            <button class="btn-secondary" (click)="downloadHistory()" *ngIf="(cuppings$ | async)?.length" style="padding: 8px 15px; font-size: 0.75rem;">
+            <button [class.btn-secondary]="tier.id !== 'classic'" 
+                    [class.btn-locked]="tier.id === 'classic'"
+                    (click)="tier.id === 'classic' ? showUpgradeNotice() : downloadHistory()" 
+                    *ngIf="(cuppings$ | async)?.length" 
+                    style="padding: 8px 15px; font-size: 0.75rem; position: relative;">
+               <span *ngIf="tier.id === 'classic'">🔒 </span>
                📥 Export CSV
             </button>
           </div>
@@ -347,6 +362,12 @@ Chart.register(RadarController, RadialLinearScale, PointElement, LineElement, Fi
     .stat-card .val { font-size: 2.2rem; font-weight: 900; color: var(--primary-color); font-family: var(--font-brand); text-shadow: 0 5px 15px rgba(0,0,0,0.5); }
     .stat-card .lab { font-size: 0.7rem; font-weight: 800; text-transform: uppercase; color: var(--text-main); opacity: 0.6; letter-spacing: 1px; }
 
+    .membership-status { display: flex; flex-direction: column; align-items: flex-end; gap: 10px; }
+    .tier-pill { display: flex; align-items: center; gap: 8px; padding: 6px 15px; border-radius: 100px; border: 1px solid var(--glass-border); font-size: 0.7rem; font-weight: 800; text-transform: uppercase; letter-spacing: 1px; }
+    .tier-pill .dot { width: 6px; height: 6px; border-radius: 50%; }
+    .upgrade-link { background: transparent; border: none; color: var(--primary-color); font-size: 0.75rem; font-weight: 800; cursor: pointer; text-decoration: underline; text-underline-offset: 4px; }
+    .upgrade-link:hover { color: var(--text-main); }
+
     .feed-section { margin-top: 50px; }
     .section-title { font-size: 2rem; margin-bottom: 40px; font-weight: 800; position: relative; display: inline-block; }
     .section-title::after {
@@ -407,6 +428,8 @@ Chart.register(RadarController, RadialLinearScale, PointElement, LineElement, Fi
     }
     .btn-icon:hover.edit { color: var(--primary-color); border-color: var(--primary-color); }
     .btn-icon:hover.delete { color: var(--danger); border-color: var(--danger); }
+    .btn-locked { background: rgba(255,255,255,0.03); color: var(--text-dim); border: 1px solid var(--glass-border); cursor: not-allowed; }
+    .btn-locked:hover { background: rgba(255,255,255,0.05); }
 
     .empty-state { text-align: center; padding: 100px; }
     .empty-icon { font-size: 4rem; opacity: 0.2; margin-bottom: 20px; }
@@ -478,9 +501,12 @@ Chart.register(RadarController, RadialLinearScale, PointElement, LineElement, Fi
 export class ProfileComponent implements OnInit {
   protected auth = inject(AuthService);
   private cuppingService = inject(CuppingService);
+  private membershipService = inject(MembershipService);
   private ts = inject(TranslationService);
   private router = inject(Router);
   protected t = this.ts.t();
+  
+  membership$: Observable<TierDetails | null> = this.membershipService.getCurrentMembership();
 
   private refreshTrigger = new BehaviorSubject<void>(undefined);
   
@@ -698,5 +724,11 @@ export class ProfileComponent implements OnInit {
   async logout() {
      await this.auth.logout();
      this.router.navigate(['/login']);
+  }
+
+  showUpgradeNotice() {
+    if (confirm('🔒 Custom Export logic is only available for Pro members. Would you like to view our premium plans?')) {
+      this.router.navigate(['/pricing']);
+    }
   }
 }

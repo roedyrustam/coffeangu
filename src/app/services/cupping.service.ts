@@ -96,6 +96,7 @@ export class CuppingService {
         level: 1,
         badges: [],
         avatarStage: 'seedling',
+        membership: 'classic',
         updatedAt: new Date()
       };
       await setDoc(docRef, newProfile);

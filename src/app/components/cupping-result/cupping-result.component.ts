@@ -7,6 +7,7 @@ import { CuppingService } from '../../services/cupping.service';
 import { TranslationService } from '../../services/translation.service';
 import { CuppingSession } from '../../models/cupping.model';
 import html2canvas from 'html2canvas';
+import { MembershipService } from '../../services/membership.service';
 import { Chart, RadarController, RadialLinearScale, PointElement, LineElement, Filler, Tooltip, Legend } from 'chart.js';
 
 Chart.register(RadarController, RadialLinearScale, PointElement, LineElement, Filler, Tooltip, Legend);
@@ -121,10 +122,14 @@ Chart.register(RadarController, RadialLinearScale, PointElement, LineElement, Fi
         </section>
 
         <footer class="actions">
-          <div class="template-selector">
+          <div class="template-selector" *ngIf="membership$ | async as tier">
              <span>Template:</span>
              <button (click)="setTheme('obsidian')" [class.active]="selectedTheme() === 'obsidian'">Obsidian</button>
-             <button (click)="setTheme('radiant')" [class.active]="selectedTheme() === 'radiant'">Radiant</button>
+             <button (click)="setTheme('radiant')" 
+                     [class.active]="selectedTheme() === 'radiant'"
+                     [class.locked-theme]="tier.id === 'classic'">
+               <span *ngIf="tier.id === 'classic'">🔒 </span>Radiant
+             </button>
           </div>
           <div class="share-options" *ngIf="session.isPublic">
              <span class="share-hint">Sharing technical assessment to {{ t('NAV_COMMUNITY') }}</span>
@@ -498,6 +503,9 @@ export class CuppingResultComponent implements OnInit, AfterViewInit {
   sensoryItems: any[] = [];
   generatingScreenshot = false;
   auth = inject(AuthService);
+  private membershipService = inject(MembershipService);
+  private router = inject(Router);
+  membership$ = this.membershipService.getCurrentMembership();
   selectedTheme = signal<'obsidian' | 'radiant'>('obsidian');
 
   isLiked() {
@@ -511,8 +519,19 @@ export class CuppingResultComponent implements OnInit, AfterViewInit {
   }
 
   setTheme(theme: 'obsidian' | 'radiant') {
+    if (theme === 'radiant') {
+      this.membership$.subscribe(m => {
+        if (m && m.id !== 'classic') {
+          this.selectedTheme.set(theme);
+        } else {
+          if (confirm('🔒 Radiant Theme is a Pro feature. Upgrade to unlock?')) {
+            this.router.navigate(['/pricing']);
+          }
+        }
+      }).unsubscribe();
+      return;
+    }
     this.selectedTheme.set(theme);
-    // Re-initialize chart to match theme colors if needed (optional)
   }
 
   async toggleLike() {
