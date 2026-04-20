@@ -1,4 +1,4 @@
-# ☕ CaffeeScore v1.2.0
+# ☕ CaffeeScore v1.3.0
 
 CaffeeScore is a premium, enterprise-grade digital cupping form designed to modernize the specialty coffee evaluation process. Completely replacing standard paper workflows, it enforces the strict guidelines of the **SCA 2025 Coffee Value Assessment (CVA)** protocol while operating seamlessly across all devices with real-time community interaction.
 
@@ -40,7 +40,7 @@ For deep-dive architecture reading and system objectives:
 - [PRD.md](./PRD.md) - Product Requirements & Business Vision 
 
 ## 🛠 Required Technologies
-- Angular 19
+- Angular 21
 - Firebase V11 (Firestore DB)
 - Chart.js (Radar component)
 - html2canvas (Image generation)

@@ -1,10 +1,10 @@
-# CaffeeScore v1.2.0 Blueprint
+# CaffeeScore v1.3.0 Blueprint
 
 ## 1. System Architecture
-CaffeeScore is a modern web application built on **Angular 19** utilizing Server-Side Rendering (SSR) optionally, but fundamentally designed as an **Offline-First Progressive Web App (PWA)**. 
+CaffeeScore is a modern web application built on **Angular 21** utilizing Server-Side Rendering (SSR) optionally, but fundamentally designed as an **Offline-First Progressive Web App (PWA)**. 
 
 ### Core Tech Stack:
-- **Framework**: Angular 19 (Standalone Components)
+- **Framework**: Angular 21 (Standalone Components)
 - **Styling**: Pure CSS3 variables with the **2026 Obsidian & Radiant Ember** design system.
 - **Backend/Database**: Firebase V11 (Firestore & Storage)
 - **Authentication**: Firebase Auth (Google Redirect for Mobile, Pop-up for Desktop)
@@ -31,7 +31,8 @@ CaffeeScore/
 │   ├── styles.css           # Global Design System (Color Tokens, Mesh Glows)
 │   └── index.html
 ├── ngsw-config.json         # Service Worker aggressive caching rules
-└── package.json             # Core dependency map (v1.2.0)
+├── .npmrc                  # Dependency resolution rules (legacy-peer-deps)
+└── package.json             # Core dependency map (v1.3.0)
 ```
 
 ## 3. Data Flow Model
