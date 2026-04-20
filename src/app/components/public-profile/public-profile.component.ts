@@ -131,7 +131,7 @@ Chart.register(RadarController, RadialLinearScale, PointElement, LineElement, Fi
     .section-label { font-size: 0.7rem; font-weight: 800; text-transform: uppercase; color: var(--primary-color); letter-spacing: 2px; }
     .numeric-stats { display: flex; flex-direction: column; gap: 15px; }
     .stat-card { background: rgba(12, 12, 14, 0.5); padding: 22px 35px; border-radius: 24px; display: flex; flex-direction: column; align-items: center; min-width: 150px; backdrop-filter: blur(20px); border: 1px solid var(--glass-border); }
-    .stat-card .val { font-size: 2.5rem; font-weight: 900; color: var(--primary-color); font-family: 'Playfair Display', serif; }
+    .stat-card .val { font-size: 2.5rem; font-weight: 900; color: var(--primary-color); font-family: var(--font-brand); }
     .stat-card .lab { font-size: 0.65rem; font-weight: 800; text-transform: uppercase; color: var(--text-dim); letter-spacing: 1px; }
 
     .badges-gallery { margin-bottom: 80px; }
@@ -151,7 +151,7 @@ Chart.register(RadarController, RadialLinearScale, PointElement, LineElement, Fi
     .bean-name { font-size: 1.5rem; font-weight: 800; color: var(--text-main); margin-bottom: 4px; }
     .history-card .roastery { font-size: 0.85rem; color: var(--text-dim); text-transform: uppercase; letter-spacing: 1.5px; margin-bottom: 10px; }
     .card-meta { display: flex; gap: 10px; font-size: 0.8rem; font-weight: 700; color: var(--primary-color); align-items: center; }
-    .score-badge { background: var(--surface-hover); width: 75px; height: 75px; display: flex; align-items: center; justify-content: center; border-radius: 20px; font-size: 1.8rem; font-weight: 950; font-family: 'Playfair Display', serif; border: 1px solid var(--glass-border); }
+    .score-badge { background: var(--surface-hover); width: 75px; height: 75px; display: flex; align-items: center; justify-content: center; border-radius: 20px; font-size: 1.8rem; font-weight: 950; font-family: var(--font-brand); border: 1px solid var(--glass-border); }
     .score-badge.specialty { background: var(--primary-gradient); color: #0c0c0e; border: none; box-shadow: 0 10px 25px var(--primary-glow); }
 
     .full-loading { display: flex; flex-direction: column; align-items: center; justify-content: center; height: 60vh; gap: 20px; color: var(--text-dim); letter-spacing: 2px; text-transform: uppercase; font-size: 0.8rem; font-weight: 800; }
@@ -245,7 +245,7 @@ export class PublicProfileComponent implements OnInit {
             grid: { color: 'rgba(255, 255, 255, 0.05)' },
             suggestedMin: 6,
             suggestedMax: 10,
-            pointLabels: { color: 'rgba(255,255,255,0.4)', font: { size: 9, weight: 'bold' } },
+            pointLabels: { color: 'rgba(255,255,255,0.4)', font: { size: 9, weight: 'bold', family: "'Poppins', sans-serif" } },
             ticks: { display: false }
           }
         },

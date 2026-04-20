@@ -500,7 +500,7 @@ import { DynamicFlavorWheelComponent } from '../flavor-wheel/flavor-wheel.compon
       font-size: 1.6rem;
       font-weight: 900;
       color: var(--primary-color);
-      font-family: 'Playfair Display', serif;
+      font-family: var(--font-brand);
     }
     .btn-step {
       background: var(--surface-hover);
@@ -751,7 +751,7 @@ import { DynamicFlavorWheelComponent } from '../flavor-wheel/flavor-wheel.compon
     .final-score-bar .final-value {
       font-size: 4rem;
       font-weight: 950;
-      font-family: 'Playfair Display', serif;
+      font-family: var(--font-brand);
       color: var(--primary-color);
       line-height: 1;
     }

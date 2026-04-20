@@ -221,7 +221,7 @@ Chart.register(RadarController, RadialLinearScale, PointElement, LineElement, Fi
       font-size: 5rem;
       font-weight: 950;
       color: #0c0c0e;
-      font-family: 'Playfair Display', serif;
+      font-family: var(--font-brand);
       line-height: 1;
     }
     .rating-label {
@@ -643,7 +643,7 @@ export class CuppingResultComponent implements OnInit, AfterViewInit {
               font: {
                 size: 12,
                 weight: 'bold',
-                family: "'Outfit', sans-serif"
+                family: "'Poppins', sans-serif"
               }
             },
             ticks: {

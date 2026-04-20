@@ -329,7 +329,7 @@ Chart.register(RadarController, RadialLinearScale, PointElement, LineElement, Fi
       min-width: 140px;
       backdrop-filter: blur(10px);
     }
-    .stat-card .val { font-size: 2.2rem; font-weight: 900; color: var(--primary-color); font-family: 'Playfair Display', serif; text-shadow: 0 5px 15px rgba(0,0,0,0.5); }
+    .stat-card .val { font-size: 2.2rem; font-weight: 900; color: var(--primary-color); font-family: var(--font-brand); text-shadow: 0 5px 15px rgba(0,0,0,0.5); }
     .stat-card .lab { font-size: 0.7rem; font-weight: 800; text-transform: uppercase; color: var(--text-main); opacity: 0.6; letter-spacing: 1px; }
 
     .feed-section { margin-top: 50px; }
@@ -372,7 +372,7 @@ Chart.register(RadarController, RadialLinearScale, PointElement, LineElement, Fi
       border-radius: 18px;
       font-size: 1.6rem;
       font-weight: 950;
-      font-family: 'Playfair Display', serif;
+      font-family: var(--font-brand);
       border: 1px solid var(--glass-border);
     }
     .score-badge.specialty { background: var(--primary-gradient); color: #0c0c0e; border: none; box-shadow: 0 8px 20px var(--primary-glow); }

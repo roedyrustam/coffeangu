@@ -195,7 +195,7 @@ import { AuthService } from '../../services/auth.service';
       display: flex;
       flex-direction: column;
     }
-    .stat-pill .val { font-size: 2.2rem; font-weight: 900; color: var(--primary-color); font-family: 'Playfair Display', serif; }
+    .stat-pill .val { font-size: 2.2rem; font-weight: 900; color: var(--primary-color); font-family: var(--font-brand); }
     .stat-pill .lab { font-size: 0.75rem; font-weight: 800; text-transform: uppercase; color: var(--text-dim); letter-spacing: 1px; }
     .stat-pill.specialty { background: var(--primary-gradient); border: none; }
     .stat-pill.specialty .val, .stat-pill.specialty .lab { color: #0c0c0e; }
@@ -313,7 +313,7 @@ import { AuthService } from '../../services/auth.service';
       border: 1px solid var(--glass-border);
     }
     .score-display.specialty { background: var(--primary-gradient); border: none; }
-    .score-display .num { font-size: 1.3rem; font-weight: 950; color: var(--text-main); font-family: 'Playfair Display', serif; }
+    .score-display .num { font-size: 1.3rem; font-weight: 950; color: var(--text-main); font-family: var(--font-brand); }
     .score-display.specialty .num { color: #0c0c0e; }
 
     .sensory-strip { display: flex; gap: 15px; z-index: 1; }

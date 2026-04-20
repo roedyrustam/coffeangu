@@ -222,7 +222,7 @@ import { CuppingSession } from '../../models/cupping.model';
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
       margin-top: 10px;
-      font-family: 'Playfair Display', serif;
+      font-family: var(--font-brand);
     }
     .section-header {
       display: flex;
@@ -342,7 +342,7 @@ import { CuppingSession } from '../../models/cupping.model';
     .session-score {
       font-size: 2.2rem;
       font-weight: 900;
-      font-family: 'Playfair Display', serif;
+      font-family: var(--font-brand);
       color: var(--primary-color);
     }
     .high-score {
