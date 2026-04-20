@@ -170,6 +170,13 @@ Chart.register(RadarController, RadialLinearScale, PointElement, LineElement, Fi
           </div>
         </div>
       </div>
+
+      <div class="profile-actions" style="margin-top: 80px; padding-top: 40px; border-top: 1px solid var(--glass-border); text-align: center;">
+         <button class="btn-danger" (click)="logout()" style="padding: 18px 60px; font-size: 1rem; letter-spacing: 2px;">
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: middle; margin-right: 10px;"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+            {{ t('BTN_LOGOUT') }}
+         </button>
+      </div>
     </div>
   `,
   styles: [`
@@ -540,5 +547,10 @@ export class ProfileComponent implements OnInit {
       console.error(e);
       alert('Failed to delete session.');
     }
+  }
+
+  async logout() {
+     await this.auth.logout();
+     this.router.navigate(['/login']);
   }
 }

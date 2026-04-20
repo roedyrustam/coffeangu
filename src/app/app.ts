@@ -1,5 +1,5 @@
 import { Component, inject, signal } from '@angular/core';
-import { RouterOutlet, RouterLink, RouterLinkActive } from '@angular/router';
+import { RouterOutlet, RouterLink, RouterLinkActive, Router } from '@angular/router';
 import { TranslationService } from './services/translation.service';
 import { AuthService } from './services/auth.service';
 import { CommonModule } from '@angular/common';
@@ -77,6 +77,10 @@ import { CommonModule } from '@angular/common';
         <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
         <span>{{ auth.currentUser() ? 'Profile' : t('BTN_LOGIN') }}</span>
       </a>
+      <button *ngIf="auth.currentUser()" (click)="onLogout()" class="bottom-nav-link logout-trigger">
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+        <span>{{ t('BTN_LOGOUT') }}</span>
+      </button>
     </nav>
 
     <footer class="main-footer">
@@ -224,6 +228,13 @@ import { CommonModule } from '@angular/common';
       transform: translateY(-2px);
       stroke: var(--primary-color);
     }
+    .logout-trigger {
+       background: transparent;
+       border: none;
+       padding: 0;
+       cursor: pointer;
+    }
+    .logout-trigger svg { color: var(--danger); }
     .main-footer {
       height: 100px;
       display: flex;
@@ -360,6 +371,12 @@ import { CommonModule } from '@angular/common';
 export class App {
   ts = inject(TranslationService);
   auth = inject(AuthService);
+  router = inject(Router);
   t = this.ts.t();
   showUserMenu = signal(false);
+
+  async onLogout() {
+    await this.auth.logout();
+    this.router.navigate(['/login']);
+  }
 }
