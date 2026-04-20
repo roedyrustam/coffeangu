@@ -210,7 +210,7 @@ import { DynamicFlavorWheelComponent } from '../flavor-wheel/flavor-wheel.compon
             </div>
           </section>
 
-          <section class="form-section">
+          <section class="form-section visibility-section">
             <h3 class="section-title">Visibility & Community</h3>
             <div class="form-options" style="margin: 0; padding: 0; border: none;">
               <label class="checkbox-container">
@@ -324,7 +324,7 @@ import { DynamicFlavorWheelComponent } from '../flavor-wheel/flavor-wheel.compon
     .form-container {
       max-width: 800px;
       margin: 0 auto;
-      padding-bottom: 300px;
+      padding-bottom: 350px;
     }
     .form-header {
       margin-bottom: 30px;
@@ -694,7 +694,7 @@ import { DynamicFlavorWheelComponent } from '../flavor-wheel/flavor-wheel.compon
     }
     .form-sticky-actions {
       position: fixed;
-      bottom: 120px;
+      bottom: 92px;
       left: 15px;
       right: 15px;
       max-width: 770px;
@@ -734,7 +734,10 @@ import { DynamicFlavorWheelComponent } from '../flavor-wheel/flavor-wheel.compon
     @media (max-width: 640px) {
       .form-section { padding: 25px; }
       .header-content h2 { font-size: 2rem; }
-      .form-sticky-actions { bottom: 105px; }
+      .form-sticky-actions { bottom: 85px; }
+    }
+    .visibility-section {
+       margin-bottom: 250px;
     }
     .final-score-bar.specialty {
       background: var(--primary-gradient) !important;
@@ -801,10 +804,11 @@ import { DynamicFlavorWheelComponent } from '../flavor-wheel/flavor-wheel.compon
       height: 28px;
       width: 28px;
       background-color: var(--surface-hover);
-      border: 2px solid var(--glass-border);
+      border: 2px solid rgba(255,255,255,0.4);
       border-radius: 8px;
       position: relative;
       transition: all 0.3s;
+      box-shadow: 0 0 15px rgba(0,0,0,0.5);
     }
     .checkmark:after {
       content: "";
