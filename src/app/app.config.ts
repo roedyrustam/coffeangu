@@ -4,6 +4,9 @@ import { provideFirebaseApp, initializeApp, getApp } from '@angular/fire/app';
 import { provideAuth, getAuth } from '@angular/fire/auth';
 import { provideFirestore, initializeFirestore, persistentLocalCache, persistentMultipleTabManager } from '@angular/fire/firestore';
 import { provideStorage, getStorage } from '@angular/fire/storage';
+import { getApps } from 'firebase/app';
+import { PLATFORM_ID, inject } from '@angular/core';
+import { isPlatformBrowser } from '@angular/common';
 
 import { routes } from './app.routes';
 import { provideClientHydration, withEventReplay } from '@angular/platform-browser';
@@ -22,13 +25,21 @@ export const appConfig: ApplicationConfig = {
   providers: [
     provideZoneChangeDetection({ eventCoalescing: true }),
     provideRouter(routes),
-    provideFirebaseApp(() => initializeApp(firebaseConfig)),
+    provideFirebaseApp(() => {
+      const apps = getApps();
+      return apps.length > 0 ? apps[0] : initializeApp(firebaseConfig);
+    }),
     provideAuth(() => getAuth()),
     provideFirestore(() => {
+      const platformId = inject(PLATFORM_ID);
       const app = getApp();
-      return initializeFirestore(app, {
-        localCache: persistentLocalCache({ tabManager: persistentMultipleTabManager() })
-      });
+      if (isPlatformBrowser(platformId)) {
+        return initializeFirestore(app, {
+          localCache: persistentLocalCache({ tabManager: persistentMultipleTabManager() })
+        });
+      } else {
+        return initializeFirestore(app, {});
+      }
     }),
     provideStorage(() => getStorage()),
     provideClientHydration(withEventReplay()), provideServiceWorker('ngsw-worker.js', {

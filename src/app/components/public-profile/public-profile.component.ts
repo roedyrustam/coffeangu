@@ -5,7 +5,7 @@ import { CuppingService } from '../../services/cupping.service';
 import { TranslationService } from '../../services/translation.service';
 import { CuppingSession } from '../../models/cupping.model';
 import { Observable, of } from 'rxjs';
-import { map, switchMap, catchError } from 'rxjs/operators';
+import { map, switchMap, catchError, tap } from 'rxjs/operators';
 import { UserProfile } from '../../models/user-profile.model';
 import { SensoryAvatarComponent } from '../sensory-avatar/sensory-avatar.component';
 import { Chart, RadarController, RadialLinearScale, PointElement, LineElement, Filler, Tooltip, Legend } from 'chart.js';
@@ -205,7 +205,7 @@ export class PublicProfileComponent implements OnInit {
 
         return { total: sessions.length, avg, averages };
       }),
-      tap(stats => {
+      tap((stats: any) => {
         if (stats.total > 0) {
           setTimeout(() => this.initSignatureChart(stats.averages), 0);
         }
