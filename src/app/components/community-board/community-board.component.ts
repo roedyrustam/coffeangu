@@ -84,8 +84,16 @@ import { AuthService } from '../../services/auth.service';
               <h3>{{ session.beanName }}</h3>
               <p class="roastery">{{ session.roastery }}</p>
             </div>
-            <div class="score-display" [class.specialty]="session.finalScore >= 80">
+            <div class="score-display" [class.specialty]="session.finalScore >= 80" [class.specialty-pulse]="session.finalScore >= 85">
               <span class="num">{{ session.finalScore | number:'1.1-1' }}</span>
+            </div>
+          </div>
+
+          <div class="session-performance">
+            <div class="mini-sensory">
+               <div class="mini-bar" [style.height.%]="(session.scores?.flavor - 6) * 25" [style.background]="getBarColor(session.scores?.flavor)" title="Flavor"></div>
+               <div class="mini-bar" [style.height.%]="(session.scores?.acidity - 6) * 25" [style.background]="getBarColor(session.scores?.acidity)" title="Acidity"></div>
+               <div class="mini-bar" [style.height.%]="(session.scores?.body - 6) * 25" [style.background]="getBarColor(session.scores?.body)" title="Body"></div>
             </div>
           </div>
 
@@ -115,13 +123,20 @@ import { AuthService } from '../../services/auth.service';
               <span class="name">{{ session.cupperName || 'Anonymous Cupper' }}</span>
             </div>
             <div class="social-stats">
+              <div class="stat-item save-btn" 
+                   [class.saved]="hasSaved(session)"
+                   (click)="$event.stopPropagation(); toggleSave(session)">
+                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" [attr.fill]="hasSaved(session) ? 'var(--primary-color)' : 'none'" [attr.stroke]="hasSaved(session) ? 'var(--primary-color)' : 'currentColor'" stroke-width="2" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="m19 21-7-4-7 4V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v16z"></path>
+                </svg>
+              </div>
               <div class="stat-item like-btn" 
                    [class.liked]="hasLiked(session)" 
                    (click)="$event.stopPropagation(); toggleLike(session)">
                 <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" [attr.fill]="hasLiked(session) ? 'var(--danger)' : 'none'" [attr.stroke]="hasLiked(session) ? 'var(--danger)' : 'currentColor'" stroke-width="2" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round">
                   <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l8.84-8.84 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
                 </svg>
-                <span>{{ session.likesCount || 0 }}</span>
+                <span class="count">{{ session.likesCount || 0 }}</span>
               </div>
             </div>
           </footer>
@@ -344,6 +359,30 @@ import { AuthService } from '../../services/auth.service';
     .like-btn.liked { color: var(--danger); }
     .like-btn svg { transition: transform 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
     .like-btn:active svg { transform: scale(1.4); }
+
+    .save-btn { cursor: pointer; padding: 5px; border-radius: 8px; }
+    .save-btn:hover { background: rgba(189, 142, 98, 0.1); }
+    .save-btn.saved { color: var(--primary-color); }
+    
+    .session-performance {
+      background: rgba(0,0,0,0.2);
+      padding: 10px 15px;
+      border-radius: 12px;
+      border: 1px solid var(--glass-border);
+    }
+    .mini-sensory {
+      display: flex;
+      align-items: flex-end;
+      gap: 8px;
+      height: 30px;
+    }
+    .mini-bar {
+      width: 10px;
+      border-radius: 3px 3px 0 0;
+      opacity: 0.6;
+      transition: all 0.4s;
+    }
+    .cupping-card:hover .mini-bar { opacity: 1; }
     
     .empty-state { text-align: center; padding: 100px; grid-column: 1 / -1; }
     .empty-icon { font-size: 4rem; margin-bottom: 20px; opacity: 0.3; }
@@ -439,9 +478,30 @@ export class CommunityBoardComponent implements OnInit {
     this.cuppingService.toggleLike(session.id, userId, isLiked);
   }
 
+  toggleSave(session: CuppingSession) {
+    const userId = this.auth.getUserId();
+    if (!userId || !session.id) return;
+    
+    const isSaved = this.hasSaved(session);
+    this.cuppingService.toggleSave(session.id, userId, isSaved);
+  }
+
   hasLiked(session: CuppingSession): boolean {
     const userId = this.auth.getUserId();
     if (!userId) return false;
     return !!session.likedBy?.includes(userId);
+  }
+
+  hasSaved(session: CuppingSession): boolean {
+    const userId = this.auth.getUserId();
+    if (!userId) return false;
+    return !!session.savedBy?.includes(userId);
+  }
+
+  getBarColor(val: number) {
+    if (!val) return 'var(--text-dim)';
+    if (val >= 8) return 'var(--accent-neon)';
+    if (val >= 7) return 'var(--primary-color)';
+    return 'var(--text-dim)';
   }
 }

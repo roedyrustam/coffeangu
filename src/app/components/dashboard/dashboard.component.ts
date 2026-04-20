@@ -225,6 +225,7 @@ import { CuppingSession } from '../../models/cupping.model';
       border: 1px solid var(--glass-border);
       transition: all 0.5s cubic-bezier(0.16, 1, 0.3, 1);
     }
+    .session-item:hover {
       box-shadow: 0 20px 50px rgba(0,0,0,0.5);
     }
     .session-image {
