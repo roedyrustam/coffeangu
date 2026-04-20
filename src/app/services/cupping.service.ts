@@ -1,5 +1,5 @@
 import { Injectable, inject } from '@angular/core';
-import { Firestore, collection, collectionData, addDoc, query, orderBy, limit, doc, getDoc, updateDoc, where, increment, arrayUnion, deleteDoc } from '@angular/fire/firestore';
+import { Firestore, collection, collectionData, addDoc, query, orderBy, limit, doc, getDoc, updateDoc, where, increment, arrayUnion, deleteDoc, QueryConstraint } from '@angular/fire/firestore';
 import { Storage, ref, uploadBytes, getDownloadURL, deleteObject } from '@angular/fire/storage';
 import { Observable, of } from 'rxjs';
 import { CuppingSession } from '../models/cupping.model';
@@ -37,7 +37,7 @@ export class CuppingService {
     order?: 'asc' | 'desc',
     limit?: number
   }): Observable<CuppingSession[]> {
-    let constraints = [where('isPublic', '==', true)];
+    let constraints: QueryConstraint[] = [where('isPublic', '==', true)];
     
     if (options?.process) {
       constraints.push(where('postHarvest', '==', options.process));

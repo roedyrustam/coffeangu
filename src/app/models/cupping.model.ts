@@ -22,7 +22,7 @@ export interface CuppingSession {
   brewMethod: string;
   cupperName: string;
   shareImageUrl?: string;
-  intensities: {
+  intensities?: {
     acidity: number; // 1-10 intensity
     body: number; // 1-10 intensity
     sweetness: number; // 1-10 intensity

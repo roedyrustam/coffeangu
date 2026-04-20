@@ -671,7 +671,11 @@ export class CuppingFormComponent implements OnInit {
 
   isEditMode = false;
   editId: string | null = null;
-
+  
+  showGuide = true;
+  loading = false;
+  isScanning = false;
+  scannerStatus = '';
   showFlavorPicker = false;
 
   async ngOnInit() {

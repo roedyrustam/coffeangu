@@ -5,8 +5,8 @@ import { FormsModule } from '@angular/forms';
 import { CuppingService } from '../../services/cupping.service';
 import { CuppingSession } from '../../models/cupping.model';
 import { TranslationService } from '../../services/translation.service';
-import { BehaviorSubject, combineLatest, Observable } from 'rxjs';
-import { map, switchMap, debounceTime, startWith } from 'rxjs/operators';
+import { BehaviorSubject, combineLatest, Observable, of } from 'rxjs';
+import { map, switchMap, debounceTime, startWith, catchError } from 'rxjs/operators';
 
 @Component({
   selector: 'app-community-board',
@@ -86,15 +86,15 @@ import { map, switchMap, debounceTime, startWith } from 'rxjs/operators';
           <div class="sensory-strip">
             <div class="sensory-badge" title="Acidity">
               <span class="icon">🍋</span>
-              <span>{{ session.intensities.acidity }}</span>
+              <span>{{ session.intensities?.acidity || '-' }}</span>
             </div>
             <div class="sensory-badge" title="Body">
               <span class="icon">🥃</span>
-              <span>{{ session.intensities.body }}</span>
+              <span>{{ session.intensities?.body || '-' }}</span>
             </div>
             <div class="sensory-badge" title="Sweetness">
               <span class="icon">🍯</span>
-              <span>{{ session.intensities.sweetness }}</span>
+              <span>{{ session.intensities?.sweetness || '-' }}</span>
             </div>
           </div>
 

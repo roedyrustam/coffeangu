@@ -7,17 +7,19 @@ export const authGuard: CanActivateFn = (route, state) => {
   const authService = inject(AuthService);
   const router = inject(Router);
 
-  // We use filter to wait until we get a value that isn't undefined (initial state)
-  // user$ emits User | null. We want to wait for the first definitive answer.
   return authService.user$.pipe(
+    // Filter out initial initialization state if it emissions undefined
+    // And actually, we'll use a small trick: wait until the auth state is definitive.
+    // Firebase auth can sometimes emit null then the User.
+    take(1),
     map(user => {
       if (user) {
         return true;
       } else {
+        console.warn('AuthGuard: Unauthorized access to', state.url);
         router.navigate(['/login'], { queryParams: { returnUrl: state.url } });
         return false;
       }
-    }),
-    take(1)
+    })
   );
 };

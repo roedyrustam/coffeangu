@@ -6,7 +6,7 @@ import { AuthService } from '../../services/auth.service';
 import { TranslationService } from '../../services/translation.service';
 import { CuppingSession } from '../../models/cupping.model';
 import { Observable, BehaviorSubject, combineLatest } from 'rxjs';
-import { map, switchMap, take } from 'rxjs/operators';
+import { map, switchMap, take, filter } from 'rxjs/operators';
 
 @Component({
   selector: 'app-profile',
