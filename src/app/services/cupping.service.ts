@@ -13,9 +13,10 @@ export class CuppingService {
   private firestore = inject(Firestore);
   private storage = inject(Storage);
   private auth = inject(AuthService);
-  private cuppingCollection = collection(this.firestore, 'cuppings');
-  private profilesCollection = collection(this.firestore, 'profiles');
-  private usernamesCollection = collection(this.firestore, 'usernames');
+
+  private get cuppingCollection() { return collection(this.firestore, 'cuppings'); }
+  private get profilesCollection() { return collection(this.firestore, 'profiles'); }
+  private get usernamesCollection() { return collection(this.firestore, 'usernames'); }
 
   getUserProfile(userId: string): Observable<UserProfile | null> {
     const docRef = doc(this.firestore, 'profiles', userId);
