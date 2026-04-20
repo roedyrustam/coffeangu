@@ -87,6 +87,27 @@ export class MembershipService {
     });
   }
 
+  async finalizeUpgrade(tierId: 'pro' | 'roastery', paymentData: any): Promise<void> {
+    const user = this.auth.currentUser();
+    if (!user) throw new Error('Not authenticated');
+
+    const profileRef = doc(this.firestore, 'profiles', user.uid);
+    
+    const expiry = new Date();
+    expiry.setFullYear(expiry.getFullYear() + 1);
+
+    await updateDoc(profileRef, {
+      membership: tierId,
+      subscriptionExpiry: expiry,
+      lastPaymentId: paymentData.payment_id || paymentData.orderID || 'PAYPAL_HOSTED',
+      lastPaymentDate: new Date(),
+      updatedAt: new Date()
+    });
+
+    // Refresh the user profile cache if necessary
+    console.log(`Membership finalized for ${user.uid}: ${tierId}`);
+  }
+
   hasAccess(featureId: string, currentTier: 'classic' | 'pro' | 'roastery'): boolean {
     const proFeatures = ['advanced_stats', 'pdf_export', 'custom_handle'];
     const roasteryFeatures = [...proFeatures, 'team_management', 'inventory_sync'];

@@ -54,17 +54,32 @@ import { AuthService } from '../../services/auth.service';
         </div>
       </div>
 
-      <!-- SIMULATED PAYMENT MODAL -->
+      <!-- PAYPAL CHECKOUT MODAL -->
       <div class="modal-overlay" *ngIf="showModal()">
-        <div class="modal glass-card animate-scale">
-          <div class="sim-payment">
-             <div class="spinner-large"></div>
-             <h3>Processing Simulation</h3>
-             <p>Contacting secure sandbox gateway...</p>
-             <div class="secure-badge">
-               <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
-               SECURE SIMULATION
-             </div>
+        <div class="modal glass-card animate-scale checkout-modal">
+          <button class="close-btn" (click)="closeModal()">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+          </button>
+          
+          <div class="checkout-header">
+            <h3>{{ selectedTier()?.name }} Upgrade</h3>
+            <p>Complete your payment via PayPal’s secure gateway</p>
+          </div>
+
+          <div class="paypal-wrapper">
+            <div id="paypal-container-{{ selectedButtonId() }}" class="paypal-container"></div>
+            
+            <div class="sdk-loader" *ngIf="loadingSDK()">
+              <div class="spinner-small"></div>
+              <span>Securing Connection...</span>
+            </div>
+          </div>
+
+          <div class="checkout-footer">
+            <div class="secure-badge">
+              <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+              Standard PayPal Encryption
+            </div>
           </div>
         </div>
       </div>
@@ -141,39 +156,81 @@ import { AuthService } from '../../services/auth.service';
     .modal-overlay {
       position: fixed;
       inset: 0;
-      background: rgba(0,0,0,0.9);
-      backdrop-filter: blur(20px);
+      background: rgba(0,0,0,0.92);
+      backdrop-filter: blur(25px);
       z-index: 3000;
       display: flex;
       align-items: center;
       justify-content: center;
+      padding: 20px;
     }
-    .sim-payment {
-      text-align: center;
-      padding: 60px;
+    .checkout-modal {
+      width: 100%;
+      max-width: 420px;
+      padding: 40px;
+      position: relative;
     }
-    .sim-payment h3 { font-size: 2rem; margin-bottom: 10px; }
-    .sim-payment p { color: var(--text-dim); margin-bottom: 30px; }
+    .close-btn {
+      position: absolute;
+      top: 20px;
+      right: 20px;
+      background: transparent;
+      border: none;
+      color: var(--text-dim);
+      cursor: pointer;
+      transition: all 0.3s;
+    }
+    .close-btn:hover { color: var(--text-main); transform: rotate(90deg); }
+
+    .checkout-header { text-align: center; margin-bottom: 30px; }
+    .checkout-header h3 { font-size: 1.8rem; margin-bottom: 8px; font-family: var(--font-brand); }
+    .checkout-header p { color: var(--text-dim); font-size: 0.9rem; }
+
+    .paypal-wrapper {
+      min-height: 200px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+    }
+    .paypal-container { width: 100%; }
+
+    .sdk-loader {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 15px;
+      color: var(--text-dim);
+      font-size: 0.85rem;
+      font-weight: 700;
+    }
+
+    .checkout-footer {
+      margin-top: 30px;
+      display: flex;
+      justify-content: center;
+    }
     .secure-badge {
       display: inline-flex;
       align-items: center;
       gap: 8px;
-      background: rgba(212, 225, 87, 0.1);
-      color: var(--accent-neon);
-      padding: 8px 20px;
+      background: rgba(212, 225, 87, 0.08);
+      color: #d4e157;
+      padding: 8px 16px;
       border-radius: 100px;
-      font-size: 0.75rem;
+      font-size: 0.7rem;
       font-weight: 800;
-      letter-spacing: 1px;
+      letter-spacing: 0.5px;
+      text-transform: uppercase;
     }
 
-    .spinner-large {
-      width: 60px;
-      height: 60px;
-      border: 4px solid var(--glass-border);
+    .spinner-small {
+      width: 32px;
+      height: 32px;
+      border: 3px solid rgba(189, 142, 98, 0.1);
       border-top-color: var(--primary-color);
       border-radius: 50%;
-      margin: 0 auto 30px;
       animation: spin 1s linear infinite;
     }
 
@@ -182,6 +239,7 @@ import { AuthService } from '../../services/auth.service';
     @media (max-width: 900px) {
       .pricing-grid { grid-template-columns: 1fr; }
       .tier-card.featured { transform: scale(1); }
+      .checkout-modal { padding: 30px 20px; }
     }
   `]
 })
@@ -193,6 +251,16 @@ export class PricingComponent {
   currentMembershipId = signal<string>('classic');
   processing = signal(false);
   showModal = signal(false);
+  loadingSDK = signal(false);
+  selectedTier = signal<TierDetails | null>(null);
+  selectedButtonId = signal<string>('');
+
+  private BUTTON_IDS: Record<string, string> = {
+    pro: 'WMZGDKGCQLKX8',
+    roastery: 'SR6V7JTRTBGZW'
+  };
+
+  private sdkLoaded = false;
 
   constructor() {
     this.membership.getCurrentMembership().subscribe(m => {
@@ -206,18 +274,64 @@ export class PricingComponent {
       return;
     }
 
+    this.selectedTier.set(tier);
+    this.selectedButtonId.set(this.BUTTON_IDS[tier.id]);
     this.showModal.set(true);
-    this.processing.set(true);
+    
+    await this.initPayPal();
+  }
 
-    try {
-      await this.membership.upgradeMembership(tier.id as any);
-      this.showModal.set(false);
-      this.router.navigate(['/profile']);
-    } catch (e) {
-      alert('Subscription failed. Please try again.');
-      this.showModal.set(false);
-    } finally {
-      this.processing.set(false);
+  closeModal() {
+    this.showModal.set(false);
+    this.selectedTier.set(null);
+    this.selectedButtonId.set('');
+  }
+
+  private async initPayPal() {
+    if (!this.sdkLoaded) {
+      this.loadingSDK.set(true);
+      await this.loadPayPalSDK();
+      this.sdkLoaded = true;
+      this.loadingSDK.set(false);
+    }
+
+    // Wait for DOM to catch up with signal update
+    setTimeout(() => {
+      this.renderHostedButton();
+    }, 100);
+  }
+
+  private loadPayPalSDK(): Promise<void> {
+    return new Promise((resolve) => {
+      const script = document.createElement('script');
+      script.src = `https://www.paypal.com/sdk/js?client-id=BAAV-mITKSmcExAjXzaToMMOYypRIIfN4MCdLjAm_MT5NtgE9cIsWqbZIYTKlXD-oGmEBTzAVaZm5Z5m6M&components=hosted-buttons&disable-funding=venmo&currency=USD`;
+      script.onload = () => resolve();
+      document.body.appendChild(script);
+    });
+  }
+
+  private renderHostedButton() {
+    const paypal = (window as any).paypal;
+    const tierId = this.selectedTier()?.id;
+    const buttonId = this.selectedButtonId();
+
+    if (paypal && paypal.HostedButtons && buttonId) {
+      paypal.HostedButtons({
+        hostedButtonId: buttonId,
+        onComplete: async (data: any) => {
+          console.log('Payment Complete:', data);
+          this.processing.set(true);
+          try {
+            await this.membership.finalizeUpgrade(tierId as any, data);
+            this.showModal.set(false);
+            this.router.navigate(['/profile']);
+          } catch (e) {
+            alert('Upgrade activation failed. Please contact support.');
+          } finally {
+            this.processing.set(false);
+          }
+        }
+      }).render(`#paypal-container-${buttonId}`);
     }
   }
 }
