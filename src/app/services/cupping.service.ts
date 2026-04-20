@@ -1,5 +1,5 @@
 import { Injectable, inject } from '@angular/core';
-import { Firestore, collection, collectionData, addDoc, query, orderBy, limit, doc, getDoc, updateDoc, where, increment, arrayUnion, deleteDoc, QueryConstraint } from '@angular/fire/firestore';
+import { Firestore, collection, collectionData, addDoc, query, orderBy, limit, doc, getDoc, updateDoc, where, increment, arrayUnion, arrayRemove, deleteDoc, QueryConstraint } from '@angular/fire/firestore';
 import { Storage, ref, uploadBytes, getDownloadURL, deleteObject } from '@angular/fire/storage';
 import { Observable, of } from 'rxjs';
 import { CuppingSession } from '../models/cupping.model';
@@ -85,22 +85,24 @@ export class CuppingService {
       userId,
       isPublic: session.isPublic || false,
       likesCount: 0,
+      likedBy: [],
       savedBy: [],
       timestamp: new Date()
     });
   }
 
-  async likeSession(id: string) {
+  async toggleLike(id: string, userId: string, currentlyLiked: boolean) {
     const docRef = doc(this.firestore, 'cuppings', id);
     return updateDoc(docRef, {
-      likesCount: increment(1)
+      likesCount: increment(currentlyLiked ? -1 : 1),
+      likedBy: currentlyLiked ? arrayRemove(userId) : arrayUnion(userId)
     });
   }
 
-  async saveSession(id: string, userId: string) {
+  async toggleSave(id: string, userId: string, currentlySaved: boolean) {
     const docRef = doc(this.firestore, 'cuppings', id);
     return updateDoc(docRef, {
-      savedBy: arrayUnion(userId)
+      savedBy: currentlySaved ? arrayRemove(userId) : arrayUnion(userId)
     });
   }
 

@@ -35,6 +35,7 @@ export interface CuppingSession {
   notes?: string;
   isPublic?: boolean;
   likesCount?: number;
+  likedBy?: string[]; // Array of user IDs who liked this
   savedBy?: string[]; // Array of user IDs who bookmarked this
   timestamp: any;
 }

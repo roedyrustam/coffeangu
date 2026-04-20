@@ -8,6 +8,10 @@ import { TranslationService } from '../../services/translation.service';
 import { BehaviorSubject, combineLatest, Observable, of } from 'rxjs';
 import { map, switchMap, debounceTime, startWith, catchError } from 'rxjs/operators';
 
+import { AuthService } from '../../services/auth.service';
+
+import { AuthService } from '../../services/auth.service';
+
 @Component({
   selector: 'app-community-board',
   standalone: true,
@@ -109,8 +113,12 @@ import { map, switchMap, debounceTime, startWith, catchError } from 'rxjs/operat
               <span class="name">{{ session.cupperName || 'Anonymous Cupper' }}</span>
             </div>
             <div class="social-stats">
-              <div class="stat-item">
-                <span class="icon">❤️</span>
+              <div class="stat-item like-btn" 
+                   [class.liked]="hasLiked(session)" 
+                   (click)="$event.stopPropagation(); toggleLike(session)">
+                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" [attr.fill]="hasLiked(session) ? 'var(--danger)' : 'none'" [attr.stroke]="hasLiked(session) ? 'var(--danger)' : 'currentColor'" stroke-width="2" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l8.84-8.84 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
+                </svg>
                 <span>{{ session.likesCount || 0 }}</span>
               </div>
             </div>
@@ -311,7 +319,12 @@ import { map, switchMap, debounceTime, startWith, catchError } from 'rxjs/operat
       font-size: 0.8rem;
     }
     .cupper-info .name { font-size: 0.85rem; font-weight: 700; color: var(--text-main); }
-    .stat-item { display: flex; align-items: center; gap: 6px; font-weight: 800; color: var(--text-dim); }
+    .stat-item { display: flex; align-items: center; gap: 8px; font-weight: 800; color: var(--text-dim); transition: all 0.2s; }
+    .like-btn { cursor: pointer; padding: 5px 10px; border-radius: 8px; }
+    .like-btn:hover { background: rgba(255, 69, 58, 0.1); color: var(--danger); }
+    .like-btn.liked { color: var(--danger); }
+    .like-btn svg { transition: transform 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
+    .like-btn:active svg { transform: scale(1.4); }
     
     .empty-state { text-align: center; padding: 100px; grid-column: 1 / -1; }
     .empty-icon { font-size: 4rem; margin-bottom: 20px; opacity: 0.3; }
@@ -333,6 +346,7 @@ import { map, switchMap, debounceTime, startWith, catchError } from 'rxjs/operat
 export class CommunityBoardComponent implements OnInit {
   private cuppingService = inject(CuppingService);
   private ts = inject(TranslationService);
+  protected auth = inject(AuthService);
   t = this.ts.t();
 
   // Filter State
@@ -396,5 +410,19 @@ export class CommunityBoardComponent implements OnInit {
 
   onSortChange() {
     this.refreshTrigger.next();
+  }
+
+  toggleLike(session: CuppingSession) {
+    const userId = this.auth.getUserId();
+    if (!userId || !session.id) return;
+    
+    const isLiked = this.hasLiked(session);
+    this.cuppingService.toggleLike(session.id, userId, isLiked);
+  }
+
+  hasLiked(session: CuppingSession): boolean {
+    const userId = this.auth.getUserId();
+    if (!userId) return false;
+    return !!session.likedBy?.includes(userId);
   }
 }
