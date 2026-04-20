@@ -4,6 +4,7 @@ import { TranslationService } from './services/translation.service';
 import { AuthService } from './services/auth.service';
 import { CommonModule } from '@angular/common';
 import { SwUpdate } from '@angular/service-worker';
+import { SeoService } from './services/seo.service';
 
 @Component({
   selector: 'app-root',
@@ -431,11 +432,14 @@ export class App {
   auth = inject(AuthService);
   router = inject(Router);
   updates = inject(SwUpdate);
+  seo = inject(SeoService);
   t = this.ts.t();
   showUserMenu = signal(false);
   parallaxTransform = signal('translate3d(0,0,0) scale(1.1)');
 
   ngOnInit() {
+    this.seo.updateMeta(); // Default SEO initialization
+    
     window.addEventListener('mousemove', (e) => {
       const x = (e.clientX / window.innerWidth - 0.5) * 30;
       const y = (e.clientY / window.innerHeight - 0.5) * 30;

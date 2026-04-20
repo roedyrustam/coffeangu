@@ -9,6 +9,7 @@ import { BehaviorSubject, combineLatest, Observable, of } from 'rxjs';
 import { map, switchMap, debounceTime, startWith, catchError } from 'rxjs/operators';
 
 import { AuthService } from '../../services/auth.service';
+import { SeoService } from '../../services/seo.service';
 
 @Component({
   selector: 'app-community-board',
@@ -161,7 +162,7 @@ import { AuthService } from '../../services/auth.service';
             </div>
 
             <!-- VISIT SHOP BUTTON (Premium Commerce) -->
-            <button class="btn-shop" *ngIf="session.buyLink" (click)="$event.stopPropagation(); window.open(session.buyLink, '_blank')">
+            <button class="btn-shop" *ngIf="session.buyLink" (click)="$event.stopPropagation(); openUrl(session.buyLink)">
               <span class="icon">🛒</span>
               <span>Visit Shop</span>
             </button>
@@ -580,6 +581,7 @@ import { AuthService } from '../../services/auth.service';
 export class CommunityBoardComponent implements OnInit {
   private cuppingService = inject(CuppingService);
   private ts = inject(TranslationService);
+  private seo = inject(SeoService);
   protected auth = inject(AuthService);
   t = this.ts.t();
   errorMessage = '';
@@ -608,6 +610,7 @@ export class CommunityBoardComponent implements OnInit {
   filteredCuppings$!: Observable<CuppingSession[]>;
 
   ngOnInit() {
+    this.updateSeo();
     this.filteredCuppings$ = combineLatest([
       this.refreshTrigger.pipe(
         switchMap(() => this.cuppingService.getPublicCuppings({ 
@@ -687,5 +690,20 @@ export class CommunityBoardComponent implements OnInit {
     if (val >= 8) return 'var(--accent-neon)';
     if (val >= 7) return 'var(--primary-color)';
     return 'var(--text-dim)';
+  }
+
+  private updateSeo() {
+    this.seo.updateMeta({
+      title: 'Community Board - Discover Specialty Coffee',
+      description: 'Explore the latest coffee evaluations from our global community of professionals and enthusiasts.',
+      image: '/assets/og-image.png',
+      type: 'website'
+    });
+  }
+
+  openUrl(url: string) {
+    if (url) {
+      window.open(url, '_blank');
+    }
   }
 }

@@ -1,4 +1,4 @@
-import { Component, OnInit, inject, PLATFORM_ID, AfterViewInit, signal } from '@angular/core';
+import { Component, OnInit, inject, PLATFORM_ID, AfterViewInit, signal, OnDestroy } from '@angular/core';
 import { CommonModule, isPlatformBrowser } from '@angular/common';
 import { ActivatedRoute, RouterLink, Router } from '@angular/router';
 import { Meta, Title } from '@angular/platform-browser';
@@ -11,6 +11,7 @@ import { MembershipService } from '../../services/membership.service';
 import { Chart, RadarController, RadialLinearScale, PointElement, LineElement, Filler, Tooltip, Legend } from 'chart.js';
 import { TeamService } from '../../services/team.service';
 import { Team } from '../../models/team.model';
+import { SeoService } from '../../services/seo.service';
 
 Chart.register(RadarController, RadialLinearScale, PointElement, LineElement, Filler, Tooltip, Legend);
 
@@ -570,7 +571,7 @@ Chart.register(RadarController, RadialLinearScale, PointElement, LineElement, Fi
     }
   `]
 })
-export class CuppingResultComponent implements OnInit, AfterViewInit {
+export class CuppingResultComponent implements OnInit, AfterViewInit, OnDestroy {
   private route = inject(ActivatedRoute);
   private cuppingService = inject(CuppingService);
   private meta = inject(Meta);
@@ -587,6 +588,7 @@ export class CuppingResultComponent implements OnInit, AfterViewInit {
   generatingScreenshot = false;
   auth = inject(AuthService);
   private membershipService = inject(MembershipService);
+  private seo = inject(SeoService);
   private router = inject(Router);
   membership$ = this.membershipService.getCurrentMembership();
   selectedTheme = signal<'obsidian' | 'radiant'>('obsidian');
@@ -691,6 +693,8 @@ export class CuppingResultComponent implements OnInit, AfterViewInit {
         this.session = data;
         this.prepareSensoryItems();
         this.updateMetaTags();
+        this.generateStructuredData(data);
+
         if (data.teamId) {
           this.teamService.getTeamById(data.teamId).subscribe(t => this.team = t);
         }
@@ -811,31 +815,50 @@ export class CuppingResultComponent implements OnInit, AfterViewInit {
   updateMetaTags() {
     if (!this.session) return;
 
-    const pageTitle = `Cupping Result: ${this.session.beanName} - CaffeeScore`;
-    const description = `Score: ${this.session.finalScore.toFixed(2)} | ${this.session.roastery} | ${this.session.type}`;
+    const description = `Score: ${this.session.finalScore.toFixed(2)} | ${this.session.roastery} | ${this.session.type}. Cupped by ${this.session.cupperName || 'Professional'}.`;
     
-    this.title.setTitle(pageTitle);
+    this.seo.updateMeta({
+      title: `${this.session.beanName} Evaluation`,
+      description: description,
+      image: this.session.shareImageUrl || '/assets/og-image.png',
+      type: 'article',
+      author: this.session.cupperName,
+      origin: this.session.origin
+    });
+  }
 
-    const tags = [
-      { name: 'description', content: description },
-      { property: 'og:title', content: pageTitle },
-      { property: 'og:description', content: description },
-      { property: 'og:type', content: 'article' },
-      { name: 'twitter:card', content: 'summary_large_image' },
-      { name: 'twitter:title', content: pageTitle },
-      { name: 'twitter:description', content: description }
-    ];
-
-    if (isPlatformBrowser(this.platformId)) {
-       tags.push({ property: 'og:url', content: window.location.href });
-    }
-
-    if (this.session.shareImageUrl) {
-      tags.push({ property: 'og:image', content: this.session.shareImageUrl });
-      tags.push({ name: 'twitter:image', content: this.session.shareImageUrl });
-    }
-
-    (tags as any[]).forEach(tag => this.meta.updateTag(tag));
+  generateStructuredData(data: CuppingSession) {
+    const jsonLd = {
+      "@context": "https://schema.org/",
+      "@type": "Product",
+      "name": data.beanName,
+      "image": [
+        data.productImageUrl || data.shareImageUrl || "https://coffeescore.app/assets/og-image.png"
+      ],
+      "description": `Coffee evaluation for ${data.beanName} by ${data.roastery}. SCA Score: ${data.finalScore.toFixed(2)}`,
+      "brand": {
+        "@type": "Brand",
+        "name": data.roastery
+      },
+      "review": {
+        "@type": "Review",
+        "reviewRating": {
+          "@type": "Rating",
+          "ratingValue": data.finalScore.toFixed(2),
+          "bestRating": "100"
+        },
+        "author": {
+          "@type": "Person",
+          "name": data.cupperName || "CaffeeScore Professional"
+        }
+      },
+      "aggregateRating": {
+        "@type": "AggregateRating",
+        "ratingValue": data.finalScore.toFixed(2),
+        "reviewCount": "1"
+      }
+    };
+    this.seo.addJsonLd(jsonLd);
   }
 
   prepareSensoryItems() {
@@ -886,5 +909,9 @@ export class CuppingResultComponent implements OnInit, AfterViewInit {
 
   getBuyUrl(): string | null {
     return this.session?.buyLink || this.team?.shopUrl || null;
+  }
+
+  ngOnDestroy() {
+    this.seo.clearJsonLd();
   }
 }

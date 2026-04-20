@@ -14,6 +14,7 @@ import { TeamService } from '../../services/team.service';
 import { Team, TeamMemberProfile } from '../../models/team.model';
 import { SensoryAvatarComponent } from '../sensory-avatar/sensory-avatar.component';
 import { Chart, RadarController, RadialLinearScale, PointElement, LineElement, Filler, Tooltip, Legend } from 'chart.js';
+import { SeoService } from '../../services/seo.service';
 
 Chart.register(RadarController, RadialLinearScale, PointElement, LineElement, Filler, Tooltip, Legend);
 
@@ -675,6 +676,7 @@ export class ProfileComponent implements OnInit {
   private membershipService = inject(MembershipService);
   private teamService = inject(TeamService);
   private ts = inject(TranslationService);
+  private seo = inject(SeoService);
   private router = inject(Router);
   protected t = this.ts.t();
   
@@ -737,8 +739,11 @@ export class ProfileComponent implements OnInit {
            const user = this.auth.currentUser()!;
            this.cuppingService.ensureUserProfile(user.uid, user.displayName || 'User', user.photoURL || undefined);
         }
-        if (profile && !this.newUsername) {
-          this.newUsername = profile.username?.replace('@', '') || '';
+        if (profile) {
+          if (!this.newUsername) {
+            this.newUsername = profile.username?.replace('@', '') || '';
+          }
+          this.updateSeo(profile.displayName);
         }
       })
     );
@@ -997,5 +1002,13 @@ export class ProfileComponent implements OnInit {
         alert(e.message || e);
       }
     }
+  }
+
+  private updateSeo(name: string) {
+    this.seo.updateMeta({
+      title: `${name}'s Profile`,
+      description: `Explore specialty coffee evaluations and sensory insights by ${name} on CaffeeScore.`,
+      type: 'profile'
+    });
   }
 }

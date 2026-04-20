@@ -8,6 +8,7 @@ import { Observable, of } from 'rxjs';
 import { map, switchMap, catchError, tap } from 'rxjs/operators';
 import { UserProfile } from '../../models/user-profile.model';
 import { SensoryAvatarComponent } from '../sensory-avatar/sensory-avatar.component';
+import { SeoService } from '../../services/seo.service';
 import { Chart, RadarController, RadialLinearScale, PointElement, LineElement, Filler, Tooltip, Legend } from 'chart.js';
 
 Chart.register(RadarController, RadialLinearScale, PointElement, LineElement, Filler, Tooltip, Legend);
@@ -27,7 +28,7 @@ Chart.register(RadarController, RadialLinearScale, PointElement, LineElement, Fi
           <div class="user-info">
             <div class="avatar-large">
               <img *ngIf="profile.photoURL" [src]="profile.photoURL" alt="Profile">
-              <span *ngIf="!profile.photoURL">{{ profile.displayName?.charAt(0) || 'U' }}</span>
+              <span *ngIf="!profile.photoURL">{{ (profile.displayName || 'U').charAt(0) }}</span>
             </div>
             <div class="user-details">
               <div class="badge-tag">Community Cupper</div>
@@ -170,6 +171,7 @@ export class PublicProfileComponent implements OnInit {
   private cuppingService = inject(CuppingService);
   private route = inject(ActivatedRoute);
   private ts = inject(TranslationService);
+  private seo = inject(SeoService);
   protected t = this.ts.t();
 
   profile$!: Observable<UserProfile | null>;
@@ -187,6 +189,9 @@ export class PublicProfileComponent implements OnInit {
           return this.cuppingService.getProfileByHandle(id);
         }
         return this.cuppingService.getUserProfile(id);
+      }),
+      tap(profile => {
+        if (profile) this.updateSeo(profile.displayName);
       })
     );
 
@@ -255,6 +260,14 @@ export class PublicProfileComponent implements OnInit {
         },
         plugins: { legend: { display: false } }
       }
+    });
+  }
+
+  private updateSeo(name: string) {
+    this.seo.updateMeta({
+      title: `${name}'s Profile`,
+      description: `Check out coffee evaluations and flavor notes from ${name} on CaffeeScore.`,
+      type: 'profile'
     });
   }
 }
