@@ -67,20 +67,23 @@ import { TranslationService } from '../../../services/translation.service';
       display: flex;
       justify-content: center;
       align-items: center;
-      min-height: 80vh;
+      min-height: 100dvh;
       padding: 20px;
+      position: relative;
+      z-index: 10;
     }
     .login-card {
       width: 100%;
-      max-width: 480px;
-      padding: 48px;
+      max-width: 360px;
+      padding: 30px;
+      backdrop-filter: blur(16px);
     }
     header {
       text-align: center;
       margin-bottom: 40px;
     }
     h2 {
-      font-size: 2.5rem;
+      font-size: 2.2rem;
       background: var(--primary-gradient);
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
@@ -194,12 +197,23 @@ import { TranslationService } from '../../../services/translation.service';
     @keyframes spin { to { transform: rotate(360deg); } }
 
     @media (max-width: 600px) {
-      .login-card {
-        padding: 30px 24px;
-        border-radius: 24px;
+      .login-container {
+        position: fixed;
+        inset: 0;
+        background: var(--bg-color);
+        z-index: 1000;
+        padding: 20px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
       }
-      h2 { font-size: 2rem; }
-      .login-container { padding: 10px; min-height: 70vh; }
+      .login-card {
+        padding: 24px 16px;
+        border-radius: 20px;
+        margin: auto;
+        box-shadow: 0 10px 40px rgba(0,0,0,0.5);
+      }
+      h2 { font-size: 1.6rem; }
     }
   `]
 })
