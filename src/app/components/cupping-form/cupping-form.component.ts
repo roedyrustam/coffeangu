@@ -210,25 +210,27 @@ import { DynamicFlavorWheelComponent } from '../flavor-wheel/flavor-wheel.compon
             </div>
           </section>
 
-          <section class="form-section visibility-section">
-            <h3 class="section-title">Visibility & Community</h3>
-            <div class="form-options" style="margin: 0; padding: 0; border: none;">
-              <label class="checkbox-container">
-                <input type="checkbox" [(ngModel)]="session.isPublic" name="isPublic">
-                <span class="checkmark"></span>
-                <span class="label-text">Broadcast to Specialty Feed</span>
-              </label>
-            </div>
-          </section>
+          <!-- Visibility is now moved to the sticky footer for better accessibility -->
 
         </div> <!-- Close form-sections-container -->
 
         <footer class="form-sticky-actions glass-card">
-          <button type="button" class="btn-cancel" (click)="cancel()">{{ t('BTN_CANCEL') }}</button>
+          <div class="footer-visibility">
+            <label class="checkbox-container footer-toggle">
+              <input type="checkbox" [(ngModel)]="session.isPublic" name="isPublic">
+              <span class="checkmark"></span>
+              <span class="label-text">Public</span>
+            </label>
+          </div>
+          
           <div class="action-spacer"></div>
-          <button type="submit" class="btn-primary btn-submit" [disabled]="loading || cuppingForm.invalid">
-             <span>{{ loading ? 'Publishing...' : (cuppingForm.invalid ? 'Fill required fields' : t('BTN_SAVE')) }}</span>
-          </button>
+
+          <div class="footer-actions">
+            <button type="button" class="btn-cancel" (click)="cancel()">{{ t('BTN_CANCEL') }}</button>
+            <button type="submit" class="btn-primary btn-submit" [disabled]="loading || cuppingForm.invalid">
+               <span>{{ loading ? 'Publishing...' : (cuppingForm.invalid ? 'Fill required fields' : t('BTN_SAVE')) }}</span>
+            </button>
+          </div>
         </footer>
       </form>
     </div>
@@ -324,7 +326,10 @@ import { DynamicFlavorWheelComponent } from '../flavor-wheel/flavor-wheel.compon
     .form-container {
       max-width: 800px;
       margin: 0 auto;
-      padding-bottom: 350px;
+      padding-bottom: 200px;
+    }
+    @media (max-width: 768px) {
+      .form-container { padding-bottom: 400px; }
     }
     .form-header {
       margin-bottom: 30px;
@@ -694,50 +699,48 @@ import { DynamicFlavorWheelComponent } from '../flavor-wheel/flavor-wheel.compon
     }
     .form-sticky-actions {
       position: fixed;
-      bottom: 92px;
+      bottom: 30px;
       left: 15px;
       right: 15px;
-      max-width: 770px;
+      max-width: 800px;
       margin: 0 auto;
-      padding: 15px 25px;
+      padding: 12px 20px;
       display: flex;
       align-items: center;
-      z-index: 100;
-      border-radius: 20px;
+      gap: 15px;
+      z-index: 1000;
+      border-radius: 24px;
       box-shadow: 0 20px 50px rgba(0,0,0,0.6);
       border: 1px solid rgba(255,255,255,0.1);
-      background: rgba(12, 12, 14, 0.8);
-      backdrop-filter: blur(20px);
+      background: rgba(22, 22, 26, 0.85);
+      backdrop-filter: blur(30px);
     }
-    .btn-submit {
-      padding: 0 40px;
-      height: 52px;
-      border-radius: 100px;
+    .footer-visibility {
+      padding-right: 15px;
+      border-right: 1px solid rgba(255,255,255,0.1);
     }
-    .btn-cancel {
-       background: transparent;
-       border: none;
-       color: var(--text-dim);
-       font-weight: 800;
-       text-transform: uppercase;
-       letter-spacing: 1px;
-       cursor: pointer;
-       font-size: 0.8rem;
-       transition: all 0.3s;
+    .footer-toggle .label-text {
+      font-size: 0.8rem !important;
+      text-transform: uppercase;
+      letter-spacing: 1px;
     }
-    .btn-cancel:hover {
-       color: var(--text-main);
-       transform: translateX(-5px);
+    .footer-actions {
+      display: flex;
+      align-items: center;
+      gap: 20px;
     }
-    .action-spacer { flex: 1; }
     
-    @media (max-width: 640px) {
+    @media (max-width: 768px) {
       .form-section { padding: 25px; }
       .header-content h2 { font-size: 2rem; }
-      .form-sticky-actions { bottom: 85px; }
-    }
-    .visibility-section {
-       margin-bottom: 250px;
+      .form-sticky-actions { 
+        bottom: 110px;
+        padding: 10px 15px;
+        gap: 10px;
+      }
+      .btn-submit { padding: 0 25px; font-size: 0.8rem; }
+      .footer-toggle .label-text { display: none; }
+      .footer-visibility { padding-right: 10px; }
     }
     .final-score-bar.specialty {
       background: var(--primary-gradient) !important;
