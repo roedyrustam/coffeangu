@@ -1,0 +1,136 @@
+{
+  "configVersion": 1,
+  "timestamp": 1776703698321,
+  "index": "/index.csr.html",
+  "assetGroups": [
+    {
+      "name": "app",
+      "installMode": "prefetch",
+      "updateMode": "prefetch",
+      "cacheQueryOptions": {
+        "ignoreVary": true
+      },
+      "urls": [
+        "/chunk-2GJHZQ6C.js",
+        "/chunk-2WWVKKQB.js",
+        "/chunk-B4WIZO7I.js",
+        "/chunk-BLXU235W.js",
+        "/chunk-DK3T6XHF.js",
+        "/chunk-DMKEC35C.js",
+        "/chunk-JEZTFRLR.js",
+        "/chunk-L4I7IHBM.js",
+        "/chunk-NFVVONEY.js",
+        "/chunk-QWWW7GFA.js",
+        "/chunk-S442AY4M.js",
+        "/chunk-YXTFK7YT.js",
+        "/favicon.ico",
+        "/index.csr.html",
+        "/main-3CFQ7XYN.js",
+        "/manifest.webmanifest",
+        "/polyfills-5CFQRCPP.js",
+        "/styles-FQ7ICL5S.css"
+      ],
+      "patterns": []
+    },
+    {
+      "name": "assets",
+      "installMode": "prefetch",
+      "updateMode": "prefetch",
+      "cacheQueryOptions": {
+        "ignoreVary": true
+      },
+      "urls": [
+        "/assets/avatars/cherry.png",
+        "/assets/avatars/flowering.png",
+        "/assets/avatars/harvest.png",
+        "/assets/avatars/seedling.png",
+        "/assets/avatars/sprout.png",
+        "/assets/default-coffee.png",
+        "/assets/hero-cupping.png",
+        "/assets/hero-dashboard.png",
+        "/assets/hero-profile.png",
+        "/icons/icon-128x128.png",
+        "/icons/icon-144x144.png",
+        "/icons/icon-152x152.png",
+        "/icons/icon-192x192.png",
+        "/icons/icon-384x384.png",
+        "/icons/icon-512x512.png",
+        "/icons/icon-72x72.png",
+        "/icons/icon-96x96.png"
+      ],
+      "patterns": []
+    }
+  ],
+  "dataGroups": [
+    {
+      "name": "google-fonts",
+      "patterns": [
+        "https:\\/\\/fonts\\.googleapis\\.com\\/.*",
+        "https:\\/\\/fonts\\.gstatic\\.com\\/.*"
+      ],
+      "strategy": "performance",
+      "maxSize": 20,
+      "maxAge": 31536000000,
+      "cacheQueryOptions": {
+        "ignoreVary": true
+      },
+      "version": 1
+    }
+  ],
+  "hashTable": {
+    "/assets/avatars/cherry.png": "3377840c996c03167ac2d54d79cd4c319e4d1253",
+    "/assets/avatars/flowering.png": "1bfc647365c3fd08df99a8c5b550043e4922ad85",
+    "/assets/avatars/harvest.png": "c269e912a49389ee82f468d8cbf345b6c40c8db9",
+    "/assets/avatars/seedling.png": "238368c19eef1688789f0565251d5ffed69fb0a2",
+    "/assets/avatars/sprout.png": "6f36ba4be203d423e250e3036fc09baba85d9d25",
+    "/assets/default-coffee.png": "09c044ae8301a62d7cbdb172978af646842641aa",
+    "/assets/hero-cupping.png": "558b48284e3db41fef8bef92df75ef3797527e33",
+    "/assets/hero-dashboard.png": "b967402937205aa19bed9840f69e71ff95e95c21",
+    "/assets/hero-profile.png": "2767a7b34a649b9967f290f61099cbf102413102",
+    "/chunk-2GJHZQ6C.js": "32f1ef0bc6822bc32d96d7320a59b4f1151dd55d",
+    "/chunk-2WWVKKQB.js": "77fda0585d91dbe715828818b6a3fb5c92bc0eec",
+    "/chunk-B4WIZO7I.js": "88b47b445b28a1e7ff944c2b25a10a5cc69b03e9",
+    "/chunk-BLXU235W.js": "a27b5fc6ff27cc56b3db6b8bb7ceb0e83f6e27d8",
+    "/chunk-DK3T6XHF.js": "8ed14ece86c30705b20a438e56f254102644f099",
+    "/chunk-DMKEC35C.js": "7825486e025d96d8289246ea26c1d4dc42ca2752",
+    "/chunk-JEZTFRLR.js": "c7ddf3fa95ad8079ca451dfcc09b72ce42f7ba6a",
+    "/chunk-L4I7IHBM.js": "2e51af806e2bd7477acde9b04b55dc1768a067d3",
+    "/chunk-NFVVONEY.js": "0c8056ce2db7b791e93a909084604e9b32813c74",
+    "/chunk-QWWW7GFA.js": "0e61127d3fc19c6e841632a6dc532e7e01ef819a",
+    "/chunk-S442AY4M.js": "4de39f632ba88308cd5a614d2f558144196e1ef1",
+    "/chunk-YXTFK7YT.js": "9adc368aa033168b4ea70d4ede1b4dd577291791",
+    "/favicon.ico": "9c39f434fe1261f68c5e3eefdf734630d99c5670",
+    "/icons/icon-128x128.png": "f912963bdc6d5a38d8f1dd0afbaab2ce8d657acb",
+    "/icons/icon-144x144.png": "b155fd5f2fd5d2ea7760721063003c4cd95fd783",
+    "/icons/icon-152x152.png": "eae6e0f0c8afb8aaae339e2a569b43e9238e5e6c",
+    "/icons/icon-192x192.png": "15c4180454633880d98674aa7394656196c91584",
+    "/icons/icon-384x384.png": "94a915751ef6c9282df9aea405ad679230631814",
+    "/icons/icon-512x512.png": "1de182f76f7329dfa8f9fcdd1fdcdd695bea6a99",
+    "/icons/icon-72x72.png": "aa88a6096bd973be7f6d7a5489bfa6bc2463f8c4",
+    "/icons/icon-96x96.png": "7fb8f59c30ce2ff12c700321a0b39e14b3dc8f95",
+    "/index.csr.html": "dc782800d9a7c1741218d48968cf4a8c422677cd",
+    "/main-3CFQ7XYN.js": "2dcd1081059824c7e8a69a7f9a94b40534f54551",
+    "/manifest.webmanifest": "f2a50ac0fc4211a1a94c7bfc842d185c7b4b55e4",
+    "/polyfills-5CFQRCPP.js": "f2241e9a25858f895ce299d15f6f22e849e2fd72",
+    "/styles-FQ7ICL5S.css": "631f045ec649c500f28b11b8170655835829697f"
+  },
+  "navigationUrls": [
+    {
+      "positive": true,
+      "regex": "^\\/.*$"
+    },
+    {
+      "positive": false,
+      "regex": "^\\/(?:.+\\/)?[^/]*\\.[^/]*$"
+    },
+    {
+      "positive": false,
+      "regex": "^\\/(?:.+\\/)?[^/]*__[^/]*$"
+    },
+    {
+      "positive": false,
+      "regex": "^\\/(?:.+\\/)?[^/]*__[^/]*\\/.*$"
+    }
+  ],
+  "navigationRequestStrategy": "performance"
+}
