@@ -513,8 +513,6 @@ export class CuppingResultComponent implements OnInit, AfterViewInit {
     // Re-initialize chart to match theme colors if needed (optional)
   }
 
-  }
-
   async toggleLike() {
     const userId = this.auth.getUserId();
     if (!this.session?.id || !userId) return;
