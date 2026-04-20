@@ -28,10 +28,13 @@ export const appConfig: ApplicationConfig = {
       const app = getApp();
       if (isPlatformBrowser(platformId)) {
         return initializeFirestore(app, {
-          localCache: persistentLocalCache({ tabManager: persistentMultipleTabManager() })
+          localCache: persistentLocalCache({ tabManager: persistentMultipleTabManager() }),
+          ignoreUndefinedProperties: true
         });
       } else {
-        return initializeFirestore(app, {});
+        return initializeFirestore(app, {
+          ignoreUndefinedProperties: true
+        });
       }
     }),
     provideStorage(() => getStorage()),
