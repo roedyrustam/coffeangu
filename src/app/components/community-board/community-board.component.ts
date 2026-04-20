@@ -123,20 +123,24 @@ import { AuthService } from '../../services/auth.service';
               <span class="name">{{ session.cupperName || 'Anonymous Cupper' }}</span>
             </div>
             <div class="social-stats">
-              <div class="stat-item save-btn" 
-                   [class.saved]="hasSaved(session)"
-                   (click)="$event.stopPropagation(); toggleSave(session)">
-                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" [attr.fill]="hasSaved(session) ? 'var(--primary-color)' : 'none'" [attr.stroke]="hasSaved(session) ? 'var(--primary-color)' : 'currentColor'" stroke-width="2" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round">
-                  <path d="m19 21-7-4-7 4V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v16z"></path>
-                </svg>
+              <div class="social-proof" *ngIf="session.likesCount">
+                ❤️ {{ session.likesCount }} users liked this results
               </div>
-              <div class="stat-item like-btn" 
-                   [class.liked]="hasLiked(session)" 
-                   (click)="$event.stopPropagation(); toggleLike(session)">
-                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" [attr.fill]="hasLiked(session) ? 'var(--danger)' : 'none'" [attr.stroke]="hasLiked(session) ? 'var(--danger)' : 'currentColor'" stroke-width="2" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round">
-                  <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l8.84-8.84 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
-                </svg>
-                <span class="count">{{ session.likesCount || 0 }}</span>
+              <div class="actions-row">
+                <div class="stat-item save-btn" 
+                     [class.saved]="hasSaved(session)"
+                     (click)="$event.stopPropagation(); toggleSave(session)">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" [attr.fill]="hasSaved(session) ? 'var(--primary-color)' : 'none'" [attr.stroke]="hasSaved(session) ? 'var(--primary-color)' : 'currentColor'" stroke-width="2" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="m19 21-7-4-7 4V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v16z"></path>
+                  </svg>
+                </div>
+                <div class="stat-item like-btn" 
+                     [class.liked]="hasLiked(session)" 
+                     (click)="$event.stopPropagation(); toggleLike(session)">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" [attr.fill]="hasLiked(session) ? 'var(--danger)' : 'none'" [attr.stroke]="hasLiked(session) ? 'var(--danger)' : 'currentColor'" stroke-width="2" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l8.84-8.84 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
+                  </svg>
+                </div>
               </div>
             </div>
           </footer>
@@ -353,8 +357,11 @@ import { AuthService } from '../../services/auth.service';
       font-size: 0.8rem;
     }
     .cupper-info .name { font-size: 0.85rem; font-weight: 700; color: var(--text-main); }
+    .social-stats { display: flex; flex-direction: column; gap: 12px; width: 100%; border-top: 1px solid var(--glass-border); padding-top: 20px; }
+    .social-proof { font-size: 0.7rem; font-weight: 700; color: var(--primary-color); background: rgba(189, 142, 98, 0.05); padding: 8px; border-radius: 8px; text-align: center; width: 100%; }
+    .actions-row { display: flex; justify-content: space-between; align-items: center; width: 100%; }
     .stat-item { display: flex; align-items: center; gap: 8px; font-weight: 800; color: var(--text-dim); transition: all 0.2s; }
-    .like-btn { cursor: pointer; padding: 5px 10px; border-radius: 8px; }
+    .like-btn { cursor: pointer; padding: 5px; border-radius: 8px; }
     .like-btn:hover { background: rgba(255, 69, 58, 0.1); color: var(--danger); }
     .like-btn.liked { color: var(--danger); }
     .like-btn svg { transition: transform 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275); }

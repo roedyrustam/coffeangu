@@ -33,7 +33,7 @@ Chart.register(RadarController, RadialLinearScale, PointElement, LineElement, Fi
             <span class="label">{{ t('FINAL_SCORE') }}</span>
             <span class="value">{{ session.finalScore | number:'1.2-2' }}</span>
           </div>
-          <div class="rating-label" [class.specialty]="session.finalScore >= 80" [class.specialty-pulse]="session.finalScore >= 80">
+          <div class="rating-label" [class.specialty]="session.finalScore >= 80" [class.specialty-pulse]="session.finalScore >= 85">
             {{ getRating(session.finalScore) }}
           </div>
 
@@ -577,8 +577,6 @@ export class CuppingResultComponent implements OnInit, AfterViewInit {
         this.prepareSensoryItems();
         this.updateMetaTags();
         if (isPlatformBrowser(this.platformId)) {
-          this.hasLiked = localStorage.getItem(`liked_${id}`) === 'true';
-          this.hasSaved = localStorage.getItem(`saved_${id}`) === 'true';
           setTimeout(() => this.initChart(), 0);
         }
       } else {
