@@ -6,8 +6,11 @@ import { AuthService } from '../../services/auth.service';
 import { TranslationService } from '../../services/translation.service';
 import { CuppingSession } from '../../models/cupping.model';
 import { Observable, BehaviorSubject, combineLatest } from 'rxjs';
-import { map, switchMap, take, filter } from 'rxjs/operators';
+import { map, switchMap, take, filter, tap } from 'rxjs/operators';
 import { FormsModule } from '@angular/forms';
+import { Chart, RadarController, RadialLinearScale, PointElement, LineElement, Filler, Tooltip, Legend } from 'chart.js';
+
+Chart.register(RadarController, RadialLinearScale, PointElement, LineElement, Filler, Tooltip, Legend);
 
 @Component({
   selector: 'app-profile',
@@ -48,13 +51,21 @@ import { FormsModule } from '@angular/forms';
         </div>
 
         <div class="stats-grid" *ngIf="stats$ | async as stats">
-          <div class="stat-card">
-            <span class="val">{{ stats.total }}</span>
-            <span class="lab">{{ t('TOTAL_SESSIONS') }}</span>
+          <div class="signature-section">
+             <span class="section-label">Your Sensory Signature</span>
+             <div class="chart-container">
+                <canvas id="signatureChart"></canvas>
+             </div>
           </div>
-          <div class="stat-card">
-            <span class="val">{{ stats.avg.toFixed(1) }}</span>
-            <span class="lab">{{ t('AVG_SCORE') }}</span>
+          <div class="numeric-stats">
+            <div class="stat-card">
+              <span class="val">{{ stats.total }}</span>
+              <span class="lab">{{ t('TOTAL_SESSIONS') }}</span>
+            </div>
+            <div class="stat-card">
+              <span class="val">{{ stats.avg.toFixed(1) }}</span>
+              <span class="lab">{{ t('AVG_SCORE') }}</span>
+            </div>
           </div>
         </div>
       </header>
@@ -244,21 +255,23 @@ import { FormsModule } from '@angular/forms';
       letter-spacing: 1px;
     }
 
-    .stats-grid { display: flex; gap: 20px; }
+    .stats-grid { display: flex; gap: 40px; align-items: center; }
+    .signature-section { flex: 1; min-width: 250px; text-align: left; }
+    .chart-container { height: 180px; width: 100%; position: relative; margin-top: 15px; }
+    .section-label { font-size: 0.7rem; font-weight: 800; text-transform: uppercase; color: var(--primary-color); letter-spacing: 2px; }
+    .numeric-stats { display: flex; flex-direction: column; gap: 15px; }
     .stat-card {
       background: var(--surface-hover);
-      padding: 20px 30px;
-      border-radius: 20px;
+      padding: 15px 25px;
+      border-radius: 18px;
       border: 1px solid var(--glass-border);
       display: flex;
       flex-direction: column;
       align-items: center;
-      min-width: 140px;
+      min-width: 130px;
     }
-    .stat-card .val { font-size: 2rem; font-weight: 900; color: var(--primary-color); font-family: 'Playfair Display', serif; }
-    .stat-card .lab { font-size: 0.7rem; font-weight: 800; text-transform: uppercase; color: var(--text-dim); }
-    .stat-card.specialty { background: var(--primary-gradient); border: none; }
-    .stat-card.specialty .val, .stat-card.specialty .lab { color: #0c0c0e; }
+    .stat-card .val { font-size: 1.8rem; font-weight: 900; color: var(--text-main); font-family: 'Playfair Display', serif; }
+    .stat-card .lab { font-size: 0.65rem; font-weight: 800; text-transform: uppercase; color: var(--text-dim); }
 
     .feed-section { margin-top: 50px; }
     .section-title { font-size: 2rem; margin-bottom: 40px; font-weight: 800; position: relative; display: inline-block; }
@@ -371,8 +384,9 @@ export class ProfileComponent implements OnInit {
   
   cuppings$!: Observable<CuppingSession[]>;
   savedCuppings$!: Observable<CuppingSession[]>;
-  stats$!: Observable<{ total: number, avg: number, favoriteProcess: string }>;
+  stats$!: Observable<{ total: number, avg: number, favoriteProcess: string, averages: any }>;
   sessionToDelete: CuppingSession | null = null;
+  private chart: any;
 
   // New signals for Profile enhancement
   activeTab = signal<'history' | 'saved'>('history');
@@ -397,7 +411,7 @@ export class ProfileComponent implements OnInit {
 
     this.stats$ = this.cuppings$.pipe(
       map(sessions => {
-        if (sessions.length === 0) return { total: 0, avg: 0, favoriteProcess: '' };
+        if (sessions.length === 0) return { total: 0, avg: 0, favoriteProcess: '', averages: {} };
         
         const avg = sessions.reduce((acc, s) => acc + s.finalScore, 0) / sessions.length;
         
@@ -407,13 +421,72 @@ export class ProfileComponent implements OnInit {
             processes.filter(v => v === a).length - processes.filter(v => v === b).length
         ).pop() || '' : '';
 
-        return { total: sessions.length, avg, favoriteProcess: favorite };
+        // Sensory Averages
+        const keys = ['fragranceAroma', 'flavor', 'aftertaste', 'acidity', 'body', 'balance', 'overall'];
+        const averages: any = {};
+        keys.forEach(k => {
+          averages[k] = sessions.reduce((acc, s) => acc + s.scores[k as keyof typeof s.scores], 0) / sessions.length;
+        });
+
+        return { total: sessions.length, avg, favoriteProcess: favorite, averages };
+      }),
+      tap(stats => {
+        if (stats.total > 0) {
+          setTimeout(() => this.initSignatureChart(stats.averages), 0);
+        }
       })
     );
   }
 
+  initSignatureChart(averages: any) {
+    const ctx = document.getElementById('signatureChart') as HTMLCanvasElement;
+    if (!ctx) return;
+
+    if (this.chart) this.chart.destroy();
+
+    const data = [
+      averages.fragranceAroma, averages.flavor, averages.aftertaste,
+      averages.acidity, averages.body, averages.balance, averages.overall
+    ];
+
+    this.chart = new Chart(ctx, {
+      type: 'radar',
+      data: {
+        labels: ['Aroma', 'Flavor', 'After', 'Acid', 'Body', 'Bal', 'Over'],
+        datasets: [{
+          data: data,
+          fill: true,
+          backgroundColor: 'rgba(189, 142, 98, 0.15)',
+          borderColor: '#BD8E62',
+          pointBackgroundColor: '#E5BC7D',
+          borderWidth: 2,
+          pointRadius: 0
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        scales: {
+          r: {
+            angleLines: { color: 'rgba(255, 255, 255, 0.05)' },
+            grid: { color: 'rgba(255, 255, 255, 0.05)' },
+            suggestedMin: 6,
+            suggestedMax: 10,
+            pointLabels: {
+              color: 'rgba(255,255,255,0.4)',
+              font: { size: 9, weight: 'bold' }
+            },
+            ticks: { display: false }
+          }
+        },
+        plugins: { legend: { display: false } }
+      }
+    });
+  }
+
   async updateProfile() {
-    if (!this.newName.trim()) return;
+    const user = this.auth.currentUser();
+    if (!user || !this.newName.trim()) return;
     this.updating.set(true);
     try {
       await this.auth.updateDisplayName(this.newName);
