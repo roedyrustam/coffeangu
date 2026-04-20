@@ -2,6 +2,9 @@
   "storage": {
     "rules": "storage.rules"
   },
+  "firestore": {
+    "indexes": "firestore.indexes.json"
+  },
   "hosting": {
     "public": "dist/coffeescore/browser",
     "ignore": [
