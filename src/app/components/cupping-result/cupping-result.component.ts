@@ -64,7 +64,7 @@ Chart.register(RadarController, RadialLinearScale, PointElement, LineElement, Fi
           </div>
           <div class="meta-item">
             <span class="meta-label">{{ t('CUPPER_NAME') }}</span>
-            <span class="meta-value">{{ session.cupperName || 'Anonymous' }}</span>
+            <span class="meta-value author-link" [routerLink]="['/u', session.userId]">{{ session.cupperName || 'Anonymous' }}</span>
           </div>
           <div class="meta-item">
             <span class="meta-label">Date</span>
@@ -260,6 +260,8 @@ Chart.register(RadarController, RadialLinearScale, PointElement, LineElement, Fi
       font-size: 1.1rem;
       color: var(--text-main);
     }
+    .author-link { cursor: pointer; transition: all 0.3s; color: var(--primary-color); }
+    .author-link:hover { text-decoration: underline; color: var(--text-main); }
     .section-label {
       display: block;
       font-size: 0.85rem;

@@ -5,6 +5,7 @@ import { CuppingResultComponent } from './components/cupping-result/cupping-resu
 import { CommunityBoardComponent } from './components/community-board/community-board.component';
 import { LoginComponent } from './components/auth/login/login.component';
 import { ProfileComponent } from './components/profile/profile.component';
+import { PublicProfileComponent } from './components/public-profile/public-profile.component';
 import { authGuard } from './guards/auth.guard';
 
 export const routes: Routes = [
@@ -14,5 +15,6 @@ export const routes: Routes = [
   { path: 'community', component: CommunityBoardComponent },
   { path: 'result/:id', component: CuppingResultComponent, canActivate: [authGuard] },
   { path: 'profile', component: ProfileComponent, canActivate: [authGuard] },
+  { path: 'u/:id', component: PublicProfileComponent },
   { path: '**', redirectTo: '' }
 ];

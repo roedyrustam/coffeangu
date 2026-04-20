@@ -118,7 +118,7 @@ import { AuthService } from '../../services/auth.service';
           </div>
 
           <footer class="card-footer">
-            <div class="cupper-info">
+            <div class="cupper-info" [routerLink]="['/u', session.userId]" (click)="$event.stopPropagation()">
               <div class="mini-avatar">{{ (session.cupperName || 'A').charAt(0) }}</div>
               <span class="name">{{ session.cupperName || 'Anonymous Cupper' }}</span>
             </div>
@@ -343,7 +343,9 @@ import { AuthService } from '../../services/auth.service';
       align-items: center;
       z-index: 1;
     }
-    .cupper-info { display: flex; align-items: center; gap: 12px; }
+    .cupper-info { display: flex; align-items: center; gap: 12px; cursor: pointer; transition: all 0.3s; padding: 5px 12px; border-radius: 10px; }
+    .cupper-info:hover { background: rgba(189, 142, 98, 0.1); }
+    .cupper-info:hover .name { color: var(--primary-color); }
     .mini-avatar {
       width: 32px;
       height: 32px;

@@ -77,6 +77,18 @@ export class CuppingService {
     return collectionData(q, { idField: 'id' }) as Observable<CuppingSession[]>;
   }
 
+  getPublicUserCuppings(userId: string): Observable<CuppingSession[]> {
+    if (!userId) return of([]);
+    const q = query(
+      this.cuppingCollection, 
+      where('userId', '==', userId),
+      where('isPublic', '==', true),
+      orderBy('timestamp', 'desc'), 
+      limit(50)
+    );
+    return collectionData(q, { idField: 'id' }) as Observable<CuppingSession[]>;
+  }
+
   getPublicCuppings(options?: { 
     process?: string, 
     origin?: string, 
