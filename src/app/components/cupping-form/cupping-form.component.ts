@@ -224,7 +224,7 @@ import { DynamicFlavorWheelComponent } from '../flavor-wheel/flavor-wheel.compon
         </div> <!-- Close form-sections-container -->
 
         <footer class="form-sticky-actions glass-card">
-          <button type="button" class="btn-cancel" (click)="cancel()">{{ t('BTN_CANCEL') }}</button>
+          <button type="button" class="btn-cancel" (click)="cancel()">{{ t('BTN_CANCEL') === 'BTN_CANCEL' ? 'Cancel' : t('BTN_CANCEL') }}</button>
           <div class="action-spacer"></div>
           <button type="submit" class="btn-primary btn-submit" [disabled]="loading || cuppingForm.invalid">
              <span>{{ loading ? 'Publishing...' : (cuppingForm.invalid ? 'Fill required fields' : t('BTN_SAVE')) }}</span>
@@ -324,7 +324,7 @@ import { DynamicFlavorWheelComponent } from '../flavor-wheel/flavor-wheel.compon
     .form-container {
       max-width: 800px;
       margin: 0 auto;
-      padding-bottom: 120px;
+      padding-bottom: 300px;
     }
     .form-header {
       margin-bottom: 30px;
@@ -694,7 +694,7 @@ import { DynamicFlavorWheelComponent } from '../flavor-wheel/flavor-wheel.compon
     }
     .form-sticky-actions {
       position: fixed;
-      bottom: 110px;
+      bottom: 120px;
       left: 15px;
       right: 15px;
       max-width: 770px;
@@ -729,7 +729,7 @@ import { DynamicFlavorWheelComponent } from '../flavor-wheel/flavor-wheel.compon
     @media (max-width: 640px) {
       .form-section { padding: 25px; }
       .header-content h2 { font-size: 2rem; }
-      .form-sticky-actions { bottom: 100px; }
+      .form-sticky-actions { bottom: 105px; }
     }
     .final-score-bar.specialty {
       background: var(--primary-gradient) !important;
@@ -784,7 +784,8 @@ import { DynamicFlavorWheelComponent } from '../flavor-wheel/flavor-wheel.compon
       cursor: pointer;
       user-select: none;
       font-weight: 700;
-      color: var(--text-main);
+      color: #ffffff;
+      padding: 10px 0;
     }
     .checkbox-container input {
       position: absolute;
