@@ -58,10 +58,19 @@ import { FlavorPickerComponent } from '../flavor-picker/flavor-picker.component'
     </div>
 
     <div class="form-container animate-fade" *ngIf="!showGuide">
-      <div class="glass-card">
-        <h2 class="brand-font">New Cupping Session</h2>
-        
-        <form #cuppingForm="ngForm" (ngSubmit)="cuppingForm.valid && submit()">
+      <header class="form-header immersive">
+        <div class="header-visual">
+          <img src="/assets/hero-cupping.png" alt="Form Hero" class="header-image">
+          <div class="header-overlay"></div>
+        </div>
+        <div class="header-content">
+          <h2 class="brand-font">New Cupping Session</h2>
+          <p class="header-sub">SCA Value Assessment Protocol</p>
+        </div>
+      </header>
+
+      <form #cuppingForm="ngForm" (ngSubmit)="cuppingForm.valid && submit()" class="modern-form">
+        <div class="form-sections-container">
           <section class="basic-info">
             <!-- OCR Section -->
             <div class="ocr-section animate-fade">
@@ -232,12 +241,16 @@ import { FlavorPickerComponent } from '../flavor-picker/flavor-picker.component'
             </label>
           </div>
 
-          <button type="submit" class="btn-primary w-full" [disabled]="loading || cuppingForm.invalid">
-            <span *ngIf="!loading">{{ cuppingForm.invalid ? 'Fill required fields' : t('BTN_SAVE') }}</span>
-            <span *ngIf="loading">Publishing...</span>
+        </div> <!-- Close form-sections-container -->
+
+        <footer class="form-sticky-actions glass-card">
+          <button type="button" class="btn-cancel" (click)="cancel()">{{ t('BTN_CANCEL') }}</button>
+          <div class="action-spacer"></div>
+          <button type="submit" class="btn-primary btn-submit" [disabled]="loading || cuppingForm.invalid">
+             <span>{{ loading ? 'Publishing...' : (cuppingForm.invalid ? 'Fill required fields' : t('BTN_SAVE')) }}</span>
           </button>
-        </form>
-      </div>
+        </footer>
+      </form>
     </div>
 
     <!-- Flavor Picker Modal -->
@@ -329,9 +342,85 @@ import { FlavorPickerComponent } from '../flavor-picker/flavor-picker.component'
       .guide-card { padding: 30px 20px; }
     }
     .form-container {
-      max-width: 900px;
-      margin: 40px auto;
-      padding: 0 20px;
+      max-width: 800px;
+      margin: 0 auto;
+      padding-bottom: 120px;
+    }
+    .form-header {
+      margin-bottom: 30px;
+      padding: 0;
+      position: relative;
+      border-radius: var(--radius-lg);
+      overflow: hidden;
+      min-height: 250px;
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-end;
+      border: 1px solid var(--glass-border);
+      box-shadow: 0 20px 80px rgba(0,0,0,0.6);
+    }
+    .header-visual {
+      position: absolute;
+      inset: 0;
+      z-index: 0;
+    }
+    .header-image {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      filter: brightness(0.6) contrast(1.1);
+    }
+    .header-overlay {
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(to bottom, transparent 0%, rgba(12, 12, 14, 0.5) 40%, var(--bg-color) 100%);
+    }
+    .header-content {
+      position: relative;
+      z-index: 1;
+      padding: 40px;
+    }
+    .header-content h2 { 
+      font-size: 2.5rem; 
+      margin: 0; 
+      line-height: 1;
+      text-shadow: 0 5px 20px rgba(0,0,0,0.5);
+    }
+    .header-sub {
+      color: var(--primary-color);
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 2px;
+      font-size: 0.8rem;
+      margin-top: 10px;
+    }
+    .form-sections-container {
+      display: flex;
+      flex-direction: column;
+      gap: 30px;
+    }
+    .form-section {
+      background: rgba(12, 12, 14, 0.4);
+      padding: 40px;
+      border-radius: var(--radius-lg);
+      backdrop-filter: blur(20px);
+      border: 1px solid var(--glass-border);
+      box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+    }
+    .section-title {
+      font-size: 1.4rem;
+      margin-bottom: 30px;
+      font-weight: 800;
+      color: var(--text-main);
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .section-title::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: var(--glass-border);
     }
     .basic-info {
       display: grid;
@@ -587,6 +676,45 @@ import { FlavorPickerComponent } from '../flavor-picker/flavor-picker.component'
       justify-content: space-between;
       align-items: center;
       border: 1px solid var(--glass-border);
+    }
+    .form-sticky-actions {
+      position: fixed;
+      bottom: 110px;
+      left: 15px;
+      right: 15px;
+      max-width: 770px;
+      margin: 0 auto;
+      padding: 15px 25px;
+      display: flex;
+      align-items: center;
+      z-index: 100;
+      border-radius: 20px;
+      box-shadow: 0 20px 50px rgba(0,0,0,0.6);
+      border: 1px solid rgba(255,255,255,0.1);
+      background: rgba(12, 12, 14, 0.8);
+      backdrop-filter: blur(20px);
+    }
+    .btn-submit {
+      padding: 0 40px;
+      height: 52px;
+      border-radius: 100px;
+    }
+    .btn-cancel {
+       background: transparent;
+       border: none;
+       color: var(--text-dim);
+       font-weight: 800;
+       text-transform: uppercase;
+       letter-spacing: 1px;
+       cursor: pointer;
+       font-size: 0.8rem;
+    }
+    .action-spacer { flex: 1; }
+    
+    @media (max-width: 640px) {
+      .form-section { padding: 25px; }
+      .header-content h2 { font-size: 2rem; }
+      .form-sticky-actions { bottom: 100px; }
     }
     .final-score-bar.specialty {
       background: var(--primary-gradient) !important;
