@@ -71,7 +71,8 @@ import { FlavorPickerComponent } from '../flavor-picker/flavor-picker.component'
 
       <form #cuppingForm="ngForm" (ngSubmit)="cuppingForm.valid && submit()" class="modern-form">
         <div class="form-sections-container">
-          <section class="basic-info">
+          <section class="form-section">
+            <h3 class="section-title">Coffee Identity</h3>
             <!-- OCR Section -->
             <div class="ocr-section animate-fade">
               <input type="file" #fileInput accept="image/*" capture="environment" style="display: none" (change)="processImage($event)">
@@ -81,165 +82,134 @@ import { FlavorPickerComponent } from '../flavor-picker/flavor-picker.component'
                 <span *ngIf="isScanning" style="font-size: 0.95rem; font-weight: 500;">{{ scannerStatus }}</span>
               </button>
             </div>
-            <!-- Input Groups -->
-            <div class="input-group">
-              <label>Bean Name <span class="required">*</span></label>
-              <input [(ngModel)]="session.beanName" name="beanName" #beanName="ngModel" placeholder="e.g. Ethiopia Yirgacheffe" required>
-              <span class="error-text" *ngIf="beanName.invalid && beanName.touched">Bean name is required</span>
-            </div>
-            <div class="input-group">
-              <label>Type</label>
-              <select [(ngModel)]="session.type" name="type">
-                <option value="Arabica">Arabica</option>
-                <option value="Robusta">Robusta</option>
-                <option value="Liberica">Liberica</option>
-                <option value="Excelsa">Excelsa</option>
-              </select>
-            </div>
-            <div class="input-group">
-              <label>Roastery <span class="required">*</span></label>
-              <input [(ngModel)]="session.roastery" name="roastery" #roastery="ngModel" placeholder="e.g. Blue Bottle" required>
-              <span class="error-text" *ngIf="roastery.invalid && roastery.touched">Roastery is required</span>
-            </div>
-            <div class="input-group">
-              <label>Pasca Panen</label>
-              <select [(ngModel)]="session.postHarvest" name="postHarvest">
-                <option value="Wash">Wash</option>
-                <option value="Natural">Natural</option>
-                <option value="Honey">Honey</option>
-                <option value="Anaerobic">Anaerobic</option>
-                <option value="Other">Other</option>
-              </select>
-            </div>
-            <!-- ... more basic info ... -->
-            <div class="input-group">
-              <label>Metode Seduh</label>
-              <select [(ngModel)]="session.brewMethod" name="brewMethod">
-                <option value="Cupping Protocol">Cupping Protocol</option>
-                <option value="V60">V60</option>
-                <option value="Aeropress">Aeropress</option>
-                <option value="French Press">French Press</option>
-                <option value="Other">Other</option>
-              </select>
-            </div>
-            <div class="input-group">
-              <label>Nama Penguji</label>
-              <input [(ngModel)]="session.cupperName" name="cupperName" placeholder="e.g. John Doe">
-            </div>
 
-            <!-- Product Photo Upload -->
-            <div class="photo-upload-section">
-              <label class="photo-label">Product Photo (Optional)</label>
-              <div class="photo-box" (click)="productFileInput.click()" [class.has-image]="productImagePreview">
-                <input type="file" #productFileInput accept="image/*" style="display: none" (change)="onProductImageSelected($event)">
-                <img *ngIf="productImagePreview" [src]="productImagePreview" alt="Preview" class="photo-preview">
-                <div class="photo-placeholder" *ngIf="!productImagePreview">
-                  <span class="icon">🖼️</span>
-                  <span>Add Product Photo</span>
-                </div>
-                <div class="photo-overlay" *ngIf="productImagePreview">
-                   <span>Change Photo</span>
+            <div class="basic-info" style="margin-top:0">
+              <div class="input-group">
+                <label>Bean Name <span class="required">*</span></label>
+                <input [(ngModel)]="session.beanName" name="beanName" #beanName="ngModel" placeholder="e.g. Ethiopia Yirgacheffe" required>
+              </div>
+              <div class="input-group">
+                <label>Type</label>
+                <select [(ngModel)]="session.type" name="type">
+                  <option value="Arabica">Arabica</option>
+                  <option value="Robusta">Robusta</option>
+                  <option value="Liberica">Liberica</option>
+                  <option value="Excelsa">Excelsa</option>
+                </select>
+              </div>
+              <div class="input-group">
+                <label>Roastery <span class="required">*</span></label>
+                <input [(ngModel)]="session.roastery" name="roastery" #roastery="ngModel" placeholder="e.g. Blue Bottle" required>
+              </div>
+              <div class="input-group">
+                <label>Pasca Panen</label>
+                <select [(ngModel)]="session.postHarvest" name="postHarvest">
+                  <option value="Wash">Wash</option>
+                  <option value="Natural">Natural</option>
+                  <option value="Honey">Honey</option>
+                  <option value="Anaerobic">Anaerobic</option>
+                  <option value="Other">Other</option>
+                </select>
+              </div>
+              <!-- Product Photo -->
+              <div class="photo-upload-section">
+                <label class="photo-label">Product Image</label>
+                <input type="file" #photoInput accept="image/*" style="display: none" (change)="onProductImageSelected($event)">
+                <div class="photo-box" (click)="photoInput.click()" [class.has-image]="productImagePreview">
+                  <img *ngIf="productImagePreview" [src]="productImagePreview" class="photo-preview" alt="Preview">
+                  <div class="photo-placeholder" *ngIf="!productImagePreview">
+                    <span class="icon">☕</span>
+                    <span>Upload Product Photo</span>
+                  </div>
+                  <div class="photo-overlay" *ngIf="productImagePreview">Change Photo</div>
                 </div>
               </div>
             </div>
           </section>
 
-          <section class="cva-section">
-            <h2 class="section-badge">Descriptive Assessment (Intensity)</h2>
+          <section class="form-section">
+            <h3 class="section-title">Descriptive Intensity</h3>
             <div class="intensity-grid">
                <div class="intensity-item">
                   <div class="intensity-header">
-                     <label>Acidity Intensity</label>
+                     <label>Acidity</label>
                      <span>{{ session.intensities!.acidity }}</span>
                   </div>
                   <input type="range" min="1" max="10" step="1" [(ngModel)]="session.intensities!.acidity" name="int-acidity">
-                  <div class="range-labels"><span>Low</span><span>High</span></div>
                </div>
                <div class="intensity-item">
                   <div class="intensity-header">
-                     <label>Body Intensity</label>
+                     <label>Body</label>
                      <span>{{ session.intensities!.body }}</span>
                   </div>
                   <input type="range" min="1" max="10" step="1" [(ngModel)]="session.intensities!.body" name="int-body">
-                  <div class="range-labels"><span>Low</span><span>High</span></div>
                </div>
                <div class="intensity-item">
                   <div class="intensity-header">
-                     <label>Sweetness Intensity</label>
+                     <label>Sweetness</label>
                      <span>{{ session.intensities!.sweetness }}</span>
                   </div>
                   <input type="range" min="1" max="10" step="1" [(ngModel)]="session.intensities!.sweetness" name="int-sweetness">
-                  <div class="range-labels"><span>Low</span><span>High</span></div>
                </div>
             </div>
           </section>
 
           <!-- NEW FLAVOR PICKER SECTION -->
-          <section class="cva-section">
-            <div class="section-title-row">
-              <h2 class="section-badge">Flavor Profile</h2>
+          <section class="form-section">
+            <div class="section-title-row" style="margin-bottom: 25px;">
+              <h3 class="section-title" style="margin-bottom:0">Sensory Fingerprint</h3>
               <button type="button" class="btn-wheel-open" (click)="showFlavorPicker = true">
-                <span class="wheel-icon">🛞</span> Wheel Picker
+                <span>Select Flavors</span>
               </button>
             </div>
             
             <div class="flavor-display">
               <div class="flavor-chips" *ngIf="session.flavorNotes.length > 0">
                  <div *ngFor="let note of session.flavorNotes" class="chip active" (click)="toggleFlavor(note)">
-                    {{ note }} <span class="remove-x">✕</span>
+                    {{ note }} ✕
                  </div>
               </div>
               <div class="empty-flavor" *ngIf="session.flavorNotes.length === 0" (click)="showFlavorPicker = true">
-                <p>Klik tombol roda untuk menganalisis profil rasa...</p>
+                <p>Tap to select descriptors from the SCA Wheel...</p>
               </div>
             </div>
           </section>
 
-          <section class="scoring-section">
-            <div class="section-title-row">
-              <h2 class="section-badge">Affective Assessment (Quality)</h2>
-              <span class="range-info">6.0 - 10.0</span>
-            </div>
-            <div class="scores-grid">
+          <section class="form-section">
+            <h3 class="section-title">Affective Quality Scores</h3>
+            <div class="intensity-grid">
               <div class="score-card" *ngFor="let key of scoreKeys">
                 <div class="score-header">
                   <label>{{ formatLabel(key) }}</label>
                   <span class="value">{{ session.scores[key] | number:'1.2-2' }}</span>
                 </div>
-                <div class="slider-row">
+                <div class="slider-row" style="display: flex; gap: 10px; align-items: center;">
                   <button type="button" class="btn-step" (click)="stepScore(key, -0.25)">-</button>
-                  <input type="range" min="6" max="10" step="0.25" [(ngModel)]="session.scores[key]" [name]="key" (input)="updateTotal()">
+                  <input type="range" min="6" max="10" step="0.25" [(ngModel)]="session.scores[key]" [name]="key" (input)="updateTotal()" style="flex:1">
                   <button type="button" class="btn-step" (click)="stepScore(key, 0.25)">+</button>
                 </div>
               </div>
             </div>
-          </section>
 
-          <section class="defects-section">
-             <div class="input-group">
-                <label>Defects (Negative Points)</label>
-                <div class="defect-input">
-                  <input type="number" [(ngModel)]="session.defects" name="defects" (input)="updateTotal()" min="0" step="1">
-                  <span class="defect-hint">Points to subtract from total</span>
-                </div>
-             </div>
-          </section>
-
-          <div class="final-score-bar" [class.specialty]="session.finalScore >= 80">
-            <div class="score-label">
-              <span>{{ t('FINAL_SCORE') }}</span>
-              <small *ngIf="session.finalScore >= 80">{{ t('SPECIALTY_GRADE') }}</small>
+            <div class="final-score-bar" [class.specialty]="session.finalScore >= 80" style="margin-top: 40px;">
+              <div class="score-label">
+                <span>Final Assessment</span>
+                <small *ngIf="session.finalScore >= 80" style="font-weight: 900; letter-spacing: 1px;">SPECIALTY GRADE</small>
+              </div>
+              <span class="final-value">{{ session.finalScore | number:'1.2-2' }}</span>
             </div>
-            <span class="final-value">{{ session.finalScore | number:'1.2-2' }}</span>
-          </div>
+          </section>
 
-          <div class="form-options">
-            <label class="checkbox-container">
-              <input type="checkbox" [(ngModel)]="session.isPublic" name="isPublic">
-              <span class="checkmark"></span>
-              <span class="label-text">Publish to Community Board</span>
-            </label>
-          </div>
+          <section class="form-section">
+            <h3 class="section-title">Visibility & Community</h3>
+            <div class="form-options" style="margin: 0; padding: 0; border: none;">
+              <label class="checkbox-container">
+                <input type="checkbox" [(ngModel)]="session.isPublic" name="isPublic">
+                <span class="checkmark"></span>
+                <span class="label-text">Broadcast to Specialty Feed</span>
+              </label>
+            </div>
+          </section>
 
         </div> <!-- Close form-sections-container -->
 
@@ -1085,11 +1055,15 @@ export class CuppingFormComponent implements OnInit {
         const docRef = await this.cuppingService.addCupping(this.session);
         this.router.navigate(['/result', docRef.id]);
       }
-    } catch (e) {
-      console.error(e);
+    } catch (err) {
+      console.error('Error saving cupping:', err);
       alert('Error saving cupping session');
     } finally {
       this.loading = false;
     }
+  }
+
+  cancel() {
+    this.router.navigate(['/profile']);
   }
 }
