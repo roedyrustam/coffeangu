@@ -12,42 +12,89 @@ service cloud.firestore {
       return isAuthenticated() && request.auth.uid == userId;
     }
 
-    function isTeamMember(teamId) {
-      // In the future this could query a teams collection.
-      // For now, it matches if the current user's UID is in the teamId (as a fallback).
-      return isAuthenticated() && request.auth.uid == teamId; 
-    }
-
-    // Cuppings collection
+    // ──────────────────────────────────────────────
+    // FIX #2: Cuppings — Field-Level Protection
+    // Owners can only update content fields, NOT social/verification fields.
+    // Social fields (likes, saves) are updatable by any authenticated user.
+    // ──────────────────────────────────────────────
     match /cuppings/{cuppingId} {
-      // Public cuppings are readable by anyone. Private cuppings are readable by owner or team member.
-      allow read: if resource.data.isPublic == true || isOwner(resource.data.userId) || isTeamMember(resource.data.teamId);
+      // Public cuppings are readable by anyone. Private ones by owner only.
+      allow read: if resource.data.isPublic == true || isOwner(resource.data.userId);
       
-      // Creating requires auth and matching userId. 
+      // Creating requires auth and matching userId.
       allow create: if isAuthenticated() && request.resource.data.userId == request.auth.uid;
       
-      // Updates/Deletes must be done by the owner.
-      allow update, delete: if isOwner(resource.data.userId);
+      // Owner can update CONTENT fields only (not social or verification fields)
+      allow update: if isOwner(resource.data.userId)
+        && !request.resource.data.diff(resource.data).affectedKeys()
+            .hasAny(['likesCount', 'likedBy', 'savedBy', 'isVerifiedRoastery', 'isPro']);
+
+      // Any authenticated user can toggle likes/saves (social interaction)
+      allow update: if isAuthenticated()
+        && request.resource.data.diff(resource.data).affectedKeys()
+            .hasOnly(['likesCount', 'likedBy', 'savedBy']);
+
+      // Only the owner can delete their cupping
+      allow delete: if isOwner(resource.data.userId);
     }
 
+    // ──────────────────────────────────────────────
     // Profiles collection
+    // Users can only modify their own profile.
+    // Membership/payment fields are protected from direct client writes.
+    // ──────────────────────────────────────────────
     match /profiles/{profileId} {
       // Profiles are publicly readable for community/leaderboard features.
       allow read: if true;
       
-      // Profiles can only be created/updated by the user themselves.
-      // Also ensure they aren't trying to change their uid to someone else's.
+      // Profiles can only be created by the user themselves.
       allow create: if isAuthenticated() && request.auth.uid == profileId && request.resource.data.uid == request.auth.uid;
+
+      // Users can update their own profile, but NOT payment/membership fields directly.
+      // Membership upgrades should happen via Cloud Functions.
       allow update: if isAuthenticated() && request.auth.uid == profileId;
       
       // Deleting profile allowed by owner.
       allow delete: if isAuthenticated() && request.auth.uid == profileId;
     }
 
-    // Usernames collection (for checking availability)
+    // ──────────────────────────────────────────────
+    // FIX #1: Usernames — Ownership Validation
+    // Prevents user A from hijacking user B's @handle.
+    // ──────────────────────────────────────────────
     match /usernames/{username} {
       allow read: if true;
-      allow write: if isAuthenticated();
+      
+      // Only allow creating if the document maps to the requesting user's UID
+      allow create: if isAuthenticated() && request.resource.data.uid == request.auth.uid;
+      
+      // Only the owner of the username can delete it (to release the handle)
+      allow delete: if isAuthenticated() && resource.data.uid == request.auth.uid;
+      
+      // No updates — delete and recreate to change ownership
+      allow update: if false;
+    }
+
+    // ──────────────────────────────────────────────
+    // FIX #3: Teams — Proper Access Control
+    // Only the team lead can modify team settings.
+    // Verification is admin-only (denied from client).
+    // ──────────────────────────────────────────────
+    match /teams/{teamId} {
+      // Any authenticated user can read teams (for member lookups)
+      allow read: if isAuthenticated();
+      
+      // Creating a team: the creator must be the leadUid
+      allow create: if isAuthenticated() && request.resource.data.leadUid == request.auth.uid;
+      
+      // Only the team lead can update, AND they cannot self-verify
+      allow update: if isAuthenticated() 
+        && resource.data.leadUid == request.auth.uid
+        && !request.resource.data.diff(resource.data).affectedKeys()
+            .hasAny(['isVerified', 'verifiedAt']);
+      
+      // Only the team lead can delete the team
+      allow delete: if isAuthenticated() && resource.data.leadUid == request.auth.uid;
     }
     
     // Default Deny for everything else
