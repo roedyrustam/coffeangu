@@ -93,15 +93,11 @@ import { CuppingSession } from '../../models/cupping.model';
             </div>
           </div>
         </div>
-
-        <div class="empty-state" *ngIf="cuppings()?.length === 0">
-           <p>No cupping sessions found. Start your first session!</p>
-           <button class="btn-primary" routerLink="/cupping">Start Cupping</button>
-        </div>
-      <button class="fab-button" routerLink="/cupping">
-        <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14m-7-7v14"/></svg>
-      </button>
-    </div>
+        </section>
+        <button class="fab-button" routerLink="/cupping">
+          <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14m-7-7v14"/></svg>
+        </button>
+      </div>
   `,
   styles: [`
     .dashboard-container {

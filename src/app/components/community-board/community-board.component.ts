@@ -91,9 +91,9 @@ import { AuthService } from '../../services/auth.service';
 
           <div class="session-performance">
             <div class="mini-sensory">
-               <div class="mini-bar" [style.height.%]="(session.scores?.flavor - 6) * 25" [style.background]="getBarColor(session.scores?.flavor)" title="Flavor"></div>
-               <div class="mini-bar" [style.height.%]="(session.scores?.acidity - 6) * 25" [style.background]="getBarColor(session.scores?.acidity)" title="Acidity"></div>
-               <div class="mini-bar" [style.height.%]="(session.scores?.body - 6) * 25" [style.background]="getBarColor(session.scores?.body)" title="Body"></div>
+               <div class="mini-bar" [style.height.%]="(session.scores.flavor - 6) * 25" [style.background]="getBarColor(session.scores.flavor)" title="Flavor"></div>
+               <div class="mini-bar" [style.height.%]="(session.scores.acidity - 6) * 25" [style.background]="getBarColor(session.scores.acidity)" title="Acidity"></div>
+               <div class="mini-bar" [style.height.%]="(session.scores.body - 6) * 25" [style.background]="getBarColor(session.scores.body)" title="Body"></div>
             </div>
           </div>
 
