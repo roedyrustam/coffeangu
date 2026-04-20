@@ -14,18 +14,23 @@ import { CuppingSession } from '../../models/cupping.model';
   imports: [CommonModule, RouterLink],
   template: `
     <div class="dashboard-container animate-fade">
-      <header class="hero">
-        <div class="mesh-bg"></div>
-        <div class="greeting-row">
-          <div class="user-meta">
-            <span class="greeting-text">{{ getGreeting() }}</span>
-            <h1 class="brand-font">{{ auth.currentUser()?.displayName || 'Cupper' }}</h1>
-          </div>
-          <div class="mini-profile" [routerLink]="['/profile']">
-             <img [src]="auth.currentUser()?.photoURL || 'https://api.dicebear.com/7.x/bottts/svg?seed=coffee'" alt="Profile">
-          </div>
+      <header class="hero immersive">
+        <div class="hero-visual">
+          <img src="/assets/hero-dashboard.png" alt="Hero" class="hero-image">
+          <div class="hero-overlay"></div>
         </div>
-        <p class="hero-sub">{{ t('HERO_SUBTITLE') }}</p>
+        <div class="hero-content">
+          <div class="greeting-row">
+            <div class="user-meta">
+              <span class="greeting-text">{{ getGreeting() }}</span>
+              <h1 class="brand-font">{{ auth.currentUser()?.displayName || 'Cupper' }}</h1>
+            </div>
+            <div class="mini-profile" [routerLink]="['/profile']">
+               <img [src]="auth.currentUser()?.photoURL || 'https://api.dicebear.com/7.x/bottts/svg?seed=coffee'" alt="Profile">
+            </div>
+          </div>
+          <p class="hero-sub">{{ t('HERO_SUBTITLE') }}</p>
+        </div>
       </header>
 
       <section class="stats-carousel scrollbar-hidden">
@@ -107,45 +112,82 @@ import { CuppingSession } from '../../models/cupping.model';
     }
     .hero {
       text-align: left;
-      margin-bottom: 50px;
+      margin-bottom: 60px;
       position: relative;
-      padding: 20px 0;
+      border-radius: var(--radius-lg);
+      overflow: hidden;
+      min-height: 420px;
+      display: flex;
+      align-items: flex-end;
+      padding: 60px;
+      border: 1px solid var(--glass-border);
+      box-shadow: 0 20px 80px rgba(0,0,0,0.6);
+    }
+    .hero-visual {
+      position: absolute;
+      top: 0; left: 0; right: 0; bottom: 0;
+      z-index: 0;
+    }
+    .hero-image {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      filter: brightness(0.7) contrast(1.1);
+      transition: transform 10s linear;
+    }
+    .hero:hover .hero-image {
+      transform: scale(1.1);
+    }
+    .hero-overlay {
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(to bottom, transparent 0%, rgba(12, 12, 14, 0.4) 40%, var(--bg-color) 100%);
+    }
+    .hero-content {
+      position: relative;
+      z-index: 1;
+      width: 100%;
     }
     .greeting-row {
       display: flex;
       justify-content: space-between;
-      align-items: center;
-      margin-bottom: 20px;
+      align-items: flex-end;
+      margin-bottom: 25px;
     }
     .greeting-text {
       color: var(--primary-color);
       font-weight: 800;
       text-transform: uppercase;
-      letter-spacing: 2px;
-      font-size: 0.85rem;
+      letter-spacing: 3px;
+      font-size: 0.9rem;
+      text-shadow: 0 2px 10px rgba(0,0,0,0.5);
     }
     .mini-profile {
-      width: 50px;
-      height: 50px;
-      border-radius: 15px;
+      width: 65px;
+      height: 65px;
+      border-radius: 20px;
       overflow: hidden;
       border: 2px solid var(--primary-color);
-      box-shadow: 0 8px 20px var(--primary-glow);
+      box-shadow: 0 12px 30px rgba(189, 142, 98, 0.4);
       cursor: pointer;
+      backdrop-filter: blur(10px);
     }
     .mini-profile img { width: 100%; height: 100%; object-fit: cover; }
     .hero h1 {
-      font-size: 3.5rem;
+      font-size: 4.5rem;
       color: var(--text-main);
       margin-top: 5px;
+      line-height: 0.9;
+      text-shadow: 0 10px 30px rgba(0,0,0,0.8);
     }
     .hero-sub {
-      color: var(--text-dim);
+      color: var(--text-main);
       font-size: 1.1rem;
-      letter-spacing: 2px;
+      letter-spacing: 4px;
       text-transform: uppercase;
-      font-weight: 600;
-      opacity: 0.7;
+      font-weight: 700;
+      opacity: 0.8;
+      text-shadow: 0 2px 4px rgba(0,0,0,0.5);
     }
     .stats-carousel {
       display: flex;
