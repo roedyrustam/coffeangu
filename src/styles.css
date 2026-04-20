@@ -144,3 +144,18 @@ input:focus {
 .animate-fade {
   animation: fadeIn 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
+
+/* Premium Refinements */
+@keyframes pulse-specialty {
+  0% { transform: scale(1); box-shadow: 0 0 0 0 rgba(212, 225, 87, 0.4); }
+  70% { transform: scale(1.05); box-shadow: 0 0 0 10px rgba(212, 225, 87, 0); }
+  100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(212, 225, 87, 0); }
+}
+
+.specialty-pulse {
+  animation: pulse-specialty 2s infinite;
+}
+
+.glow-perunggu {
+  box-shadow: 0 0 15px var(--primary-glow);
+}

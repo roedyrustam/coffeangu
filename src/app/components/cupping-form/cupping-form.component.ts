@@ -728,12 +728,18 @@ export class CuppingFormComponent implements OnInit {
       else if (text.includes('robusta')) this.session.type = 'Robusta';
       else if (text.includes('liberica')) this.session.type = 'Liberica';
 
-      if (text.includes('wash') || text.includes('washed')) this.session.postHarvest = 'Wash';
-      else if (text.includes('natural') || text.includes('dry')) this.session.postHarvest = 'Natural';
+      if (text.includes('wash')) this.session.postHarvest = 'Wash';
+      else if (text.includes('natural') || text.includes('dry') || text.includes('jemur')) this.session.postHarvest = 'Natural';
       else if (text.includes('honey')) this.session.postHarvest = 'Honey';
-      else if (text.includes('anaerobic')) this.session.postHarvest = 'Anaerobic';
+      else if (text.includes('anaerobic') || text.includes('anaerob')) this.session.postHarvest = 'Anaerobic';
+      else if (text.includes('experimental') || text.includes('carbonic')) this.session.postHarvest = 'Other';
       
-      const origins = ['ethiopia', 'colombia', 'brazil', 'indonesia', 'kenya', 'rwanda', 'panama', 'costa rica', 'sumatra', 'jawa', 'gayo'];
+      const origins = [
+        'ethiopia', 'colombia', 'brazil', 'indonesia', 'kenya', 'rwanda', 
+        'panama', 'costa rica', 'sumatra', 'jawa', 'gayo', 'toraja', 
+        'sidikalang', 'kintamani', 'temanggung', 'ciwidey', 'preanger',
+        'bali', 'flores', 'papua', 'guatemala', 'honduras', 'vietnam'
+      ];
       for (const origin of origins) {
         if (text.includes(origin)) {
           this.session.origin = origin.charAt(0).toUpperCase() + origin.slice(1);

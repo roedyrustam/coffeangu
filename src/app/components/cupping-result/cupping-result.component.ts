@@ -28,7 +28,7 @@ Chart.register(RadarController, RadialLinearScale, PointElement, LineElement, Fi
             <span class="label">{{ t('FINAL_SCORE') }}</span>
             <span class="value">{{ session.finalScore | number:'1.2-2' }}</span>
           </div>
-          <div class="rating-label" [class.specialty]="session.finalScore >= 80">
+          <div class="rating-label" [class.specialty]="session.finalScore >= 80" [class.specialty-pulse]="session.finalScore >= 80">
             {{ getRating(session.finalScore) }}
           </div>
 
@@ -82,15 +82,15 @@ Chart.register(RadarController, RadialLinearScale, PointElement, LineElement, Fi
               <div class="intensity-bars-row">
                   <div class="int-bar-item">
                      <label>{{ t('ACIDITY') }}</label>
-                     <div class="int-track"><div class="int-fill" [style.width.%]="(session?.intensities?.acidity || 0) * 10"></div></div>
+                     <div class="int-track"><div class="int-fill glow-perunggu" [style.width.%]="(session.intensities?.acidity || 0) * 10"></div></div>
                   </div>
                   <div class="int-bar-item">
                      <label>{{ t('BODY') }}</label>
-                     <div class="int-track"><div class="int-fill" [style.width.%]="(session?.intensities?.body || 0) * 10"></div></div>
+                     <div class="int-track"><div class="int-fill glow-perunggu" [style.width.%]="(session.intensities?.body || 0) * 10"></div></div>
                   </div>
                   <div class="int-bar-item">
                      <label>{{ t('SWEETNESS') }}</label>
-                     <div class="int-track"><div class="int-fill" [style.width.%]="(session?.intensities?.sweetness || 0) * 10"></div></div>
+                     <div class="int-track"><div class="int-fill glow-perunggu" [style.width.%]="(session.intensities?.sweetness || 0) * 10"></div></div>
                   </div>
               </div>
            </div>
