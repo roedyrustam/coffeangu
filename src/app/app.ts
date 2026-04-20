@@ -201,7 +201,7 @@ import { SeoService } from './services/seo.service';
     .mobile-bottom-nav {
       display: none;
       position: fixed;
-      bottom: 25px;
+      bottom: 15px;
       left: 15px;
       right: 15px;
       height: 68px;
