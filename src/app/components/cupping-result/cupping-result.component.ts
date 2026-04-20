@@ -9,6 +9,8 @@ import { CuppingSession } from '../../models/cupping.model';
 import html2canvas from 'html2canvas';
 import { MembershipService } from '../../services/membership.service';
 import { Chart, RadarController, RadialLinearScale, PointElement, LineElement, Filler, Tooltip, Legend } from 'chart.js';
+import { TeamService } from '../../services/team.service';
+import { Team } from '../../models/team.model';
 
 Chart.register(RadarController, RadialLinearScale, PointElement, LineElement, Filler, Tooltip, Legend);
 

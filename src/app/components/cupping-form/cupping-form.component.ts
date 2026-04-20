@@ -1140,12 +1140,27 @@ export class CuppingFormComponent implements OnInit {
   async submit() {
     this.loading = true;
     try {
+      // Phase 1: Image Upload (if selected)
       if (this.productImageFile) {
-        this.loading = true; // Still loading
-        const photoUrl = await this.cuppingService.uploadProductImage(this.productImageFile);
-        this.session.productImageUrl = photoUrl;
+        try {
+          const photoUrl = await this.cuppingService.uploadProductImage(this.productImageFile);
+          this.session.productImageUrl = photoUrl;
+        } catch (uploadErr: any) {
+          const msg = uploadErr?.message || '';
+          if (msg.includes('NETWORK_ERROR')) {
+            alert('⚠️ Gagal mengunggah gambar. Periksa koneksi internet Anda dan coba lagi.');
+          } else if (msg.includes('PERMISSION_DENIED')) {
+            alert('⚠️ Anda tidak memiliki izin untuk mengunggah gambar. Silakan login ulang.');
+          } else {
+            alert('⚠️ Gagal mengunggah gambar. Sesi akan disimpan tanpa foto.');
+          }
+          console.error('Image upload failed:', uploadErr);
+          // Continue saving without the image
+          this.session.productImageUrl = undefined;
+        }
       }
 
+      // Phase 2: Save or Update Session
       if (this.isEditMode && this.editId) {
         await this.cuppingService.updateCupping(this.editId, this.session);
         this.router.navigate(['/result', this.editId]);
@@ -1153,9 +1168,13 @@ export class CuppingFormComponent implements OnInit {
         const docRef = await this.cuppingService.addCupping(this.session);
         this.router.navigate(['/result', docRef.id]);
       }
-    } catch (err) {
+    } catch (err: any) {
       console.error('Error saving cupping:', err);
-      alert('Error saving cupping session');
+      if (err?.message?.includes('not authenticated')) {
+        alert('❌ Sesi login Anda telah habis. Silakan login ulang.');
+      } else {
+        alert('❌ Gagal menyimpan sesi cupping. Silakan coba lagi.');
+      }
     } finally {
       this.loading = false;
     }

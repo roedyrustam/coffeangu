@@ -181,6 +181,7 @@ export class CuppingService {
     return collectionData(q, { idField: 'id' }) as Observable<CuppingSession[]>;
   }
 
+  async addCupping(session: CuppingSession) {
     const userId = this.auth.getUserId();
     if (!userId) throw new Error('User not authenticated');
 
@@ -364,12 +365,90 @@ export class CuppingService {
     return getDownloadURL(storageRef);
   }
 
+  /**
+   * Compresses an image file using Canvas API.
+   * Resizes to max 1024px on longest side and outputs as JPEG at 0.8 quality.
+   */
+  private compressImage(file: File, maxSize = 1024, quality = 0.8): Promise<Blob> {
+    return new Promise((resolve, reject) => {
+      const img = new Image();
+      const reader = new FileReader();
+
+      reader.onload = (e) => {
+        img.onload = () => {
+          try {
+            let { width, height } = img;
+
+            // Scale down proportionally
+            if (width > maxSize || height > maxSize) {
+              if (width > height) {
+                height = Math.round((height / width) * maxSize);
+                width = maxSize;
+              } else {
+                width = Math.round((width / height) * maxSize);
+                height = maxSize;
+              }
+            }
+
+            const canvas = document.createElement('canvas');
+            canvas.width = width;
+            canvas.height = height;
+            const ctx = canvas.getContext('2d')!;
+            ctx.drawImage(img, 0, 0, width, height);
+
+            canvas.toBlob(
+              (blob) => {
+                if (blob) {
+                  resolve(blob);
+                } else {
+                  reject(new Error('Canvas compression returned null blob'));
+                }
+              },
+              'image/jpeg',
+              quality
+            );
+          } catch (err) {
+            reject(err);
+          }
+        };
+        img.onerror = () => reject(new Error('Failed to load image for compression'));
+        img.src = e.target?.result as string;
+      };
+      reader.onerror = () => reject(new Error('Failed to read file'));
+      reader.readAsDataURL(file);
+    });
+  }
+
   async uploadProductImage(file: File): Promise<string> {
     const userId = this.auth.getUserId() || 'anonymous';
-    const filePath = `products/${userId}/${Date.now()}_${file.name}`;
+
+    // Sanitize filename: remove special chars, keep extension
+    const sanitized = file.name
+      .replace(/[^a-zA-Z0-9._-]/g, '_')
+      .replace(/_{2,}/g, '_')
+      .toLowerCase();
+    const filePath = `products/${userId}/${Date.now()}_${sanitized}`;
     const storageRef = ref(this.storage, filePath);
-    await uploadBytes(storageRef, file);
-    return getDownloadURL(storageRef);
+
+    try {
+      // Compress the image before uploading
+      const compressed = await this.compressImage(file);
+      await uploadBytes(storageRef, compressed, {
+        contentType: 'image/jpeg'
+      });
+      return getDownloadURL(storageRef);
+    } catch (err: any) {
+      // Provide specific error context
+      if (err?.code === 'storage/unauthorized') {
+        throw new Error('PERMISSION_DENIED: Anda tidak memiliki izin untuk mengunggah gambar.');
+      } else if (err?.code === 'storage/canceled') {
+        throw new Error('UPLOAD_CANCELED: Unggahan dibatalkan.');
+      } else if (err?.code === 'storage/retry-limit-exceeded' || err?.message?.includes('net::')) {
+        throw new Error('NETWORK_ERROR: Gagal mengunggah gambar. Periksa koneksi internet Anda.');
+      } else {
+        throw new Error(`UPLOAD_FAILED: ${err?.message || 'Gagal mengunggah gambar.'}`);
+      }
+    }
   }
 
   exportToCSV(sessions: CuppingSession[]) {
