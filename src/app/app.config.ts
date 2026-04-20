@@ -4,6 +4,7 @@ import { provideFirebaseApp, initializeApp, getApp, getApps } from '@angular/fir
 import { provideAuth, getAuth } from '@angular/fire/auth';
 import { provideFirestore, initializeFirestore, persistentLocalCache, persistentMultipleTabManager, getFirestore } from '@angular/fire/firestore';
 import { provideStorage, getStorage } from '@angular/fire/storage';
+import { provideFunctions, getFunctions } from '@angular/fire/functions';
 import { PLATFORM_ID, inject } from '@angular/core';
 import { isPlatformBrowser } from '@angular/common';
 
@@ -37,6 +38,7 @@ export const appConfig: ApplicationConfig = {
       }
     }),
     provideStorage(() => getStorage()),
+    provideFunctions(() => getFunctions()),
     provideClientHydration(withEventReplay()), provideServiceWorker('ngsw-worker.js', {
             enabled: !isDevMode(),
             registrationStrategy: 'registerWhenStable:30000'

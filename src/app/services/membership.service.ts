@@ -1,5 +1,6 @@
 import { Injectable, inject } from '@angular/core';
 import { Firestore, doc, updateDoc, getDoc } from '@angular/fire/firestore';
+import { Functions, httpsCallable } from '@angular/fire/functions';
 import { AuthService } from './auth.service';
 import { CuppingService } from './cupping.service';
 import { UserProfile } from '../models/user-profile.model';
@@ -18,6 +19,7 @@ export interface TierDetails {
 })
 export class MembershipService {
   private firestore = inject(Firestore);
+  private functions = inject(Functions);
   private auth = inject(AuthService);
   private cuppingService = inject(CuppingService);
 
@@ -91,21 +93,14 @@ export class MembershipService {
     const user = this.auth.currentUser();
     if (!user) throw new Error('Not authenticated');
 
-    const profileRef = doc(this.firestore, 'profiles', user.uid);
-    
-    const expiry = new Date();
-    expiry.setFullYear(expiry.getFullYear() + 1);
-
-    await updateDoc(profileRef, {
-      membership: tierId,
-      subscriptionExpiry: expiry,
-      lastPaymentId: paymentData.payment_id || paymentData.orderID || 'PAYPAL_HOSTED',
-      lastPaymentDate: new Date(),
-      updatedAt: new Date()
-    });
-
-    // Refresh the user profile cache if necessary
-    console.log(`Membership finalized for ${user.uid}: ${tierId}`);
+    try {
+      const upgradeCallable = httpsCallable<{ tierId: string; paymentData: any }, { success: boolean; tierId: string; expiry: Date }>(this.functions, 'finalizeUpgrade');
+      const result = await upgradeCallable({ tierId, paymentData });
+      console.log(`Membership finalized for ${user.uid}: ${result.data.tierId}`);
+    } catch (error) {
+      console.error('Failed to finalize upgrade:', error);
+      throw error;
+    }
   }
 
   hasAccess(featureId: string, currentTier: 'classic' | 'pro' | 'roastery'): boolean {
