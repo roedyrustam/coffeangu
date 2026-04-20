@@ -19,7 +19,7 @@ app.get('/sitemap.xml', async (req, res) => {
   try {
     const protocol = req.headers['x-forwarded-proto'] || req.protocol;
     const host = `${protocol}://${req.headers.host}`;
-    const FIREBASE_PROJECT_ID = 'coffeescore-cupping-2024';
+    const FIREBASE_PROJECT_ID = process.env['FIREBASE_PROJECT_ID'] || 'coffeescore-cupping-2024';
     const baseUrl = `https://firestore.googleapis.com/v1/projects/${FIREBASE_PROJECT_ID}/databases/(default)/documents`;
 
     const urls = [

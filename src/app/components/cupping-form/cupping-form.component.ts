@@ -1108,7 +1108,9 @@ export class CuppingFormComponent implements OnInit {
     },
     defects: 0,
     finalScore: 80,
-    timestamp: null
+    timestamp: null,
+    isPublic: true,
+    likesCount: 0
   };
 
   toggleFlavor(category: string) {

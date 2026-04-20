@@ -215,7 +215,7 @@ export class CuppingService {
       teamId,
       isVerifiedRoastery,
       buyLink,
-      isPublic: session.isPublic || false,
+      isPublic: session.isPublic ?? true,
       likesCount: 0,
       likedBy: [],
       savedBy: [],

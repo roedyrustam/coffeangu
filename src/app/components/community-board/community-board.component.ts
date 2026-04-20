@@ -177,7 +177,14 @@ import { AuthService } from '../../services/auth.service';
           </footer>
         </div>
 
-        <div class="empty-state glass-card" *ngIf="cuppings.length === 0">
+        <div class="empty-state glass-card" *ngIf="errorMessage" style="border-color: var(--danger); background: rgba(220,53,69,0.05);">
+          <span class="icon">⚠️</span>
+          <h4>Terjadi Kesalahan</h4>
+          <p>{{ errorMessage }}</p>
+          <button class="btn-primary" style="margin-top:20px" (click)="errorMessage = ''; refresh()">Coba Lagi</button>
+        </div>
+
+        <div class="empty-state glass-card" *ngIf="!errorMessage && cuppings.length === 0">
            <div class="empty-icon">☕</div>
            <h3>No matching cuppings</h3>
            <p>Adjust your filters or be the first to share this profile!</p>
@@ -492,6 +499,7 @@ export class CommunityBoardComponent implements OnInit {
   private ts = inject(TranslationService);
   protected auth = inject(AuthService);
   t = this.ts.t();
+  errorMessage = '';
 
   // Filter State
   searchQuery = '';
@@ -539,6 +547,7 @@ export class CommunityBoardComponent implements OnInit {
       }),
       catchError(err => {
         console.error('Discovery Feed Error:', err);
+        this.errorMessage = err.message || 'Gagal memuat data. Periksa koneksi atau index database.';
         return of([]);
       })
     );
@@ -546,7 +555,11 @@ export class CommunityBoardComponent implements OnInit {
 
   onSearchChange(val: string) {
     this.searchQuery = val;
-    this.refreshTrigger.next(); // Trigger re-filter
+    this.refresh(); 
+  }
+
+  refresh() {
+    this.refreshTrigger.next();
   }
 
   setProcess(process: string) {

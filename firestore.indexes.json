@@ -4,14 +4,6 @@
       "collectionGroup": "cuppings",
       "queryScope": "COLLECTION",
       "fields": [
-        { "fieldPath": "userId", "order": "ASCENDING" },
-        { "fieldPath": "timestamp", "order": "DESCENDING" }
-      ]
-    },
-    {
-      "collectionGroup": "cuppings",
-      "queryScope": "COLLECTION",
-      "fields": [
         { "fieldPath": "isPublic", "order": "ASCENDING" },
         { "fieldPath": "timestamp", "order": "DESCENDING" }
       ]
@@ -39,8 +31,33 @@
       "queryScope": "COLLECTION",
       "fields": [
         { "fieldPath": "isPublic", "order": "ASCENDING" },
-        { "fieldPath": "origin", "order": "ASCENDING" },
-        { "fieldPath": "timestamp", "order": "DESCENDING" }
+        { "fieldPath": "finalScore", "order": "DESCENDING" }
+      ]
+    },
+    {
+      "collectionGroup": "cuppings",
+      "queryScope": "COLLECTION",
+      "fields": [
+        { "fieldPath": "isPublic", "order": "ASCENDING" },
+        { "fieldPath": "likesCount", "order": "DESCENDING" }
+      ]
+    },
+    {
+      "collectionGroup": "cuppings",
+      "queryScope": "COLLECTION",
+      "fields": [
+        { "fieldPath": "isPublic", "order": "ASCENDING" },
+        { "fieldPath": "postHarvest", "order": "ASCENDING" },
+        { "fieldPath": "finalScore", "order": "DESCENDING" }
+      ]
+    },
+    {
+      "collectionGroup": "cuppings",
+      "queryScope": "COLLECTION",
+      "fields": [
+        { "fieldPath": "isPublic", "order": "ASCENDING" },
+        { "fieldPath": "postHarvest", "order": "ASCENDING" },
+        { "fieldPath": "likesCount", "order": "DESCENDING" }
       ]
     },
     {
@@ -51,5 +68,6 @@
         { "fieldPath": "timestamp", "order": "DESCENDING" }
       ]
     }
-  ]
+  ],
+  "fieldOverrides": []
 }
