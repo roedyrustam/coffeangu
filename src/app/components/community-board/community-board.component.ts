@@ -74,6 +74,10 @@ import { AuthService } from '../../services/auth.service';
              [routerLink]="['/result', session.id]">
           
           <div class="card-glow"></div>
+
+          <div class="card-image" *ngIf="session.productImageUrl">
+            <img [src]="session.productImageUrl" alt="Product Photo">
+          </div>
           
           <div class="card-header">
             <div class="bean-main">
@@ -257,6 +261,23 @@ import { AuthService } from '../../services/auth.service';
       pointer-events: none;
     }
     .cupping-card:hover .card-glow { opacity: 0.5; }
+
+    .card-image {
+      width: calc(100% + 80px);
+      margin: -40px -40px 20px -40px;
+      height: 200px;
+      overflow: hidden;
+      border-bottom: 1px solid var(--glass-border);
+    }
+    .card-image img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transition: transform 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    .cupping-card:hover .card-image img {
+      transform: scale(1.1);
+    }
     
     .card-header { display: flex; justify-content: space-between; align-items: flex-start; z-index: 1; }
     .bean-main h3 { font-size: 1.6rem; margin-bottom: 6px; font-weight: 800; }

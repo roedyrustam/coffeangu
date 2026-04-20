@@ -159,3 +159,52 @@ input:focus {
 .glow-perunggu {
   box-shadow: 0 0 15px var(--primary-glow);
 }
+
+/* 2026 App-Like Utilities */
+.mesh-bg {
+  position: absolute;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: 
+    radial-gradient(at 10% 20%, rgba(189, 142, 98, 0.15) 0px, transparent 50%),
+    radial-gradient(at 90% 10%, rgba(212, 225, 87, 0.1) 0px, transparent 50%),
+    radial-gradient(at 50% 100%, rgba(189, 142, 98, 0.05) 0px, transparent 50%);
+  filter: blur(80px);
+  z-index: -1;
+  opacity: 0.8;
+}
+
+.fab-button {
+  position: fixed;
+  bottom: 100px; /* Above bottom nav */
+  right: 24px;
+  width: 64px;
+  height: 64px;
+  border-radius: 20px;
+  background: var(--primary-gradient);
+  color: #0c0c0e;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 12px 40px var(--primary-glow);
+  cursor: pointer;
+  z-index: 100;
+  transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  border: none;
+}
+
+.fab-button:hover {
+  transform: scale(1.1) rotate(5deg);
+  box-shadow: 0 15px 45px var(--primary-glow);
+}
+
+.fab-button:active {
+  transform: scale(0.9);
+}
+
+.scrollbar-hidden::-webkit-scrollbar {
+  display: none;
+}
+.scrollbar-hidden {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}

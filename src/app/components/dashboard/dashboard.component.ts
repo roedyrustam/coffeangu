@@ -15,14 +15,20 @@ import { CuppingSession } from '../../models/cupping.model';
   template: `
     <div class="dashboard-container animate-fade">
       <header class="hero">
-        <h1 class="brand-font">{{ t('APP_TITLE') }}</h1>
-        <p>{{ t('HERO_SUBTITLE') }}</p>
-        <div class="actions">
-          <button class="btn-primary" routerLink="/cupping">{{ t('BTN_NEW_SESSION') }}</button>
+        <div class="mesh-bg"></div>
+        <div class="greeting-row">
+          <div class="user-meta">
+            <span class="greeting-text">{{ getGreeting() }}</span>
+            <h1 class="brand-font">{{ auth.currentUser()?.displayName || 'Cupper' }}</h1>
+          </div>
+          <div class="mini-profile" [routerLink]="['/profile']">
+             <img [src]="auth.currentUser()?.photoURL || 'https://api.dicebear.com/7.x/bottts/svg?seed=coffee'" alt="Profile">
+          </div>
         </div>
+        <p class="hero-sub">{{ t('HERO_SUBTITLE') }}</p>
       </header>
 
-      <section class="stats-grid">
+      <section class="stats-carousel scrollbar-hidden">
         <div class="glass-card stat-card">
           <span class="stat-label">{{ t('STAT_TOTAL_SESSIONS') }}</span>
           <div class="stat-value">{{ cuppings()?.length || 0 }}</div>
@@ -30,6 +36,10 @@ import { CuppingSession } from '../../models/cupping.model';
         <div class="glass-card stat-card">
           <span class="stat-label">{{ t('STAT_AVG_SCORE') }}</span>
           <div class="stat-value">{{ calculateAvg() }}</div>
+        </div>
+        <div class="glass-card stat-card specialty">
+          <span class="stat-label">Specialty Ratio</span>
+          <div class="stat-value">{{ getSpecialtyCount() }}</div>
         </div>
       </section>
 
@@ -41,6 +51,9 @@ import { CuppingSession } from '../../models/cupping.model';
 
         <div class="sessions-list">
           <div *ngFor="let session of cuppings()" class="glass-card session-item" [routerLink]="['/result', session.id]">
+            <div class="session-image" *ngIf="session.productImageUrl">
+               <img [src]="session.productImageUrl" alt="Product Photo">
+            </div>
             <div class="session-main">
               <div class="session-info">
                 <div class="tags">
@@ -57,14 +70,17 @@ import { CuppingSession } from '../../models/cupping.model';
               
               <div class="session-performance">
                 <div class="mini-sensory">
-                   <div class="mini-bar" [style.height.%]="(session.scores.flavor - 6) * 25" title="Flavor"></div>
-                   <div class="mini-bar" [style.height.%]="(session.scores.acidity - 6) * 25" title="Acidity"></div>
-                   <div class="mini-bar" [style.height.%]="(session.scores.body - 6) * 25" title="Body"></div>
+                   <div class="mini-bar" [style.height.%]="(session.scores.flavor - 6) * 25" [style.background]="getBarColor(session.scores.flavor)" title="Flavor"></div>
+                   <div class="mini-bar" [style.height.%]="(session.scores.acidity - 6) * 25" [style.background]="getBarColor(session.scores.acidity)" title="Acidity"></div>
+                   <div class="mini-bar" [style.height.%]="(session.scores.body - 6) * 25" [style.background]="getBarColor(session.scores.body)" title="Body"></div>
                 </div>
-                <div class="session-score" [class.high-score]="session.finalScore >= 85">
-                  {{ session.finalScore | number:'1.2-2' }}
+                <div class="session-score" [class.high-score]="session.finalScore >= 80" [class.specialty-pulse]="session.finalScore >= 85">
+                  {{ session.finalScore | number:'1.1-1' }}
                 </div>
               </div>
+            </div>
+            <div class="session-social" *ngIf="session.likesCount">
+               <span class="likes">❤️ {{ session.likesCount }} users liked this results</span>
             </div>
             <div class="session-footer">
                <span class="harvest" *ngIf="session.postHarvest">Process: {{ session.postHarvest }}</span>
@@ -77,7 +93,9 @@ import { CuppingSession } from '../../models/cupping.model';
            <p>No cupping sessions found. Start your first session!</p>
            <button class="btn-primary" routerLink="/cupping">Start Cupping</button>
         </div>
-      </section>
+      <button class="fab-button" routerLink="/cupping">
+        <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14m-7-7v14"/></svg>
+      </button>
     </div>
   `,
   styles: [`
@@ -89,33 +107,63 @@ import { CuppingSession } from '../../models/cupping.model';
     }
     .hero {
       text-align: left;
-      margin-bottom: 60px;
+      margin-bottom: 50px;
       position: relative;
+      padding: 20px 0;
     }
-    .hero h1 {
-      font-size: 5rem;
-      background: var(--primary-gradient);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      margin-bottom: 0px;
-      line-height: 1;
+    .greeting-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
     }
-    .hero p {
-      color: var(--text-dim);
-      font-size: 1.2rem;
-      letter-spacing: 4px;
+    .greeting-text {
+      color: var(--primary-color);
+      font-weight: 800;
       text-transform: uppercase;
-      font-weight: 500;
-      margin-top: 10px;
+      letter-spacing: 2px;
+      font-size: 0.85rem;
     }
-    .actions {
-      margin-top: 40px;
+    .mini-profile {
+      width: 50px;
+      height: 50px;
+      border-radius: 15px;
+      overflow: hidden;
+      border: 2px solid var(--primary-color);
+      box-shadow: 0 8px 20px var(--primary-glow);
+      cursor: pointer;
     }
-    .stats-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-      gap: 30px;
-      margin-bottom: 80px;
+    .mini-profile img { width: 100%; height: 100%; object-fit: cover; }
+    .hero h1 {
+      font-size: 3.5rem;
+      color: var(--text-main);
+      margin-top: 5px;
+    }
+    .hero-sub {
+      color: var(--text-dim);
+      font-size: 1.1rem;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      font-weight: 600;
+      opacity: 0.7;
+    }
+    .stats-carousel {
+      display: flex;
+      gap: 20px;
+      margin-bottom: 60px;
+      overflow-x: auto;
+      padding-bottom: 10px;
+      padding-right: 20px;
+    }
+    .stat-card {
+      min-width: 200px;
+      flex: 1;
+      text-align: center;
+      padding: 30px;
+    }
+    .stat-card.specialty {
+      border-color: var(--accent-neon);
+      background: linear-gradient(135deg, rgba(212, 225, 87, 0.05), transparent);
     }
     .stat-card {
       text-align: center;
@@ -177,10 +225,23 @@ import { CuppingSession } from '../../models/cupping.model';
       border: 1px solid var(--glass-border);
       transition: all 0.5s cubic-bezier(0.16, 1, 0.3, 1);
     }
-    .session-item:hover {
-      border-color: rgba(189, 142, 98, 0.4);
-      transform: translateY(-8px);
       box-shadow: 0 20px 50px rgba(0,0,0,0.5);
+    }
+    .session-image {
+      width: calc(100% + 60px);
+      margin: -30px -30px 0 -30px;
+      height: 180px;
+      overflow: hidden;
+      border-bottom: 1px solid var(--glass-border);
+    }
+    .session-image img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transition: transform 0.5s;
+    }
+    .session-item:hover .session-image img {
+      transform: scale(1.1);
     }
     .tag {
       font-size: 0.65rem;
@@ -246,8 +307,17 @@ import { CuppingSession } from '../../models/cupping.model';
       color: var(--primary-color);
     }
     .high-score {
-      color: var(--accent-neon);
-      text-shadow: 0 0 20px rgba(212, 225, 87, 0.2);
+      color: var(--accent-neon) !important;
+      text-shadow: 0 0 20px rgba(212, 225, 87, 0.4);
+    }
+    .session-social {
+      font-size: 0.75rem;
+      font-weight: 700;
+      color: var(--primary-color);
+      background: rgba(189, 142, 98, 0.1);
+      padding: 10px;
+      border-radius: 12px;
+      text-align: center;
     }
     .session-footer {
       display: flex;
@@ -272,16 +342,37 @@ import { CuppingSession } from '../../models/cupping.model';
 export class DashboardComponent {
   private cuppingService = inject(CuppingService);
   private ts = inject(TranslationService);
-  private auth = inject(AuthService);
+  protected auth = inject(AuthService);
+  
   cuppings = toSignal(this.auth.user$.pipe(
     switchMap(user => this.cuppingService.getLatestCuppings(user?.uid))
   ));
   t = this.ts.t();
 
+  getGreeting() {
+    const hour = new Date().getHours();
+    if (hour < 12) return 'Good Morning';
+    if (hour < 17) return 'Good Afternoon';
+    return 'Good Evening';
+  }
+
   calculateAvg() {
     const list = this.cuppings() as any[];
-    if (!list || list.length === 0) return '0.00';
+    if (!list || list.length === 0) return '0.0';
     const sum = list.reduce((acc: number, curr: any) => acc + curr.finalScore, 0);
-    return (sum / list.length).toFixed(2);
+    return (sum / list.length).toFixed(1);
+  }
+
+  getSpecialtyCount() {
+    const list = this.cuppings() as any[];
+    if (!list || list.length === 0) return '0%';
+    const count = list.filter(c => c.finalScore >= 80).length;
+    return Math.round((count / list.length) * 100) + '%';
+  }
+
+  getBarColor(val: number) {
+    if (val >= 8) return 'var(--accent-neon)';
+    if (val >= 7) return 'var(--primary-color)';
+    return 'var(--text-dim)';
   }
 }

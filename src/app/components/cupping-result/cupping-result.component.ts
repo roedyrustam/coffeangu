@@ -24,6 +24,10 @@ Chart.register(RadarController, RadialLinearScale, PointElement, LineElement, Fi
           <p class="roastery">{{ session.roastery }}</p>
         </header>
 
+        <section class="product-visual" *ngIf="session.productImageUrl">
+           <img [src]="session.productImageUrl" alt="Product Photo" class="product-photo">
+        </section>
+
         <section class="score-display">
           <div class="score-circle">
             <span class="label">{{ t('FINAL_SCORE') }}</span>
@@ -177,6 +181,19 @@ Chart.register(RadarController, RadialLinearScale, PointElement, LineElement, Fi
       letter-spacing: 2px;
       text-transform: uppercase;
       font-weight: 500;
+    }
+    .product-visual {
+      margin: 40px auto;
+      max-width: 500px;
+      border-radius: var(--radius-md);
+      overflow: hidden;
+      border: 1px solid var(--glass-border);
+      box-shadow: 0 15px 40px rgba(0,0,0,0.4);
+    }
+    .product-photo {
+      width: 100%;
+      height: auto;
+      display: block;
     }
     .score-display {
       margin: 60px 0;

@@ -138,6 +138,14 @@ export class CuppingService {
     return getDownloadURL(storageRef);
   }
 
+  async uploadProductImage(file: File): Promise<string> {
+    const userId = this.auth.getUserId() || 'anonymous';
+    const filePath = `products/${userId}/${Date.now()}_${file.name}`;
+    const storageRef = ref(this.storage, filePath);
+    await uploadBytes(storageRef, file);
+    return getDownloadURL(storageRef);
+  }
+
   exportToCSV(sessions: CuppingSession[]) {
     if (sessions.length === 0) return;
     

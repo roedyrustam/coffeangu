@@ -117,6 +117,22 @@ import { FlavorPickerComponent } from '../flavor-picker/flavor-picker.component'
               <label>Nama Penguji</label>
               <input [(ngModel)]="session.cupperName" name="cupperName" placeholder="e.g. John Doe">
             </div>
+
+            <!-- Product Photo Upload -->
+            <div class="photo-upload-section">
+              <label class="photo-label">Product Photo (Optional)</label>
+              <div class="photo-box" (click)="productFileInput.click()" [class.has-image]="productImagePreview">
+                <input type="file" #productFileInput accept="image/*" style="display: none" (change)="onProductImageSelected($event)">
+                <img *ngIf="productImagePreview" [src]="productImagePreview" alt="Preview" class="photo-preview">
+                <div class="photo-placeholder" *ngIf="!productImagePreview">
+                  <span class="icon">🖼️</span>
+                  <span>Add Product Photo</span>
+                </div>
+                <div class="photo-overlay" *ngIf="productImagePreview">
+                   <span>Change Photo</span>
+                </div>
+              </div>
+            </div>
           </section>
 
           <section class="cva-section">
@@ -661,6 +677,80 @@ import { FlavorPickerComponent } from '../flavor-picker/flavor-picker.component'
       display: block;
     }
     .label-text { font-size: 1rem; }
+
+    .photo-upload-section {
+      grid-column: 1 / -1;
+      margin-top: 20px;
+    }
+    .photo-label {
+      font-size: 0.85rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 1.5px;
+      color: var(--text-dim);
+      margin-bottom: 12px;
+      display: block;
+    }
+    .photo-box {
+      width: 100%;
+      height: 200px;
+      background: var(--surface-hover);
+      border: 2px dashed var(--glass-border);
+      border-radius: var(--radius-md);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      overflow: hidden;
+      position: relative;
+      transition: all 0.3s;
+    }
+    .photo-box:hover {
+      border-color: var(--primary-color);
+      background: rgba(189, 142, 98, 0.05);
+    }
+    .photo-box.has-image {
+      border-style: solid;
+      border-color: var(--glass-border);
+    }
+    .photo-preview {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+    .photo-placeholder {
+      text-align: center;
+      color: var(--text-dim);
+    }
+    .photo-placeholder .icon {
+      font-size: 2.5rem;
+      display: block;
+      margin-bottom: 10px;
+    }
+    .photo-placeholder span:not(.icon) {
+      font-weight: 700;
+      font-size: 0.9rem;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+    .photo-overlay {
+      position: absolute;
+      inset: 0;
+      background: rgba(0,0,0,0.6);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      opacity: 0;
+      transition: opacity 0.3s;
+      color: white;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+    .photo-box:hover .photo-overlay {
+      opacity: 1;
+    }
   `]
 })
 export class CuppingFormComponent implements OnInit {
@@ -679,6 +769,9 @@ export class CuppingFormComponent implements OnInit {
   isScanning = false;
   scannerStatus = '';
   showFlavorPicker = false;
+  
+  productImageFile: File | null = null;
+  productImagePreview: string | null = null;
 
   async ngOnInit() {
     this.editId = this.route.snapshot.queryParamMap.get('edit');
@@ -694,6 +787,9 @@ export class CuppingFormComponent implements OnInit {
           return;
         }
         this.session = { ...session };
+        if (this.session.productImageUrl) {
+          this.productImagePreview = this.session.productImageUrl;
+        }
       } else {
         alert('Session not found');
         this.router.navigate(['/profile']);
@@ -771,6 +867,18 @@ export class CuppingFormComponent implements OnInit {
     }
   }
 
+  onProductImageSelected(event: Event) {
+    const input = event.target as HTMLInputElement;
+    if (!input.files || input.files.length === 0) return;
+    
+    this.productImageFile = input.files[0];
+    const reader = new FileReader();
+    reader.onload = () => {
+      this.productImagePreview = reader.result as string;
+    };
+    reader.readAsDataURL(this.productImageFile);
+  }
+
   scoreKeys: (keyof SensoryScores)[] = [
     'fragranceAroma', 'flavor', 'aftertaste', 'acidity', 
     'body', 'balance', 'uniformity', 'cleanCup', 'sweetness', 'overall'
@@ -836,6 +944,12 @@ export class CuppingFormComponent implements OnInit {
   async submit() {
     this.loading = true;
     try {
+      if (this.productImageFile) {
+        this.loading = true; // Still loading
+        const photoUrl = await this.cuppingService.uploadProductImage(this.productImageFile);
+        this.session.productImageUrl = photoUrl;
+      }
+
       if (this.isEditMode && this.editId) {
         await this.cuppingService.updateCupping(this.editId, this.session);
         this.router.navigate(['/result', this.editId]);
