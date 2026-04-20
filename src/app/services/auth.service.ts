@@ -3,6 +3,8 @@ import {
   Auth, 
   user, 
   signInWithPopup, 
+  signInWithRedirect,
+  getRedirectResult,
   GoogleAuthProvider, 
   signOut, 
   signInWithEmailAndPassword, 
@@ -13,6 +15,8 @@ import {
 import { Observable } from 'rxjs';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { Storage, ref, uploadBytes, getDownloadURL } from '@angular/fire/storage';
+import { isPlatformBrowser } from '@angular/common';
+import { PLATFORM_ID } from '@angular/core';
 
 @Injectable({
   providedIn: 'root'
@@ -20,6 +24,7 @@ import { Storage, ref, uploadBytes, getDownloadURL } from '@angular/fire/storage
 export class AuthService {
   private auth = inject(Auth);
   private storage = inject(Storage);
+  private platformId = inject(PLATFORM_ID);
   
   // Expose user as a signal for the UI
   user$ = user(this.auth);
@@ -28,12 +33,31 @@ export class AuthService {
   async loginWithGoogle() {
     const provider = new GoogleAuthProvider();
     try {
-      const result = await signInWithPopup(this.auth, provider);
-      return result.user;
+      if (this.isMobile()) {
+        return await signInWithRedirect(this.auth, provider);
+      } else {
+        const result = await signInWithPopup(this.auth, provider);
+        return result.user;
+      }
     } catch (error) {
       console.error('Login failed:', error);
       throw error;
     }
+  }
+
+  async handleRedirectResult() {
+    try {
+      const result = await getRedirectResult(this.auth);
+      return result?.user || null;
+    } catch (error) {
+      console.error('Redirect login failed:', error);
+      throw error;
+    }
+  }
+
+  private isMobile(): boolean {
+    if (!isPlatformBrowser(this.platformId)) return false;
+    return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
   }
 
   async loginWithEmail(email: string, pass: string) {

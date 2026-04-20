@@ -1,4 +1,4 @@
-import { Component, inject, signal } from '@angular/core';
+import { Component, inject, signal, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule, ReactiveFormsModule, FormBuilder, Validators } from '@angular/forms';
 import { Router, ActivatedRoute } from '@angular/router';
@@ -192,9 +192,18 @@ import { TranslationService } from '../../../services/translation.service';
       display: inline-block;
     }
     @keyframes spin { to { transform: rotate(360deg); } }
+
+    @media (max-width: 600px) {
+      .login-card {
+        padding: 30px 24px;
+        border-radius: 24px;
+      }
+      h2 { font-size: 2rem; }
+      .login-container { padding: 10px; min-height: 70vh; }
+    }
   `]
 })
-export class LoginComponent {
+export class LoginComponent implements OnInit {
   authService = inject(AuthService);
   fb = inject(FormBuilder);
   router = inject(Router);
@@ -211,6 +220,17 @@ export class LoginComponent {
     password: ['', [Validators.required, Validators.minLength(6)]],
     displayName: ['']
   });
+
+  async ngOnInit() {
+    try {
+      const user = await this.authService.handleRedirectResult();
+      if (user) {
+        this.redirect();
+      }
+    } catch (err: any) {
+      this.errorMessage.set(this.formatError(err.code));
+    }
+  }
 
   async onSubmit() {
     if (this.authForm.invalid) return;
