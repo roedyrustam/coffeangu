@@ -996,27 +996,42 @@ export class CuppingFormComponent implements OnInit {
       
       const lines = result.data.text.split('\n').map((l: string) => l.trim()).filter((l: string) => l.length > 2);
       
+      // IMPROVED LOGIC: Identify Roastery
+      const roasteryKeywords = ['roastery', 'roasters', 'coffee', 'lab', 'kopi', 'sangrai'];
+      for (const line of lines) {
+         if (roasteryKeywords.some(kw => line.toLowerCase().includes(kw))) {
+            this.session.roastery = line;
+            break;
+         }
+      }
+
+      // IMPROVED LOGIC: Bean Name (usually the first or second line, excluding the detected Roastery)
       if (lines.length > 0) {
-        if (!this.session.beanName) {
-           this.session.beanName = lines[0];
+        const potentialName = lines[0];
+        if (potentialName !== this.session.roastery) {
+           this.session.beanName = potentialName;
+        } else if (lines.length > 1) {
+           this.session.beanName = lines[1];
         }
       }
 
-      if (text.includes('arabica')) this.session.type = 'Arabica';
-      else if (text.includes('robusta')) this.session.type = 'Robusta';
-      else if (text.includes('liberica')) this.session.type = 'Liberica';
-
-      if (text.includes('wash')) this.session.postHarvest = 'Wash';
-      else if (text.includes('natural') || text.includes('dry') || text.includes('jemur')) this.session.postHarvest = 'Natural';
+      // IMPROVED LOGIC: Process (More comprehensive)
+      if (text.includes('wash') || text.includes('basah')) this.session.postHarvest = 'Wash';
+      else if (text.includes('natural') || text.includes('dry') || text.includes('jemur') || text.includes('matahari')) this.session.postHarvest = 'Natural';
       else if (text.includes('honey')) this.session.postHarvest = 'Honey';
-      else if (text.includes('anaerobic') || text.includes('anaerob')) this.session.postHarvest = 'Anaerobic';
-      else if (text.includes('experimental') || text.includes('carbonic')) this.session.postHarvest = 'Other';
-      
+      else if (text.includes('anaerob') || text.includes('yeast') || text.includes('lactic')) this.session.postHarvest = 'Anaerobic';
+      else if (text.includes('carbonic') || text.includes('maceration') || text.includes('experimental')) this.session.postHarvest = 'Other';
+
+      // IMPROVED LOGIC: Type
+      if (text.includes('arabica') || text.includes('ateng') || text.includes('sigarar')) this.session.type = 'Arabica';
+      else if (text.includes('robusta')) this.session.type = 'Robusta';
+
+      // IMPROVED LOGIC: Origin (Expanded)
       const origins = [
         'ethiopia', 'colombia', 'brazil', 'indonesia', 'kenya', 'rwanda', 
-        'panama', 'costa rica', 'sumatra', 'jawa', 'gayo', 'toraja', 
-        'sidikalang', 'kintamani', 'temanggung', 'ciwidey', 'preanger',
-        'bali', 'flores', 'papua', 'guatemala', 'honduras', 'vietnam'
+        'panama', 'costa rica', 'sumatra', 'jawa', 'gayo', 'toraja', 'aceh',
+        'sidikalang', 'kintamani', 'temanggung', 'ciwidey', 'preanger', 'malabar',
+        'bali', 'flores', 'papua', 'guatemala', 'honduras', 'vietnam', 'garut'
       ];
       for (const origin of origins) {
         if (text.includes(origin)) {

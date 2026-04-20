@@ -113,14 +113,22 @@ Chart.register(RadarController, RadialLinearScale, PointElement, LineElement, Fi
         <div class="history-view" *ngIf="activeTab() === 'history'">
           <div class="section-title-row" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 40px;">
             <h2 class="section-title" style="margin-bottom: 0;">{{ t('PERSONAL_HISTORY') }}</h2>
-            <button [class.btn-secondary]="tier.id !== 'classic'" 
-                    [class.btn-locked]="tier.id === 'classic'"
-                    (click)="tier.id === 'classic' ? showUpgradeNotice() : downloadHistory()" 
-                    *ngIf="(cuppings$ | async)?.length" 
-                    style="padding: 8px 15px; font-size: 0.75rem; position: relative;">
-               <span *ngIf="tier.id === 'classic'">🔒 </span>
-               📥 Export CSV
-            </button>
+            <div class="row-actions" style="display: flex; gap: 10px;">
+              <button class="btn-secondary" 
+                      style="padding: 8px 15px; font-size: 0.75rem;"
+                      (click)="goToAnalytics(tier.id)">
+                 <span *ngIf="tier.id === 'classic'">🔒 </span>
+                 📊 {{ t('VIEW_ANALYTICS') || 'Analytics' }}
+              </button>
+              <button [class.btn-secondary]="tier.id !== 'classic'" 
+                      [class.btn-locked]="tier.id === 'classic'"
+                      (click)="tier.id === 'classic' ? showUpgradeNotice() : downloadHistory()" 
+                      *ngIf="(cuppings$ | async)?.length" 
+                      style="padding: 8px 15px; font-size: 0.75rem; position: relative;">
+                 <span *ngIf="tier.id === 'classic'">🔒 </span>
+                 📥 Export CSV
+              </button>
+            </div>
           </div>
           <div class="history-feed" *ngIf="cuppings$ | async as cuppings; else loading">
             <div class="history-card glass-card" *ngFor="let session of cuppings">
@@ -826,8 +834,16 @@ export class ProfileComponent implements OnInit {
   }
 
   showUpgradeNotice() {
-    if (confirm('🔒 Custom Export logic is only available for Pro members. Would you like to view our premium plans?')) {
+    if (confirm('🔒 Custom Analytics & CSV Export are only available for Pro members. Would you like to view our premium plans?')) {
       this.router.navigate(['/pricing']);
+    }
+  }
+
+  goToAnalytics(tierId: string) {
+    if (tierId === 'classic') {
+      this.showUpgradeNotice();
+    } else {
+      this.router.navigate(['/analytics']);
     }
   }
 

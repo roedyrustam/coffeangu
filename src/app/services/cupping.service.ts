@@ -1,5 +1,5 @@
 import { Injectable, inject } from '@angular/core';
-import { Firestore, collection, collectionData, addDoc, query, orderBy, limit, doc, getDoc, updateDoc, setDoc, where, increment, arrayUnion, arrayRemove, deleteDoc, QueryConstraint } from '@angular/fire/firestore';
+import { Firestore, collection, collectionData, addDoc, query, orderBy, limit, doc, getDoc, getDocs, updateDoc, setDoc, where, increment, arrayUnion, arrayRemove, deleteDoc, QueryConstraint } from '@angular/fire/firestore';
 import { Storage, ref, uploadBytes, getDownloadURL, deleteObject } from '@angular/fire/storage';
 import { Observable, of } from 'rxjs';
 import { CuppingSession, GlobalScore } from '../models/cupping.model';
@@ -258,24 +258,37 @@ export class CuppingService {
   }
 
   async getSmartSuggestions(filters: { beanName?: string, postHarvest?: string }): Promise<string[]> {
-    // Queries public cuppings to find common flavor notes
-    let constraints: QueryConstraint[] = [where('isPublic', '==', true), limit(50)];
+    const cuppingsRef = collection(this.firestore, 'cuppings');
+    let qConstraints: QueryConstraint[] = [where('isPublic', '==', true), limit(30)];
     
     if (filters.postHarvest) {
-      constraints.push(where('postHarvest', '==', filters.postHarvest));
+      qConstraints.push(where('postHarvest', '==', filters.postHarvest));
     }
 
-    const q = query(this.cuppingCollection, ...constraints);
-    const snap = await getDoc(null as any); // This is just a placeholder, we use collectionData or getDocs
-    // Real implementation would aggregate flavorNotes frequency
-    // For "Smart" feel, we'll return top 5 frequent notes
+    const q = query(cuppingsRef, ...qConstraints);
+    const querySnapshot = await getDocs(q);
     
-    // Simulated aggregation logic for now:
-    const mockNotes = filters.postHarvest === 'Natural' 
-      ? ['Berry', 'Fermented', 'Chocolate', 'Winey', 'Smooth']
-      : ['Citrus', 'Floral', 'Tea', 'Clean', 'Jasmine'];
+    const flavorCounts: Record<string, number> = {};
+    querySnapshot.forEach((docSnapshot: any) => {
+      const notes = docSnapshot.data()['flavorNotes'] || [];
+      notes.forEach((note: string) => {
+        flavorCounts[note] = (flavorCounts[note] || 0) + 1;
+      });
+    });
+
+    // Sort by frequency and get top 8
+    const topNotes = Object.keys(flavorCounts)
+      .sort((a, b) => flavorCounts[b] - flavorCounts[a])
+      .slice(0, 8);
+
+    // Fallback to defaults if no community data exists yet
+    if (topNotes.length === 0) {
+      return filters.postHarvest === 'Natural' 
+        ? ['Berry', 'Fermented', 'Chocolate', 'Winey', 'Smooth', 'Dried Fruit']
+        : ['Citrus', 'Floral', 'Tea', 'Clean', 'Jasmine', 'Green Apple'];
+    }
     
-    return mockNotes;
+    return topNotes;
   }
 
   async toggleLike(id: string, userId: string, currentlyLiked: boolean) {
