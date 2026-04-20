@@ -1,15 +1,16 @@
-# ☕ CaffeeScore v1.1.0
+# ☕ CaffeeScore v1.2.0
 
-CaffeeScore is a premium, enterprise-grade digital cupping form designed to modernize the specialty coffee evaluation process. Completely replacing standard paper workflows, it enforces the strict guidelines of the **SCA 2025 Coffee Value Assessment (CVA)** protocol while operating seamlessly without an internet connection in farms or roasting laboratories.
+CaffeeScore is a premium, enterprise-grade digital cupping form designed to modernize the specialty coffee evaluation process. Completely replacing standard paper workflows, it enforces the strict guidelines of the **SCA 2025 Coffee Value Assessment (CVA)** protocol while operating seamlessly across all devices with real-time community interaction.
 
 ## 🌟 Key Features
 
 - **Offline-First PWA:** Full functionality entirely off-grid. Cupping session data is stored locally via IndexedDB and automatically synchronized to Firebase Cloud upon reconnection.
-- **SCA Protocol Gatekeeping:** Interactive checklist ensuring standardized extraction metrics (Ratio, Temp, Time) before scoring begins.
+- **Global Community Discovery:** A real-time hub for exploring cupping results from around the world, featuring atomic 'Likes' and 'Saves' for cross-device synchronization.
+- **Native Mobile Experience:** Optimized Google Auth redirect handshake and an immersive dashboard featuring dynamic greetings, interactive stats carousels, and mesh-glow aesthetics.
+- **Advanced Product Integration:** Enhanced visual storytelling with user-uploaded product photos or premium AI-generated fallbacks for every session.
+- **AI OCR Scanning:** Autofill bean information by scanning sticker or packaging via integrated Tesseract.js engine.
 - **Obsidian & Radiant Ember Theme (2026):** A premium, high-contrast dark theme using `#0c0c0e` backgrounds with Radiant Bronze and Acid Lime accents for maximum professional clarity.
-- **SCA Flavor Wheel Visual Picker:** An interactive, hierarchical flavor wheel based on the official SCA lexicon, allowing evaluators to precisely map flavor profiles via a sunburst-style navigation.
-- **Advanced Radar Generation:** Instantly map sensory data onto dynamic Radar Charts with built-in export to PNG capabilities.
-- **SSR-Ready Architecture:** Improved handling for library loading (e.g., Tesseract.js) to ensure seamless performance in Angular 19 SSR environments.
+- **Radar Visualization:** High-fidelity sensory mapping onto dynamic Radar Charts with built-in export to PNG capabilities.
 ## 🚀 Getting Started
 
 ### Prerequisites
