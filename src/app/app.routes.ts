@@ -13,7 +13,7 @@ export const routes: Routes = [
   { path: 'login', component: LoginComponent },
   { path: 'cupping', component: CuppingFormComponent, canActivate: [authGuard] },
   { path: 'community', component: CommunityBoardComponent },
-  { path: 'result/:id', component: CuppingResultComponent, canActivate: [authGuard] },
+  { path: 'result/:id', component: CuppingResultComponent },
   { path: 'profile', component: ProfileComponent, canActivate: [authGuard] },
   { path: 'analytics', loadComponent: () => import('./components/analytics/analytics.component').then(m => m.AnalyticsComponent), canActivate: [authGuard] },
   { path: 'pricing', loadComponent: () => import('./components/pricing/pricing.component').then(m => m.PricingComponent) },

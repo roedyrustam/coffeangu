@@ -612,6 +612,19 @@ export class CuppingResultComponent implements OnInit, AfterViewInit {
     try {
       const data = await this.cuppingService.getCuppingById(id);
       if (data) {
+        // Enforce privacy: If not public, ensure logged-in user is the owner
+        if (!data.isPublic) {
+          const { take } = await import('rxjs/operators');
+          const { firstValueFrom } = await import('rxjs');
+          const user = await firstValueFrom(this.auth.user$.pipe(take(1)));
+          
+          if (!user || user.uid !== data.userId) {
+            console.warn('Unauthorized access to private cupping session');
+            this.router.navigate(['/login'], { queryParams: { returnUrl: `/result/${id}` } });
+            return;
+          }
+        }
+        
         this.session = data;
         this.prepareSensoryItems();
         this.updateMetaTags();
