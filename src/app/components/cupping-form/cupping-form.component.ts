@@ -224,7 +224,7 @@ import { DynamicFlavorWheelComponent } from '../flavor-wheel/flavor-wheel.compon
         </div> <!-- Close form-sections-container -->
 
         <footer class="form-sticky-actions glass-card">
-          <button type="button" class="btn-cancel" (click)="cancel()">{{ t('BTN_CANCEL') === 'BTN_CANCEL' ? 'Cancel' : t('BTN_CANCEL') }}</button>
+          <button type="button" class="btn-cancel" (click)="cancel()">{{ t('BTN_CANCEL') }}</button>
           <div class="action-spacer"></div>
           <button type="submit" class="btn-primary btn-submit" [disabled]="loading || cuppingForm.invalid">
              <span>{{ loading ? 'Publishing...' : (cuppingForm.invalid ? 'Fill required fields' : t('BTN_SAVE')) }}</span>
@@ -723,6 +723,11 @@ import { DynamicFlavorWheelComponent } from '../flavor-wheel/flavor-wheel.compon
        letter-spacing: 1px;
        cursor: pointer;
        font-size: 0.8rem;
+       transition: all 0.3s;
+    }
+    .btn-cancel:hover {
+       color: var(--text-main);
+       transform: translateX(-5px);
     }
     .action-spacer { flex: 1; }
     

@@ -64,5 +64,6 @@
   "CONFIRM_DELETE_DESC": "Esta acción no se puede deshacer. Todos los datos sensoriales de esta sesión se eliminarán de forma permanente.",
   "EMPTY_HISTORY_DESC": "Aún no has registrado ninguna sesión de cupping.",
   "SAVED_SESSIONS": "Sesiones Guardadas",
-  "BTN_SETTINGS": "Configuración"
+  "BTN_SETTINGS": "Configuración",
+  "BTN_CANCEL": "Cancelar"
 }
