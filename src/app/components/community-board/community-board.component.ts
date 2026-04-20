@@ -10,8 +10,6 @@ import { map, switchMap, debounceTime, startWith, catchError } from 'rxjs/operat
 
 import { AuthService } from '../../services/auth.service';
 
-import { AuthService } from '../../services/auth.service';
-
 @Component({
   selector: 'app-community-board',
   standalone: true,

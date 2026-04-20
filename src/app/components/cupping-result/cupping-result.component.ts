@@ -2,6 +2,7 @@ import { Component, OnInit, inject, PLATFORM_ID, AfterViewInit, signal } from '@
 import { CommonModule, isPlatformBrowser } from '@angular/common';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import { Meta, Title } from '@angular/platform-browser';
+import { AuthService } from '../../services/auth.service';
 import { CuppingService } from '../../services/cupping.service';
 import { TranslationService } from '../../services/translation.service';
 import { CuppingSession } from '../../models/cupping.model';
@@ -33,13 +34,17 @@ Chart.register(RadarController, RadialLinearScale, PointElement, LineElement, Fi
           </div>
 
           <div class="social-actions" *ngIf="session.id">
-            <button class="social-btn like-btn" (click)="onLike()" [disabled]="hasLiked">
-              <span class="icon">{{ hasLiked ? '❤️' : '🤍' }}</span>
+            <button class="social-btn like-btn" [class.active]="isLiked()" (click)="toggleLike()">
+              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" [attr.fill]="isLiked() ? '#ff4757' : 'none'" [attr.stroke]="isLiked() ? '#ff4757' : 'currentColor'" stroke-width="2" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l8.84-8.84 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
+              </svg>
               <span class="count">{{ session.likesCount || 0 }}</span>
             </button>
-            <button class="social-btn save-btn" (click)="onSave()" [disabled]="hasSaved">
-              <span class="icon">{{ hasSaved ? '🔖' : '🔖' }}</span>
-              <span>{{ hasSaved ? 'Saved' : t('BTN_SAVE_LIST') }}</span>
+            <button class="social-btn save-btn" [class.active]="isSaved()" (click)="toggleSave()">
+              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" [attr.fill]="isSaved() ? 'var(--primary-color)' : 'none'" [attr.stroke]="isSaved() ? 'var(--primary-color)' : 'currentColor'" stroke-width="2" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"></path>
+              </svg>
+              <span>{{ isSaved() ? 'Saved' : t('BTN_SAVE_LIST') }}</span>
             </button>
           </div>
         </section>
@@ -473,46 +478,66 @@ export class CuppingResultComponent implements OnInit, AfterViewInit {
   error = false;
   sensoryItems: any[] = [];
   generatingScreenshot = false;
-  hasLiked = false;
-  hasSaved = false;
+  auth = inject(AuthService);
   selectedTheme = signal<'obsidian' | 'radiant'>('obsidian');
+
+  isLiked() {
+    const userId = this.auth.getUserId();
+    return !!this.session?.likedBy?.includes(userId || '');
+  }
+
+  isSaved() {
+    const userId = this.auth.getUserId();
+    return !!this.session?.savedBy?.includes(userId || '');
+  }
 
   setTheme(theme: 'obsidian' | 'radiant') {
     this.selectedTheme.set(theme);
     // Re-initialize chart to match theme colors if needed (optional)
   }
 
-  private getDeviceId() {
-    if (isPlatformBrowser(this.platformId)) {
-      let id = localStorage.getItem('device_id');
-      if (!id) {
-        id = Math.random().toString(36).substring(7);
-        localStorage.setItem('device_id', id);
-      }
-      return id;
-    }
-    return 'ssr-bot';
   }
 
-  async onLike() {
-    if (!this.session?.id || this.hasLiked) return;
+  async toggleLike() {
+    const userId = this.auth.getUserId();
+    if (!this.session?.id || !userId) return;
     try {
-      await this.cuppingService.likeSession(this.session.id);
-      this.hasLiked = true;
-      if (this.session) this.session.likesCount = (this.session.likesCount || 0) + 1;
-      localStorage.setItem(`liked_${this.session.id}`, 'true');
+      const liked = this.isLiked();
+      await this.cuppingService.toggleLike(this.session.id, userId, liked);
+      // Optimistic update for immediate feedback
+      if (this.session.likedBy) {
+        if (liked) {
+          this.session.likedBy = this.session.likedBy.filter(id => id !== userId);
+          this.session.likesCount = (this.session.likesCount || 1) - 1;
+        } else {
+          this.session.likedBy.push(userId);
+          this.session.likesCount = (this.session.likesCount || 0) + 1;
+        }
+      } else {
+        this.session.likedBy = liked ? [] : [userId];
+        this.session.likesCount = liked ? 0 : 1;
+      }
     } catch (e) {
       console.error(e);
     }
   }
 
-  async onSave() {
-    if (!this.session?.id || this.hasSaved) return;
+  async toggleSave() {
+    const userId = this.auth.getUserId();
+    if (!this.session?.id || !userId) return;
     try {
-      const deviceId = this.getDeviceId();
-      await this.cuppingService.saveSession(this.session.id, deviceId);
-      this.hasSaved = true;
-      localStorage.setItem(`saved_${this.session.id}`, 'true');
+      const saved = this.isSaved();
+      await this.cuppingService.toggleSave(this.session.id, userId, saved);
+      // Optimistic update
+      if (this.session.savedBy) {
+        if (saved) {
+          this.session.savedBy = this.session.savedBy.filter(id => id !== userId);
+        } else {
+          this.session.savedBy.push(userId);
+        }
+      } else {
+        this.session.savedBy = saved ? [] : [userId];
+      }
     } catch (e) {
       console.error(e);
     }
