@@ -1,4 +1,4 @@
-# Product Requirements Document (PRD)
+# Product Requirements Document (PRD) v1.6.0
 
 ## 1. Product Vision
 **CaffeeScore** is designed to digitize and elevate the professional coffee sensory evaluation process. Our goal is to replace archaic paper forms with a premium, responsive, and robust offline-first digital application that adheres strictly to the **Specialty Coffee Association (SCA) 2025 CVA Protocol**.
@@ -26,9 +26,13 @@
 - **Goal:** Firebase Local Persistance caches forms inside browser IndexedDB. Angular Service Worker caches the JS engine and UI components. All features must be usable locally, utilizing an auto-sync engine logic upon reconnection.
 
 ## 4. UI/UX Specifications
-- **Theme:** "Obsidian & Radiant Ember" 2026 Edition (`#0c0c0e` Root).
-- **Typography:** Outfit (Primary) & Playfair Display (Accent/Scores).
-- **Responsive Target:** Mobile Vertical (iPhone/Android) and Tablet Landscape (Data-density visualization).
+- **Theme**: "Obsidian & Radiant Ember" 2026 Edition (`#0c0c0e` Root).
+- **Typography**: Outfit (Primary) & Playfair Display (Accent/Scores).
+- **Responsive Target**: 
+    - **Headerless Mobile**: Vertical viewports <= 768px with 0px header offset to maximize data scannability.
+    - **High-Fidelity Bento Discovery**: Magazine-style asymmetrical grid for community feeds.
+    - **Nano-Auth Focus**: Hyper-minimalist centered authentication cards (320px width) for improved user conversion.
+    - **Tablet Landscape**: Data-density visualization for lab use (1080x720px).
 
 ## 5. Success Metrics
 - 0% data loss during offline rural cupping scenarios.

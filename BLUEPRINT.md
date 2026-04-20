@@ -1,4 +1,4 @@
-# CaffeeScore v1.5.0 Blueprint
+# CaffeeScore v1.6.0 Blueprint
 
 ## 1. System Architecture
 CaffeeScore is a modern web application built on **Angular 21** utilizing Server-Side Rendering (SSR) optionally, but fundamentally designed as an **Offline-First Progressive Web App (PWA)**. 
@@ -21,11 +21,11 @@ CaffeeScore/
 ├── src/
 │   ├── app/
 │   │   ├── components/     
-│   │   │   ├── dashboard/       # Interactive Command Center (FAB + Stats Carousel)
+│   │   │   ├── dashboard/       # Interactive Command Center (Top 6 Global Discovery Feed)
 │   │   │   ├── cupping-form/    # Core sensory input + AI Photo Upload
 │   │   │   ├── cupping-result/  # Social Action Bar + Radar Chart visualization
-│   │   │   ├── community-board/ # Global discovery feed with Social synchronization
-│   │   │   ├── auth/            # Mobile-optimized Redirect handshake
+│   │   │   ├── community-board/ # Bento-style Discovery Grid (Dynamic density logic)
+│   │   │   ├── auth/            # Nano-compact handshakes (Centered minimalist UI)
 │   │   ├── models/              # TypeScript Interfaces (CuppingSession, SensoryScores)
 │   │   ├── services/            # Firebase injection and Atomic Social Handlers
 │   │   └── app.component.ts     # Main Shell & Glassmorphism Nav
@@ -49,3 +49,6 @@ CaffeeScore/
 - **Atomic Concurrency**: Social metrics use Firestore `increment()` and Atomic Array operations to prevent race conditions during community engagement.
 - **Static Asset Fallback**: Every cupping session is visually anchored by either a user-uploaded photo or a professionally generated system default.
 - **B2B Commerce Bridge**: Roastery-verified sessions include denormalized commerce links (`buyLink`) to facilitate direct-to-consumer sales from the platform.
+- **Bento Discovery Architecture**: Implemented a responsive `grid-auto-flow: dense` layout that assigns card sizes based on `finalScore` and verification status, creating a magazine-style browsing experience.
+- **Nano-Auth Minimalism**: Authentication cards are constrained to a maximum width of `320px` to maximize focus and minimize visual noise, with precision centering using `100dvh`.
+- **Headerless Mobile UX**: To maximize vertical screen space on smartphone devices, the top navigation header is hidden on screens <= `768px`, relying entirely on a floating bottom navigation bar positioned `15px` from the bottom edge.

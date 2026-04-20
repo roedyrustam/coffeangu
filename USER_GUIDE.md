@@ -1,4 +1,4 @@
-# ☕ Selamat Datang di CaffeeScore v1.5.0
+# ☕ Selamat Datang di CaffeeScore v1.6.0
 
 CaffeeScore adalah platform ekosistem kopi spesialti yang dirancang untuk memodernisasi cara Anda mencatat, menganalisis, dan membagikan hasil evaluasi kopi (cupping). Berikut adalah panduan lengkap untuk membantu Anda memulai.
 
@@ -32,8 +32,9 @@ Untuk Anda yang ingin membawa evaluasi kopi ke tingkat bisnis.
 - **Data Export**: Unduh seluruh riwayat cupping dalam format **CSV** untuk kebutuhan pengolahan data internal atau laporan ke klien.
 
 ## 🤝 5. Komunitas & Berbagi
-- **Community Board**: Lihat apa yang sedang dikurasi oleh para ahli di seluruh dunia melalui Discovery Feed.
-- **Share Graphic**: Bagikan hasil cupping Anda dalam bentuk grafik premium yang dioptimalkan untuk media sosial langsung dari halaman hasil.
+- **Bento Discovery Board**: Jelajahi hasil cupping dari seluruh dunia melalui layout grid asimetris yang dinamis. Sesi dengan nilai tertinggi dan dari roasteri terverifikasi akan tampil lebih besar dan menonjol.
+- **Top 6 Global Discovery**: Di halaman dashboard utama, Anda akan langsung melihat 6 hasil cupping terbaik dari seluruh dunia untuk inspirasi harian Anda.
+- **Share Graphic**: Bagikan hasil cupping Anda dalam bentuk grafik premium yang dioptimalkan untuk media sosial (PNG) langsung dari halaman hasil.
 
 ---
 
