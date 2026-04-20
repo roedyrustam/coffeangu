@@ -1,0 +1,58 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // Reusable functions
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+    
+    function isOwner(userId) {
+      return isAuthenticated() && request.auth.uid == userId;
+    }
+
+    function isTeamMember(teamId) {
+      // In the future this could query a teams collection.
+      // For now, it matches if the current user's UID is in the teamId (as a fallback).
+      return isAuthenticated() && request.auth.uid == teamId; 
+    }
+
+    // Cuppings collection
+    match /cuppings/{cuppingId} {
+      // Public cuppings are readable by anyone. Private cuppings are readable by owner or team member.
+      allow read: if resource.data.isPublic == true || isOwner(resource.data.userId) || isTeamMember(resource.data.teamId);
+      
+      // Creating requires auth and matching userId. 
+      allow create: if isAuthenticated() && request.resource.data.userId == request.auth.uid;
+      
+      // Updates/Deletes must be done by the owner.
+      allow update, delete: if isOwner(resource.data.userId);
+    }
+
+    // Profiles collection
+    match /profiles/{profileId} {
+      // Profiles are publicly readable for community/leaderboard features.
+      allow read: if true;
+      
+      // Profiles can only be created/updated by the user themselves.
+      // Also ensure they aren't trying to change their uid to someone else's.
+      allow create: if isAuthenticated() && request.auth.uid == profileId && request.resource.data.uid == request.auth.uid;
+      allow update: if isAuthenticated() && request.auth.uid == profileId;
+      
+      // Deleting profile allowed by owner.
+      allow delete: if isAuthenticated() && request.auth.uid == profileId;
+    }
+
+    // Usernames collection (for checking availability)
+    match /usernames/{username} {
+      allow read: if true;
+      allow write: if isAuthenticated();
+    }
+    
+    // Default Deny for everything else
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}
