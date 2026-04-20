@@ -61,24 +61,29 @@ import { CommonModule } from '@angular/common';
     </main>
 
     <nav class="mobile-bottom-nav">
+      <div class="nav-blur-bg"></div>
       <a routerLink="/" class="bottom-nav-link" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}">
-        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+        <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
         <span>{{ t('NAV_HOME') }}</span>
       </a>
       <a routerLink="/community" class="bottom-nav-link" routerLinkActive="active">
-        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
+        <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
         <span>{{ t('NAV_DISCOVER') }}</span>
       </a>
-      <a routerLink="/cupping" class="bottom-nav-link" routerLinkActive="active">
-        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="M12 5v14"/></svg>
-        <span>{{ t('NAV_NEW') }}</span>
-      </a>
+      
+      <div class="nav-center-action">
+        <button class="center-fab" routerLink="/cupping">
+          <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12h14"/></svg>
+        </button>
+      </div>
+
       <a [routerLink]="auth.currentUser() ? '/profile' : '/login'" class="bottom-nav-link" routerLinkActive="active">
-        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+        <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
         <span>{{ auth.currentUser() ? 'Profile' : t('BTN_LOGIN') }}</span>
       </a>
+      
       <button *ngIf="auth.currentUser()" (click)="onLogout()" class="bottom-nav-link logout-trigger">
-        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+        <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
         <span>{{ t('BTN_LOGOUT') }}</span>
       </button>
     </nav>
@@ -190,34 +195,44 @@ import { CommonModule } from '@angular/common';
     .mobile-bottom-nav {
       display: none;
       position: fixed;
-      bottom: 20px;
-      left: 20px;
-      right: 20px;
-      height: 75px;
-      background: rgba(22, 22, 26, 0.95);
-      backdrop-filter: blur(25px);
-      border: 1px solid var(--glass-border);
-      border-radius: 40px;
+      bottom: 25px;
+      left: 15px;
+      right: 15px;
+      height: 70px;
       z-index: 1000;
-      justify-content: space-around;
+      justify-content: space-between;
       align-items: center;
-      padding: 0 20px;
-      box-shadow: 0 10px 40px rgba(0,0,0,0.5);
+      padding: 0 10px;
+    }
+    .nav-blur-bg {
+      position: absolute;
+      inset: 0;
+      background: rgba(12, 12, 14, 0.85);
+      backdrop-filter: blur(25px);
+      -webkit-backdrop-filter: blur(25px);
+      border: 1px solid var(--glass-border);
+      border-radius: 28px;
+      z-index: -1;
+      box-shadow: 0 15px 40px rgba(0,0,0,0.8);
     }
     .bottom-nav-link {
+      flex: 1;
       display: flex;
       flex-direction: column;
       align-items: center;
       justify-content: center;
       color: var(--text-dim);
       text-decoration: none;
-      font-size: 0.75rem;
-      font-weight: 600;
-      gap: 4px;
-      transition: all 0.3s;
+      font-size: 0.65rem;
+      font-weight: 800;
+      gap: 5px;
+      transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      z-index: 1;
     }
     .bottom-nav-link svg {
-      opacity: 0.6;
+      opacity: 0.5;
       transition: all 0.3s;
     }
     .bottom-nav-link.active {
@@ -225,8 +240,40 @@ import { CommonModule } from '@angular/common';
     }
     .bottom-nav-link.active svg {
       opacity: 1;
-      transform: translateY(-2px);
+      transform: translateY(-2px) scale(1.1);
       stroke: var(--primary-color);
+    }
+    .nav-center-action {
+      position: relative;
+      width: 70px;
+      height: 70px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      z-index: 2;
+    }
+    .center-fab {
+      width: 62px;
+      height: 62px;
+      background: var(--primary-gradient);
+      border-radius: 50%;
+      border: 6px solid var(--bg-color);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      color: #0c0c0e;
+      box-shadow: 0 8px 30px var(--primary-glow);
+      cursor: pointer;
+      position: absolute;
+      top: -28px;
+      transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    }
+    .center-fab:hover {
+      transform: scale(1.15) translateY(-5px);
+      box-shadow: 0 15px 40px var(--primary-glow);
+    }
+    .center-fab:active {
+      transform: scale(0.9);
     }
     .logout-trigger {
        background: transparent;
@@ -234,7 +281,7 @@ import { CommonModule } from '@angular/common';
        padding: 0;
        cursor: pointer;
     }
-    .logout-trigger svg { color: var(--danger); }
+    .logout-trigger svg { color: var(--danger); opacity: 0.7; }
     .main-footer {
       height: 100px;
       display: flex;

@@ -31,40 +31,46 @@ Chart.register(RadarController, RadialLinearScale, PointElement, LineElement, Fi
         </button>
       </div>
 
-      <header class="profile-header glass-card">
-        <div class="user-info">
-          <div class="avatar-large" (click)="avatarInput.click()" style="cursor: pointer; position: relative;">
-            <img *ngIf="auth.currentUser()?.photoURL" [src]="auth.currentUser()?.photoURL" alt="Profile">
-            <span *ngIf="!auth.currentUser()?.photoURL">{{ auth.currentUser()?.displayName?.charAt(0) || 'U' }}</span>
-            <div class="avatar-overlay">
-               <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
-            </div>
-            <input type="file" #avatarInput style="display: none" (change)="onAvatarSelected($event)" accept="image/*">
-          </div>
-          <div class="user-details">
-            <h1 class="brand-font">{{ auth.currentUser()?.displayName }}</h1>
-            <p class="email">{{ auth.currentUser()?.email }}</p>
-            <div class="cupper-rank" *ngIf="stats$ | async as stats">
-              <span class="rank-label">{{ getRank(stats.total) }}</span>
-            </div>
-          </div>
+      <header class="profile-header immersive glass-card">
+        <div class="header-visual">
+          <img src="/assets/hero-profile.png" alt="Profile Hero" class="header-image">
+          <div class="header-overlay"></div>
         </div>
-
-        <div class="stats-grid" *ngIf="stats$ | async as stats">
-          <div class="signature-section">
-             <span class="section-label">Your Sensory Signature</span>
-             <div class="chart-container">
-                <canvas id="signatureChart"></canvas>
-             </div>
-          </div>
-          <div class="numeric-stats">
-            <div class="stat-card">
-              <span class="val">{{ stats.total }}</span>
-              <span class="lab">{{ t('TOTAL_SESSIONS') }}</span>
+        <div class="header-content">
+          <div class="user-info">
+            <div class="avatar-large" (click)="avatarInput.click()" style="cursor: pointer; position: relative;">
+              <img *ngIf="auth.currentUser()?.photoURL" [src]="auth.currentUser()?.photoURL" alt="Profile">
+              <span *ngIf="!auth.currentUser()?.photoURL">{{ auth.currentUser()?.displayName?.charAt(0) || 'U' }}</span>
+              <div class="avatar-overlay">
+                 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
+              </div>
+              <input type="file" #avatarInput style="display: none" (change)="onAvatarSelected($event)" accept="image/*">
             </div>
-            <div class="stat-card">
-              <span class="val">{{ stats.avg.toFixed(1) }}</span>
-              <span class="lab">{{ t('AVG_SCORE') }}</span>
+            <div class="user-details">
+              <h1 class="brand-font">{{ auth.currentUser()?.displayName }}</h1>
+              <p class="email">{{ auth.currentUser()?.email }}</p>
+              <div class="cupper-rank" *ngIf="stats$ | async as stats">
+                <span class="rank-label">{{ getRank(stats.total) }}</span>
+              </div>
+            </div>
+          </div>
+  
+          <div class="stats-grid" *ngIf="stats$ | async as stats">
+            <div class="signature-section">
+               <span class="section-label">Sensory Fingerprint</span>
+               <div class="chart-container">
+                  <canvas id="signatureChart"></canvas>
+               </div>
+            </div>
+            <div class="numeric-stats">
+              <div class="stat-card glass-card">
+                <span class="val">{{ stats.total }}</span>
+                <span class="lab">{{ t('TOTAL_SESSIONS') }}</span>
+              </div>
+              <div class="stat-card glass-card">
+                <span class="val">{{ stats.avg.toFixed(1) }}</span>
+                <span class="lab">{{ t('AVG_SCORE') }}</span>
+              </div>
             </div>
           </div>
         </div>
@@ -214,12 +220,42 @@ Chart.register(RadarController, RadialLinearScale, PointElement, LineElement, Fi
     .settings-trigger:hover { background: var(--surface-hover); color: var(--text-main); }
 
     .profile-header {
-      padding: 60px;
+      padding: 0;
       margin-bottom: 60px;
+      position: relative;
+      border-radius: var(--radius-lg);
+      overflow: hidden;
+      min-height: 380px;
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-end;
+      border: 1px solid var(--glass-border);
+      box-shadow: 0 20px 80px rgba(0,0,0,0.6);
+    }
+    .header-visual {
+      position: absolute;
+      inset: 0;
+      z-index: 0;
+    }
+    .header-image {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      filter: brightness(0.6) contrast(1.1);
+    }
+    .header-overlay {
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(to bottom, transparent 0%, rgba(12, 12, 14, 0.5) 40%, var(--bg-color) 100%);
+    }
+    .header-content {
+      position: relative;
+      z-index: 1;
+      padding: 40px 60px;
       display: flex;
       justify-content: space-between;
       align-items: center;
-      background-image: radial-gradient(circle at 100% 0%, var(--primary-glow) 0%, transparent 40%);
+      width: 100%;
     }
     .user-info { display: flex; gap: 40px; align-items: center; }
     .avatar-large {
@@ -249,17 +285,18 @@ Chart.register(RadarController, RadialLinearScale, PointElement, LineElement, Fi
     }
     .avatar-large:hover .avatar-overlay { opacity: 1; }
     
-    .user-details h1 { font-size: 3rem; margin-bottom: 8px; line-height: 1; }
-    .email { color: var(--text-dim); font-size: 1.1rem; margin-bottom: 15px; }
+    .user-details h1 { font-size: 3.5rem; margin-bottom: 8px; line-height: 1; text-shadow: 0 5px 20px rgba(0,0,0,0.5); }
+    .email { color: var(--text-main); font-size: 1.1rem; margin-bottom: 15px; opacity: 0.8; }
     .cupper-rank .rank-label {
-      background: var(--primary-color);
+      background: var(--primary-gradient);
       color: #0c0c0e;
-      padding: 4px 15px;
-      border-radius: 6px;
-      font-size: 0.75rem;
+      padding: 6px 18px;
+      border-radius: 8px;
+      font-size: 0.8rem;
       font-weight: 900;
       text-transform: uppercase;
-      letter-spacing: 1px;
+      letter-spacing: 2px;
+      box-shadow: 0 5px 15px var(--primary-glow);
     }
 
     .stats-grid { display: flex; gap: 40px; align-items: center; }
@@ -268,17 +305,17 @@ Chart.register(RadarController, RadialLinearScale, PointElement, LineElement, Fi
     .section-label { font-size: 0.7rem; font-weight: 800; text-transform: uppercase; color: var(--primary-color); letter-spacing: 2px; }
     .numeric-stats { display: flex; flex-direction: column; gap: 15px; }
     .stat-card {
-      background: var(--surface-hover);
-      padding: 15px 25px;
-      border-radius: 18px;
-      border: 1px solid var(--glass-border);
+      background: rgba(12, 12, 14, 0.4);
+      padding: 20px 30px;
+      border-radius: 22px;
       display: flex;
       flex-direction: column;
       align-items: center;
-      min-width: 130px;
+      min-width: 140px;
+      backdrop-filter: blur(10px);
     }
-    .stat-card .val { font-size: 1.8rem; font-weight: 900; color: var(--text-main); font-family: 'Playfair Display', serif; }
-    .stat-card .lab { font-size: 0.65rem; font-weight: 800; text-transform: uppercase; color: var(--text-dim); }
+    .stat-card .val { font-size: 2.2rem; font-weight: 900; color: var(--primary-color); font-family: 'Playfair Display', serif; text-shadow: 0 5px 15px rgba(0,0,0,0.5); }
+    .stat-card .lab { font-size: 0.7rem; font-weight: 800; text-transform: uppercase; color: var(--text-main); opacity: 0.6; letter-spacing: 1px; }
 
     .feed-section { margin-top: 50px; }
     .section-title { font-size: 2rem; margin-bottom: 40px; font-weight: 800; position: relative; display: inline-block; }
