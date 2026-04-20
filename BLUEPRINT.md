@@ -1,4 +1,4 @@
-# CaffeeScore v1.3.0 Blueprint
+# CaffeeScore v1.5.0 Blueprint
 
 ## 1. System Architecture
 CaffeeScore is a modern web application built on **Angular 21** utilizing Server-Side Rendering (SSR) optionally, but fundamentally designed as an **Offline-First Progressive Web App (PWA)**. 
@@ -11,6 +11,7 @@ CaffeeScore is a modern web application built on **Angular 21** utilizing Server
 - **Visualization**: Chart.js 4 (Radar Chart) + html2canvas for image snapshots.
 - **OCR Engine**: Tesseract.js (AI autofill via package sticker scanning).
 - **Asset Generation**: Integrated AI generation for premium fallback product images.
+- **B2B Infrastructure**: Role-based team management with Verified Roastery badges and Shop URL integration.
 
 ## 2. Directory Structure
 ```text
@@ -47,3 +48,4 @@ CaffeeScore/
 - **Mobile Handshake**: Detects mobile user agents to force `signInWithRedirect`, preventing traditional pop-up blocking issues on iOS/Android.
 - **Atomic Concurrency**: Social metrics use Firestore `increment()` and Atomic Array operations to prevent race conditions during community engagement.
 - **Static Asset Fallback**: Every cupping session is visually anchored by either a user-uploaded photo or a professionally generated system default.
+- **B2B Commerce Bridge**: Roastery-verified sessions include denormalized commerce links (`buyLink`) to facilitate direct-to-consumer sales from the platform.

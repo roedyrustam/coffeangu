@@ -1,4 +1,4 @@
-# ☕ Selamat Datang di CaffeeScore v1.3.0
+# ☕ Selamat Datang di CaffeeScore v1.5.0
 
 CaffeeScore adalah platform ekosistem kopi spesialti yang dirancang untuk memodernisasi cara Anda mencatat, menganalisis, dan membagikan hasil evaluasi kopi (cupping). Berikut adalah panduan lengkap untuk membantu Anda memulai.
 
@@ -26,9 +26,9 @@ Form cupping kami mengikuti standar nilai terbaru dari Specialty Coffee Associat
 Untuk Anda yang ingin membawa evaluasi kopi ke tingkat bisnis.
 - **Analytics Dashboard**: Akses melalui Profil Anda. Lihat tren konsistensi QC tim, diversitas portofolio origin, dan kalibrasi palate Anda dibanding komunitas.
 - **Team Management (Roastery)**: 
-    - Buat tim Roastery Anda.
-    - Undang cupper lain menggunakan `@handle` mereka.
-    - Pantau hasil cupping seluruh tim dalam satu feed ter pusat untuk menjaga konsistensi rasa produk Anda.
+    - Buat tim Roastery Anda dan undang cupper lain menggunakan `@handle` mereka.
+    - **Verified Roastery Profile**: Ajukan verifikasi tim untuk mendapatkan lencana biru (check) di feed komunitas, meningkatkan kepercayaan calon pembeli.
+    - **Direct Commerce**: Masukkan tautan toko online (Shop URL) tim Anda. Setiap sesi cupping publik dari tim terverifikasi akan mendapatkan tombol **"Buy This Bean"** otomatis untuk meningkatkan penjualan langsung.
 - **Data Export**: Unduh seluruh riwayat cupping dalam format **CSV** untuk kebutuhan pengolahan data internal atau laporan ke klien.
 
 ## 🤝 5. Komunitas & Berbagi
