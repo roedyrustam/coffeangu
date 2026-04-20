@@ -313,11 +313,18 @@ import { DynamicFlavorWheelComponent } from '../flavor-wheel/flavor-wheel.compon
       opacity: 0.8;
     }
     .btn-start {
-      padding: 24px;
-      font-size: 1.2rem;
+      padding: 20px 30px;
+      font-size: 1.15rem;
       border-radius: 100px;
-      letter-spacing: 2px;
+      letter-spacing: 1px;
       box-shadow: 0 15px 35px var(--primary-glow);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      line-height: 1.3;
+      text-align: center;
+      min-height: 80px;
     }
     @media (max-width: 640px) {
       .guide-grid { grid-template-columns: 1fr; }

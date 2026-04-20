@@ -311,18 +311,19 @@ import { AuthService } from '../../services/auth.service';
     /* GRID & CARD STYLES */
     .feed-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
-      gap: 40px;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 30px;
     }
     .cupping-card {
-      padding: 32px;
+      padding: 24px;
       position: relative;
       overflow: hidden;
       display: flex;
       flex-direction: column;
-      gap: 20px;
+      gap: 12px;
       height: 100%;
-      min-height: 520px;
+      min-height: 420px; /* Further reduced from 480px */
+      border-radius: var(--radius-md);
     }
     .card-glow {
       position: absolute;
@@ -338,9 +339,9 @@ import { AuthService } from '../../services/auth.service';
     .cupping-card:hover .card-glow { opacity: 0.5; }
 
     .card-image {
-      width: calc(100% + 64px);
-      margin: -32px -32px 10px -32px;
-      height: 200px;
+      width: calc(100% + 48px);
+      margin: -24px -24px 8px -24px;
+      height: 160px; /* Reduced from 200px */
       overflow: hidden;
       border-bottom: 1px solid var(--glass-border);
       aspect-ratio: 16 / 9;
@@ -479,24 +480,32 @@ import { AuthService } from '../../services/auth.service';
       .filters-row { flex-direction: column; gap: 25px; align-items: flex-start; }
     }
     @media (max-width: 768px) {
-      .feed-grid { grid-template-columns: repeat(2, 1fr); gap: 20px; }
-      .discovery-hero { padding: 40px; }
-      .brand-font { font-size: 3.5rem; }
-    }
-    @media (max-width: 540px) {
-      .community-container { padding: 20px; }
-      .feed-grid { grid-template-columns: 1fr; gap: 24px; }
-      .cupping-card { padding: 24px; min-height: auto; }
+      .feed-grid { grid-template-columns: repeat(3, 1fr); gap: 8px; }
+      .discovery-hero { padding: 30px; }
+      .brand-font { font-size: 2.2rem; }
+      .cupping-card { min-height: 260px; padding: 10px; gap: 6px; border-radius: 10px; }
       .card-image {
-        width: calc(100% + 48px);
-        margin: -24px -24px 15px -24px;
-        height: 180px;
+        width: calc(100% + 20px);
+        margin: -10px -10px 4px -10px;
+        height: 55px; /* Ultra compact */
       }
-      .bean-main h3 { font-size: 1.4rem; height: auto; -webkit-line-clamp: 3; }
-      .roastery { font-size: 0.7rem; }
-      .score-display { width: 50px; height: 50px; }
-      .score-display .num { font-size: 1.1rem; }
-      .card-footer { padding-top: 20px; }
+      .bean-main h3 { font-size: 0.8rem; height: 1.8rem; -webkit-line-clamp: 2; margin-bottom: 2px; }
+      .roastery { font-size: 0.5rem; letter-spacing: 0.5px; }
+      .score-display { width: 30px; height: 30px; border-radius: 6px; }
+      .score-display .num { font-size: 0.7rem; }
+      .sensory-strip { display: none; } /* Hide in super compact 3-col mobile */
+      .flavor-cloud { display: none; } /* Hide in super compact 3-col mobile */
+      .card-footer { padding-top: 8px; flex-direction: column; gap: 8px; align-items: flex-start; }
+      .social-stats { padding-top: 8px; }
+      .mini-avatar { width: 20px; height: 20px; font-size: 0.6rem; }
+      .cupper-info .name { font-size: 0.6rem; }
+    }
+    @media (max-width: 400px) {
+      .feed-grid { gap: 10px; }
+      .cupping-card { padding: 15px; min-height: 440px; }
+      .card-image { width: calc(100% + 30px); margin: -15px -15px 5px -15px; height: 100px; }
+      .bean-main h3 { font-size: 0.95rem; height: 2.4rem; }
+      .sensory-strip { gap: 4px; }
     }
     @media (max-width: 380px) {
       .feed-grid { grid-template-columns: 1fr; }
