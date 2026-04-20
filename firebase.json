@@ -6,17 +6,11 @@
     "indexes": "firestore.indexes.json"
   },
   "hosting": {
-    "public": "dist/coffeescore/browser",
+    "source": ".",
     "ignore": [
       "firebase.json",
       "**/.*",
       "**/node_modules/**"
-    ],
-    "rewrites": [
-      {
-        "source": "**",
-        "destination": "/index.html"
-      }
     ]
   }
 }
