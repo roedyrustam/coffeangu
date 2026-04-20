@@ -124,25 +124,25 @@ import { FlavorPickerComponent } from '../flavor-picker/flavor-picker.component'
                <div class="intensity-item">
                   <div class="intensity-header">
                      <label>Acidity Intensity</label>
-                     <span>{{ session.intensities.acidity }}</span>
+                     <span>{{ session.intensities!.acidity }}</span>
                   </div>
-                  <input type="range" min="1" max="10" step="1" [(ngModel)]="session.intensities.acidity" name="int-acidity">
+                  <input type="range" min="1" max="10" step="1" [(ngModel)]="session.intensities!.acidity" name="int-acidity">
                   <div class="range-labels"><span>Low</span><span>High</span></div>
                </div>
                <div class="intensity-item">
                   <div class="intensity-header">
                      <label>Body Intensity</label>
-                     <span>{{ session.intensities.body }}</span>
+                     <span>{{ session.intensities!.body }}</span>
                   </div>
-                  <input type="range" min="1" max="10" step="1" [(ngModel)]="session.intensities.body" name="int-body">
+                  <input type="range" min="1" max="10" step="1" [(ngModel)]="session.intensities!.body" name="int-body">
                   <div class="range-labels"><span>Low</span><span>High</span></div>
                </div>
                <div class="intensity-item">
                   <div class="intensity-header">
                      <label>Sweetness Intensity</label>
-                     <span>{{ session.intensities.sweetness }}</span>
+                     <span>{{ session.intensities!.sweetness }}</span>
                   </div>
-                  <input type="range" min="1" max="10" step="1" [(ngModel)]="session.intensities.sweetness" name="int-sweetness">
+                  <input type="range" min="1" max="10" step="1" [(ngModel)]="session.intensities!.sweetness" name="int-sweetness">
                   <div class="range-labels"><span>Low</span><span>High</span></div>
                </div>
             </div>
@@ -671,7 +671,7 @@ export class CuppingFormComponent implements OnInit {
 
   isEditMode = false;
   editId: string | null = null;
-  
+
   showGuide = true;
   loading = false;
   isScanning = false;
