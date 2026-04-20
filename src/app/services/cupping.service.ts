@@ -14,8 +14,18 @@ export class CuppingService {
   private auth = inject(AuthService);
   private cuppingCollection = collection(this.firestore, 'cuppings');
 
-  getLatestCuppings(): Observable<CuppingSession[]> {
-    const q = query(this.cuppingCollection, orderBy('timestamp', 'desc'), limit(20));
+  getLatestCuppings(userId?: string): Observable<CuppingSession[]> {
+    let q;
+    if (userId) {
+      q = query(
+        this.cuppingCollection, 
+        where('userId', '==', userId),
+        orderBy('timestamp', 'desc'), 
+        limit(20)
+      );
+    } else {
+      q = query(this.cuppingCollection, orderBy('timestamp', 'desc'), limit(20));
+    }
     return collectionData(q, { idField: 'id' }) as Observable<CuppingSession[]>;
   }
 
@@ -55,6 +65,16 @@ export class CuppingService {
     constraints.push(limit(qLimit));
 
     const q = query(this.cuppingCollection, ...constraints);
+    return collectionData(q, { idField: 'id' }) as Observable<CuppingSession[]>;
+  }
+  getSavedCuppings(userId: string): Observable<CuppingSession[]> {
+    if (!userId) return of([]);
+    const q = query(
+      this.cuppingCollection,
+      where('savedBy', 'array-contains', userId),
+      orderBy('timestamp', 'desc'),
+      limit(50)
+    );
     return collectionData(q, { idField: 'id' }) as Observable<CuppingSession[]>;
   }
 

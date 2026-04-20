@@ -1,6 +1,7 @@
 import { Component, inject, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { TranslationService } from '../../services/translation.service';
+import { AuthService } from '../../services/auth.service';
 import { FormsModule } from '@angular/forms';
 import { Router, ActivatedRoute } from '@angular/router';
 import { CuppingService } from '../../services/cupping.service';
@@ -667,6 +668,7 @@ export class CuppingFormComponent implements OnInit {
   private router = inject(Router);
   private route = inject(ActivatedRoute);
   private ts = inject(TranslationService);
+  private auth = inject(AuthService);
   t = this.ts.t();
 
   isEditMode = false;
@@ -685,6 +687,12 @@ export class CuppingFormComponent implements OnInit {
       this.showGuide = false;
       const session = await this.cuppingService.getCuppingById(this.editId);
       if (session) {
+        // Ownership check
+        if (session.userId !== this.auth.getUserId()) {
+          alert('Unauthorized: You can only edit your own sessions.');
+          this.router.navigate(['/']);
+          return;
+        }
         this.session = { ...session };
       } else {
         alert('Session not found');

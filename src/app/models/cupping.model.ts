@@ -13,6 +13,7 @@ export interface SensoryScores {
 
 export interface CuppingSession {
   id?: string;
+  userId?: string;
   beanName: string;
   type: string; // Arabica, Robusta, etc.
   origin?: string;

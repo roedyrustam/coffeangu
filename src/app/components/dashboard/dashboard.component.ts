@@ -3,7 +3,10 @@ import { CommonModule } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { CuppingService } from '../../services/cupping.service';
 import { TranslationService } from '../../services/translation.service';
+import { AuthService } from '../../services/auth.service';
 import { toSignal } from '@angular/core/rxjs-interop';
+import { switchMap } from 'rxjs';
+import { CuppingSession } from '../../models/cupping.model';
 
 @Component({
   selector: 'app-dashboard',
@@ -269,13 +272,16 @@ import { toSignal } from '@angular/core/rxjs-interop';
 export class DashboardComponent {
   private cuppingService = inject(CuppingService);
   private ts = inject(TranslationService);
-  cuppings = toSignal(this.cuppingService.getLatestCuppings());
+  private auth = inject(AuthService);
+  cuppings = toSignal(this.auth.user$.pipe(
+    switchMap(user => this.cuppingService.getLatestCuppings(user?.uid))
+  ));
   t = this.ts.t();
 
   calculateAvg() {
-    const list = this.cuppings();
+    const list = this.cuppings() as any[];
     if (!list || list.length === 0) return '0.00';
-    const sum = list.reduce((acc, curr) => acc + curr.finalScore, 0);
+    const sum = list.reduce((acc: number, curr: any) => acc + curr.finalScore, 0);
     return (sum / list.length).toFixed(2);
   }
 }

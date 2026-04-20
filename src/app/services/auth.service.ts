@@ -55,6 +55,18 @@ export class AuthService {
     }
   }
 
+  async updateDisplayName(name: string) {
+    const user = this.auth.currentUser;
+    if (!user) return;
+    try {
+      await updateProfile(user, { displayName: name });
+      return true;
+    } catch (error) {
+      console.error('Update profile failed:', error);
+      throw error;
+    }
+  }
+
   async logout() {
     try {
       await signOut(this.auth);

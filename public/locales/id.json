@@ -62,5 +62,7 @@
   "BTN_DELETE": "Hapus",
   "CONFIRM_DELETE_TITLE": "Hapus Sesi?",
   "CONFIRM_DELETE_DESC": "Tindakan ini tidak dapat dibatalkan. Semua data sensori untuk sesi ini akan dihapus secara permanen.",
-  "EMPTY_HISTORY_DESC": "Anda belum mencatat sesi cupping apapun."
+  "EMPTY_HISTORY_DESC": "Anda belum mencatat sesi cupping apapun.",
+  "SAVED_SESSIONS": "Sesi Tersimpan",
+  "BTN_SETTINGS": "Pengaturan"
 }

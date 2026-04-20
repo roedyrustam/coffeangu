@@ -62,5 +62,7 @@
   "BTN_DELETE": "Delete",
   "CONFIRM_DELETE_TITLE": "Delete Session?",
   "CONFIRM_DELETE_DESC": "This action cannot be undone. All sensory data for this session will be permanently removed.",
-  "EMPTY_HISTORY_DESC": "You haven't recorded any cupping sessions yet."
+  "EMPTY_HISTORY_DESC": "You haven't recorded any cupping sessions yet.",
+  "SAVED_SESSIONS": "Saved Impressions",
+  "BTN_SETTINGS": "Settings"
 }
