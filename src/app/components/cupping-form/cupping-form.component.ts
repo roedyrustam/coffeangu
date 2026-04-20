@@ -237,7 +237,7 @@ import { DynamicFlavorWheelComponent } from '../flavor-wheel/flavor-wheel.compon
     <app-flavor-wheel 
       *ngIf="showFlavorPicker" 
       [selectedNotes]="session.flavorNotes"
-      (notesChanged)="session.flavorNotes = $event; updateTotal(); checkSuggestions()"
+      (notesChanged)="session.flavorNotes = $event; updateTotal(); checkSuggestions(); triggerHaptic()"
       (close)="showFlavorPicker = false">
     </app-flavor-wheel>
   `,

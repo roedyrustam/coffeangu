@@ -275,10 +275,14 @@ export class DynamicFlavorWheelComponent implements AfterViewInit {
   private isDragging = false;
   private startAngle = 0;
   private startRotation = 0;
+  private velocity = 0;
+  private lastAngle = 0;
+  private lastTime = 0;
+  private rafId: number | null = null;
+  private friction = 0.96; // Premium inertia damping
 
   ngAfterViewInit() {
     this.currentNodes.set([]);
-    // Add event listeners for global mouse up/move to handle drag outside
     window.addEventListener('mousemove', this.onMouseMove);
     window.addEventListener('mouseup', this.onMouseUp);
     window.addEventListener('touchmove', this.onTouchMove, { passive: false });
@@ -286,36 +290,80 @@ export class DynamicFlavorWheelComponent implements AfterViewInit {
   }
 
   onMouseDown(event: MouseEvent) {
+    this.stopInertia();
     this.isDragging = true;
     this.startAngle = this.getAngle(event.clientX, event.clientY);
     this.startRotation = this.rotation();
+    this.lastAngle = this.startAngle;
+    this.lastTime = performance.now();
   }
 
   onTouchStart(event: TouchEvent) {
+    this.stopInertia();
     this.isDragging = true;
     const touch = event.touches[0];
     this.startAngle = this.getAngle(touch.clientX, touch.clientY);
     this.startRotation = this.rotation();
+    this.lastAngle = this.startAngle;
+    this.lastTime = performance.now();
   }
 
   private onMouseMove = (event: MouseEvent) => {
     if (!this.isDragging) return;
-    const currentAngle = this.getAngle(event.clientX, event.clientY);
-    const delta = currentAngle - this.startAngle;
-    this.rotation.set(this.startRotation + delta);
+    this.handleMove(event.clientX, event.clientY);
   };
 
   private onTouchMove = (event: TouchMoveEvent | any) => {
     if (!this.isDragging) return;
     const touch = event.touches[0];
-    const currentAngle = this.getAngle(touch.clientX, touch.clientY);
-    const delta = currentAngle - this.startAngle;
-    this.rotation.set(this.startRotation + delta);
+    this.handleMove(touch.clientX, touch.clientY);
   };
 
+  private handleMove(clientX: number, clientY: number) {
+    const currentAngle = this.getAngle(clientX, clientY);
+    const currentTime = performance.now();
+    
+    const deltaAngle = currentAngle - this.lastAngle;
+    const deltaTime = currentTime - this.lastTime;
+    
+    if (deltaTime > 0) {
+      this.velocity = (deltaAngle / deltaTime) * 16; // Normalizing velocity
+    }
+
+    const totalDelta = currentAngle - this.startAngle;
+    this.rotation.set(this.startRotation + totalDelta);
+    
+    this.lastAngle = currentAngle;
+    this.lastTime = currentTime;
+  }
+
   private onMouseUp = () => {
+    if (!this.isDragging) return;
     this.isDragging = false;
+    this.startInertia();
   };
+
+  private startInertia() {
+    const step = () => {
+      if (Math.abs(this.velocity) < 0.1) {
+        this.stopInertia();
+        return;
+      }
+      
+      this.rotation.update(r => r + this.velocity);
+      this.velocity *= this.friction;
+      this.rafId = requestAnimationFrame(step);
+    };
+    this.rafId = requestAnimationFrame(step);
+  }
+
+  private stopInertia() {
+    if (this.rafId) {
+      cancelAnimationFrame(this.rafId);
+      this.rafId = null;
+    }
+    this.velocity = 0;
+  }
 
   private getAngle(x: number, y: number): number {
     const rect = this.wheelWrapper.nativeElement.getBoundingClientRect();

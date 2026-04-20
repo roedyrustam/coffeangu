@@ -7,7 +7,7 @@ import { UserProfile, LEVEL_THRESHOLDS } from '../../models/user-profile.model';
   standalone: true,
   imports: [CommonModule],
   template: `
-    <div class="avatar-container glass-card animate-fade">
+    <div class="avatar-container glass-card animate-fade animate-float">
       <div class="avatar-aura" [class]="profile.avatarStage"></div>
       
       <div class="avatar-image-wrapper">
@@ -15,6 +15,8 @@ import { UserProfile, LEVEL_THRESHOLDS } from '../../models/user-profile.model';
              [alt]="profile.avatarStage" 
              class="avatar-growth-image">
       </div>
+      <div class="avatar-shadow"></div>
+
 
       <div class="avatar-stats">
         <div class="level-badge">
@@ -76,7 +78,7 @@ import { UserProfile, LEVEL_THRESHOLDS } from '../../models/user-profile.model';
       height: 180px;
       position: relative;
       z-index: 1;
-      margin-bottom: 30px;
+      margin-bottom: 20px;
       filter: drop-shadow(0 15px 35px rgba(0,0,0,0.5));
     }
     .avatar-growth-image {
@@ -85,8 +87,25 @@ import { UserProfile, LEVEL_THRESHOLDS } from '../../models/user-profile.model';
       object-fit: contain;
       transition: all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
     }
-    .avatar-container:hover .avatar-growth-image {
-      transform: scale(1.05) translateY(-5px);
+    .avatar-shadow {
+      width: 60px;
+      height: 8px;
+      background: rgba(0,0,0,0.4);
+      border-radius: 50%;
+      filter: blur(8px);
+      margin-top: -10px;
+      margin-bottom: 30px;
+      transform: scale(1);
+      transition: all 3s ease-in-out;
+    }
+    
+    .avatar-container.animate-float .avatar-shadow {
+      animation: shadowScale 6s ease-in-out infinite;
+    }
+
+    @keyframes shadowScale {
+      0%, 100% { transform: scale(1); opacity: 0.4; }
+      50% { transform: scale(0.7); opacity: 0.2; }
     }
 
     .avatar-stats {

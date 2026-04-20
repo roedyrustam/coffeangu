@@ -9,6 +9,8 @@ import { CommonModule } from '@angular/common';
   standalone: true,
   imports: [RouterOutlet, RouterLink, RouterLinkActive, CommonModule],
   template: `
+    <div class="mesh-bg" [style.transform]="parallaxTransform()"></div>
+    
     <nav class="main-nav">
       <div class="nav-content">
         <a routerLink="/" class="brand brand-font">{{ t('APP_TITLE') }}</a>
@@ -425,10 +427,18 @@ import { CommonModule } from '@angular/common';
 })
 export class App {
   ts = inject(TranslationService);
-  auth = inject(AuthService);
   router = inject(Router);
   t = this.ts.t();
   showUserMenu = signal(false);
+  parallaxTransform = signal('translate3d(0,0,0) scale(1.1)');
+
+  ngOnInit() {
+    window.addEventListener('mousemove', (e) => {
+      const x = (e.clientX / window.innerWidth - 0.5) * 30;
+      const y = (e.clientY / window.innerHeight - 0.5) * 30;
+      this.parallaxTransform.set(`translate3d(${x}px, ${y}px, 0) scale(1.1)`);
+    });
+  }
 
   async onLogout() {
     await this.auth.logout();
