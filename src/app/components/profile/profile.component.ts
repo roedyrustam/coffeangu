@@ -30,9 +30,13 @@ import { FormsModule } from '@angular/forms';
 
       <header class="profile-header glass-card">
         <div class="user-info">
-          <div class="avatar-large">
+          <div class="avatar-large" (click)="avatarInput.click()" style="cursor: pointer; position: relative;">
             <img *ngIf="auth.currentUser()?.photoURL" [src]="auth.currentUser()?.photoURL" alt="Profile">
             <span *ngIf="!auth.currentUser()?.photoURL">{{ auth.currentUser()?.displayName?.charAt(0) || 'U' }}</span>
+            <div class="avatar-overlay">
+               <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
+            </div>
+            <input type="file" #avatarInput style="display: none" (change)="onAvatarSelected($event)" accept="image/*">
           </div>
           <div class="user-details">
             <h1 class="brand-font">{{ auth.currentUser()?.displayName }}</h1>
@@ -58,7 +62,12 @@ import { FormsModule } from '@angular/forms';
       <section class="feed-section">
         <!-- HISTORY VIEW -->
         <div class="history-view" *ngIf="activeTab() === 'history'">
-          <h2 class="section-title">{{ t('PERSONAL_HISTORY') }}</h2>
+          <div class="section-title-row" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 40px;">
+            <h2 class="section-title" style="margin-bottom: 0;">{{ t('PERSONAL_HISTORY') }}</h2>
+            <button class="btn-secondary" (click)="downloadHistory()" *ngIf="(cuppings$ | async)?.length" style="padding: 8px 15px; font-size: 0.75rem;">
+               📥 Export CSV
+            </button>
+          </div>
           <div class="history-feed" *ngIf="cuppings$ | async as cuppings; else loading">
             <div class="history-card glass-card" *ngFor="let session of cuppings">
               <div class="card-left" [routerLink]="['/result', session.id]">
@@ -209,6 +218,18 @@ import { FormsModule } from '@angular/forms';
     }
     .avatar-large img { width: 100%; height: 100%; object-fit: cover; }
     .avatar-large span { font-size: 3rem; font-weight: 800; color: #0c0c0e; }
+    .avatar-overlay {
+      position: absolute;
+      inset: 0;
+      background: rgba(0,0,0,0.4);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      opacity: 0;
+      transition: opacity 0.3s;
+      color: white;
+    }
+    .avatar-large:hover .avatar-overlay { opacity: 1; }
     
     .user-details h1 { font-size: 3rem; margin-bottom: 8px; line-height: 1; }
     .email { color: var(--text-dim); font-size: 1.1rem; margin-bottom: 15px; }
@@ -402,6 +423,26 @@ export class ProfileComponent implements OnInit {
     } finally {
       this.updating.set(false);
     }
+  }
+
+  async onAvatarSelected(event: any) {
+    const file = event.target.files?.[0];
+    if (!file) return;
+
+    this.updating.set(true);
+    try {
+      await this.auth.updateProfileImage(file);
+    } catch (e) {
+      alert('Failed to upload avatar');
+    } finally {
+      this.updating.set(false);
+    }
+  }
+
+  downloadHistory() {
+    this.cuppings$.pipe(take(1)).subscribe(sessions => {
+      this.cuppingService.exportToCSV(sessions);
+    });
   }
 
   getRank(total: number): string {

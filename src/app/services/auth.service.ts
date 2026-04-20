@@ -12,12 +12,14 @@ import {
 } from '@angular/fire/auth';
 import { Observable } from 'rxjs';
 import { toSignal } from '@angular/core/rxjs-interop';
+import { Storage, ref, uploadBytes, getDownloadURL } from '@angular/fire/storage';
 
 @Injectable({
   providedIn: 'root'
 })
 export class AuthService {
   private auth = inject(Auth);
+  private storage = inject(Storage);
   
   // Expose user as a signal for the UI
   user$ = user(this.auth);
@@ -63,6 +65,22 @@ export class AuthService {
       return true;
     } catch (error) {
       console.error('Update profile failed:', error);
+      throw error;
+    }
+  }
+
+  async updateProfileImage(file: File) {
+    const user = this.auth.currentUser;
+    if (!user) return;
+    try {
+      const filePath = `avatars/${user.uid}`;
+      const storageRef = ref(this.storage, filePath);
+      await uploadBytes(storageRef, file);
+      const url = await getDownloadURL(storageRef);
+      await updateProfile(user, { photoURL: url });
+      return url;
+    } catch (error) {
+      console.error('Update avatar failed:', error);
       throw error;
     }
   }

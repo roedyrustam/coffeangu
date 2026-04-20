@@ -135,4 +135,33 @@ export class CuppingService {
     await uploadBytes(storageRef, blob);
     return getDownloadURL(storageRef);
   }
+
+  exportToCSV(sessions: CuppingSession[]) {
+    if (sessions.length === 0) return;
+    
+    const headers = ['Date', 'Bean Name', 'Roastery', 'Type', 'Process', 'Final Score', 'Acidity', 'Body', 'Sweetness', 'Flavor Notes'];
+    const rows = sessions.map(s => [
+      s.timestamp ? (s.timestamp.toDate ? s.timestamp.toDate().toLocaleDateString() : new Date(s.timestamp).toLocaleDateString()) : s.productionDate,
+      `"${s.beanName}"`,
+      `"${s.roastery}"`,
+      s.type,
+      s.postHarvest,
+      s.finalScore,
+      s.intensities?.acidity || 0,
+      s.intensities?.body || 0,
+      s.intensities?.sweetness || 0,
+      `"${s.flavorNotes.join(', ')}"`
+    ]);
+
+    const csvContent = [headers, ...rows].map(e => e.join(',')).join('\n');
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+    const link = document.createElement('a');
+    const url = URL.createObjectURL(blob);
+    link.setAttribute('href', url);
+    link.setAttribute('download', `CaffeeScore_History_${new Date().toISOString().split('T')[0]}.csv`);
+    link.style.visibility = 'hidden';
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  }
 }

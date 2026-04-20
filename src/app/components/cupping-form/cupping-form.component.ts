@@ -698,6 +698,12 @@ export class CuppingFormComponent implements OnInit {
         alert('Session not found');
         this.router.navigate(['/profile']);
       }
+    } else {
+      // New session: auto-fill cupper name from profile if available
+      const user = this.auth.currentUser();
+      if (user?.displayName) {
+        this.session.cupperName = user.displayName;
+      }
     }
   }
 
