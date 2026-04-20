@@ -414,8 +414,7 @@ import { SeoService } from './services/seo.service';
       text-decoration: none;
     }
     @media (max-width: 768px) {
-      .main-nav { height: 80px; }
-      .nav-links { display: none; }
+      .main-nav { display: none; }
       .mobile-bottom-nav { display: flex; }
       main { padding-bottom: 100px; }
       .main-footer {
