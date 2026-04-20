@@ -74,8 +74,8 @@ import { TranslationService } from '../../../services/translation.service';
     }
     .login-card {
       width: 100%;
-      max-width: 360px;
-      padding: 30px;
+      max-width: 320px;
+      padding: 24px;
       backdrop-filter: blur(16px);
     }
     header {
@@ -83,15 +83,15 @@ import { TranslationService } from '../../../services/translation.service';
       margin-bottom: 40px;
     }
     h2 {
-      font-size: 2.2rem;
+      font-size: 2rem;
       background: var(--primary-gradient);
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
-      margin-bottom: 8px;
+      margin-bottom: 4px;
     }
     .subtitle {
       color: var(--text-dim);
-      font-size: 0.95rem;
+      font-size: 0.85rem;
     }
     .auth-toggle {
       display: flex;
@@ -134,7 +134,8 @@ import { TranslationService } from '../../../services/translation.service';
     }
     input {
       width: 100%;
-      height: 56px;
+      height: 48px;
+      font-size: 0.9rem;
     }
     .w-full { width: 100%; }
     .divider {
@@ -161,7 +162,7 @@ import { TranslationService } from '../../../services/translation.service';
       background: #ffffff;
       color: #1f1f1f;
       border: none;
-      height: 56px;
+      height: 48px;
       border-radius: 100px;
       font-weight: 700;
       display: flex;
@@ -208,12 +209,14 @@ import { TranslationService } from '../../../services/translation.service';
         justify-content: center;
       }
       .login-card {
-        padding: 24px 16px;
+        padding: 20px 14px;
         border-radius: 20px;
         margin: auto;
         box-shadow: 0 10px 40px rgba(0,0,0,0.5);
       }
-      h2 { font-size: 1.6rem; }
+      h2 { font-size: 1.4rem; }
+      .form-group { margin-bottom: 16px; }
+      input, .btn-google { height: 44px; }
     }
   `]
 })
