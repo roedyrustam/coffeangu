@@ -62,13 +62,15 @@ import { CommonModule } from '@angular/common';
 
     <nav class="mobile-bottom-nav">
       <div class="nav-blur-bg"></div>
+      
       <a routerLink="/" class="bottom-nav-link" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}">
         <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
-        <span>{{ t('NAV_HOME') }}</span>
+        <span>Home</span>
       </a>
+      
       <a routerLink="/community" class="bottom-nav-link" routerLinkActive="active">
         <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
-        <span>{{ t('NAV_DISCOVER') }}</span>
+        <span>Explore</span>
       </a>
       
       <div class="nav-center-action">
@@ -77,19 +79,19 @@ import { CommonModule } from '@angular/common';
         </button>
       </div>
 
+      <a routerLink="/profile" class="bottom-nav-link" routerLinkActive="active" [routerLinkActiveOptions]="{queryParams: 'exact'}">
+        <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2H2v10c0 1.1.9 2 2 2h12a2 2 0 0 0 2-2V2h-4"/><path d="M2 10h16"/><path d="m17 21 3-3-3-3"/><path d="M3 18h14"/></svg>
+        <span>History</span>
+      </a>
+
       <a [routerLink]="auth.currentUser() ? '/profile' : '/login'" class="bottom-nav-link" routerLinkActive="active">
         <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
-        <span>{{ auth.currentUser() ? 'Profile' : t('BTN_LOGIN') }}</span>
+        <span>{{ auth.currentUser() ? 'Me' : 'Join' }}</span>
       </a>
-      
-      <button *ngIf="auth.currentUser()" (click)="onLogout()" class="bottom-nav-link logout-trigger">
-        <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
-        <span>{{ t('BTN_LOGOUT') }}</span>
-      </button>
     </nav>
 
     <footer class="main-footer">
-      <p>&copy; 2024 CaffeeScore - Professional Coffee Cupping Platform</p>
+      <p>&copy; 2026 CaffeeScore - Professional Coffee Cupping Platform</p>
     </footer>
   `,
   styles: [`
@@ -198,11 +200,11 @@ import { CommonModule } from '@angular/common';
       bottom: 25px;
       left: 15px;
       right: 15px;
-      height: 70px;
+      height: 68px;
       z-index: 1000;
       justify-content: space-between;
       align-items: center;
-      padding: 0 10px;
+      padding: 0 5px;
     }
     .nav-blur-bg {
       position: absolute;
@@ -211,9 +213,9 @@ import { CommonModule } from '@angular/common';
       backdrop-filter: blur(25px);
       -webkit-backdrop-filter: blur(25px);
       border: 1px solid var(--glass-border);
-      border-radius: 28px;
+      border-radius: 24px;
       z-index: -1;
-      box-shadow: 0 15px 40px rgba(0,0,0,0.8);
+      box-shadow: 0 20px 50px rgba(0,0,0,0.8);
     }
     .bottom-nav-link {
       flex: 1;
@@ -223,65 +225,71 @@ import { CommonModule } from '@angular/common';
       justify-content: center;
       color: var(--text-dim);
       text-decoration: none;
-      font-size: 0.65rem;
+      font-size: 0.6rem;
       font-weight: 800;
-      gap: 5px;
-      transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+      gap: 4px;
+      transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
       text-transform: uppercase;
       letter-spacing: 0.5px;
       z-index: 1;
+      position: relative;
     }
     .bottom-nav-link svg {
-      opacity: 0.5;
+      opacity: 0.6;
       transition: all 0.3s;
+      stroke-width: 2px;
     }
     .bottom-nav-link.active {
       color: var(--primary-color);
     }
     .bottom-nav-link.active svg {
       opacity: 1;
-      transform: translateY(-2px) scale(1.1);
+      transform: translateY(-2px);
       stroke: var(--primary-color);
+      stroke-width: 2.5px;
+    }
+    .bottom-nav-link.active::after {
+      content: '';
+      position: absolute;
+      bottom: -8px;
+      width: 4px;
+      height: 4px;
+      background: var(--primary-color);
+      border-radius: 50%;
+      box-shadow: 0 0 10px var(--primary-color);
     }
     .nav-center-action {
       position: relative;
-      width: 70px;
-      height: 70px;
+      width: 65px;
+      height: 100%;
       display: flex;
       justify-content: center;
       align-items: center;
       z-index: 2;
     }
     .center-fab {
-      width: 62px;
-      height: 62px;
+      width: 58px;
+      height: 58px;
       background: var(--primary-gradient);
       border-radius: 50%;
-      border: 6px solid var(--bg-color);
+      border: 5px solid var(--bg-color);
       display: flex;
       justify-content: center;
       align-items: center;
       color: #0c0c0e;
-      box-shadow: 0 8px 30px var(--primary-glow);
+      box-shadow: 0 10px 25px rgba(189, 142, 98, 0.4);
       cursor: pointer;
       position: absolute;
-      top: -28px;
+      top: -24px;
       transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
     }
     .center-fab:hover {
-      transform: scale(1.15) translateY(-5px);
+      transform: scale(1.1) translateY(-5px);
       box-shadow: 0 15px 40px var(--primary-glow);
     }
     .center-fab:active {
       transform: scale(0.9);
     }
-    .logout-trigger {
-       background: transparent;
-       border: none;
-       padding: 0;
-       cursor: pointer;
-    }
-    .logout-trigger svg { color: var(--danger); opacity: 0.7; }
     .main-footer {
       height: 100px;
       display: flex;
