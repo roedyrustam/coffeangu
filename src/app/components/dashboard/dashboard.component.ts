@@ -5,7 +5,7 @@ import { CuppingService } from '../../services/cupping.service';
 import { TranslationService } from '../../services/translation.service';
 import { AuthService } from '../../services/auth.service';
 import { toSignal } from '@angular/core/rxjs-interop';
-import { switchMap } from 'rxjs';
+import { switchMap, of } from 'rxjs';
 import { CuppingSession } from '../../models/cupping.model';
 
 @Component({
@@ -36,7 +36,7 @@ import { CuppingSession } from '../../models/cupping.model';
       <section class="stats-carousel scrollbar-hidden">
         <div class="glass-card stat-card">
           <span class="stat-label">{{ t('STAT_TOTAL_SESSIONS') }}</span>
-          <div class="stat-value">{{ cuppings()?.length || 0 }}</div>
+          <div class="stat-value">{{ userCuppings()?.length || 0 }}</div>
         </div>
         <div class="glass-card stat-card">
           <span class="stat-label">{{ t('STAT_AVG_SCORE') }}</span>
@@ -50,8 +50,7 @@ import { CuppingSession } from '../../models/cupping.model';
 
       <section class="recent-sessions">
         <div class="section-header">
-           <h2 class="section-title">{{ t('RECENT_SCORES') }}</h2>
-           <span class="count-badge">{{ cuppings()?.length || 0 }} {{ t('ENTRIES') }}</span>
+           <h2 class="section-title">TOP GLOBAL DISCOVERY</h2>
         </div>
 
         <div class="sessions-list">
@@ -383,9 +382,16 @@ export class DashboardComponent {
   private ts = inject(TranslationService);
   protected auth = inject(AuthService);
   
-  cuppings = toSignal(this.auth.user$.pipe(
-    switchMap(user => this.cuppingService.getLatestCuppings(user?.uid))
+  cuppings = toSignal(this.cuppingService.getPublicCuppings({ 
+    sortBy: 'finalScore', 
+    order: 'desc', 
+    limit: 6 
+  }));
+
+  userCuppings = toSignal(this.auth.user$.pipe(
+    switchMap(user => user ? this.cuppingService.getUserCuppings(user.uid) : of([]))
   ));
+
   t = this.ts.t();
 
   getGreeting() {
@@ -396,14 +402,14 @@ export class DashboardComponent {
   }
 
   calculateAvg() {
-    const list = this.cuppings() as any[];
+    const list = this.userCuppings() as any[];
     if (!list || list.length === 0) return '0.0';
     const sum = list.reduce((acc: number, curr: any) => acc + curr.finalScore, 0);
     return (sum / list.length).toFixed(1);
   }
 
   getSpecialtyCount() {
-    const list = this.cuppings() as any[];
+    const list = this.userCuppings() as any[];
     if (!list || list.length === 0) return '0%';
     const count = list.filter(c => c.finalScore >= 80).length;
     return Math.round((count / list.length) * 100) + '%';
