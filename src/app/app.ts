@@ -3,6 +3,7 @@ import { RouterOutlet, RouterLink, RouterLinkActive, Router } from '@angular/rou
 import { TranslationService } from './services/translation.service';
 import { AuthService } from './services/auth.service';
 import { CommonModule } from '@angular/common';
+import { SwUpdate } from '@angular/service-worker';
 
 @Component({
   selector: 'app-root',
@@ -429,6 +430,7 @@ export class App {
   ts = inject(TranslationService);
   auth = inject(AuthService);
   router = inject(Router);
+  updates = inject(SwUpdate);
   t = this.ts.t();
   showUserMenu = signal(false);
   parallaxTransform = signal('translate3d(0,0,0) scale(1.1)');
@@ -439,6 +441,15 @@ export class App {
       const y = (e.clientY / window.innerHeight - 0.5) * 30;
       this.parallaxTransform.set(`translate3d(${x}px, ${y}px, 0) scale(1.1)`);
     });
+
+    if (this.updates.isEnabled) {
+      this.updates.versionUpdates.subscribe((evt) => {
+        if (evt.type === 'VERSION_READY') {
+          console.log('New PWA version ready! Reloading...');
+          window.location.reload();
+        }
+      });
+    }
   }
 
   async onLogout() {
