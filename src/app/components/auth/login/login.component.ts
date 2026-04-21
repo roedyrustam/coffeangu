@@ -272,13 +272,22 @@ export class LoginComponent implements OnInit {
 
   async loginWithGoogle() {
     this.loading.set(true);
+    this.errorMessage.set(null);
     try {
-      await this.authService.loginWithGoogle();
-      this.redirect();
+      const { user, redirected } = await this.authService.loginWithGoogle();
+      if (user) {
+        this.redirect();
+      } else if (redirected) {
+        // Browser is redirecting, keep loading state
+        return;
+      }
     } catch (err: any) {
       this.errorMessage.set(this.formatError(err.code));
-    } finally {
       this.loading.set(false);
+    } finally {
+      // Only clear loading if we are NOT redirecting
+      // (On redirect, the page will reload anyway)
+      // Note: result of loginWithGoogle check above handles this
     }
   }
 
@@ -292,6 +301,8 @@ export class LoginComponent implements OnInit {
       case 'auth/user-not-found': return 'Account not found.';
       case 'auth/wrong-password': return 'Invalid password.';
       case 'auth/email-already-in-use': return 'Email already registered.';
+      case 'auth/popup-closed-by-user': return 'Login cancelled.';
+      case 'auth/cancelled-via-redirect': return 'Authentication was cancelled.';
       default: return 'Authentication failed. Please try again.';
     }
   }

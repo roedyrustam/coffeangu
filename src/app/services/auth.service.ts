@@ -30,14 +30,17 @@ export class AuthService {
   user$ = user(this.auth);
   currentUser = toSignal(this.user$);
 
-  async loginWithGoogle() {
+  async loginWithGoogle(): Promise<{ user: User | null; redirected: boolean }> {
     const provider = new GoogleAuthProvider();
+    provider.setCustomParameters({ prompt: 'select_account' });
+    
     try {
       if (this.isMobile()) {
-        return await signInWithRedirect(this.auth, provider);
+        await signInWithRedirect(this.auth, provider);
+        return { user: null, redirected: true };
       } else {
         const result = await signInWithPopup(this.auth, provider);
-        return result.user;
+        return { user: result.user, redirected: false };
       }
     } catch (error) {
       console.error('Login failed:', error);
