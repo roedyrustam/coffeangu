@@ -239,13 +239,16 @@ export class LoginComponent implements OnInit {
   });
 
   async ngOnInit() {
+    this.loading.set(true);
     try {
       const user = await this.authService.handleRedirectResult();
       if (user) {
         this.redirect();
       }
     } catch (err: any) {
-      this.errorMessage.set(this.formatError(err.code));
+      this.errorMessage.set(this.formatError(err));
+    } finally {
+      this.loading.set(false);
     }
   }
 
@@ -264,7 +267,7 @@ export class LoginComponent implements OnInit {
       }
       this.redirect();
     } catch (err: any) {
-      this.errorMessage.set(this.formatError(err.code));
+      this.errorMessage.set(this.formatError(err));
     } finally {
       this.loading.set(false);
     }
@@ -282,7 +285,7 @@ export class LoginComponent implements OnInit {
         return;
       }
     } catch (err: any) {
-      this.errorMessage.set(this.formatError(err.code));
+      this.errorMessage.set(this.formatError(err));
       this.loading.set(false);
     } finally {
       // Only clear loading if we are NOT redirecting
@@ -296,14 +299,21 @@ export class LoginComponent implements OnInit {
     this.router.navigateByUrl(returnUrl);
   }
 
-  private formatError(code: string): string {
+  private formatError(err: any): string {
+    const code = err.code;
+    const message = err.message;
+
+    // Display custom error messages if they exist
+    if (message && message.includes('Authorized Domains')) return message;
+
     switch (code) {
       case 'auth/user-not-found': return 'Account not found.';
       case 'auth/wrong-password': return 'Invalid password.';
       case 'auth/email-already-in-use': return 'Email already registered.';
       case 'auth/popup-closed-by-user': return 'Login cancelled.';
       case 'auth/cancelled-via-redirect': return 'Authentication was cancelled.';
-      default: return 'Authentication failed. Please try again.';
+      case 'auth/unauthorized-domain': return 'This domain is not authorized. Please add your Vercel URL to Authorized Domains in Firebase Console.';
+      default: return message || 'Authentication failed. Please try again.';
     }
   }
 }

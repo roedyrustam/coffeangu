@@ -29,6 +29,7 @@ export class AuthService {
   // Expose user as a signal for the UI
   user$ = user(this.auth);
   currentUser = toSignal(this.user$);
+  initialized = signal(false);
 
   async loginWithGoogle(): Promise<{ user: User | null; redirected: boolean }> {
     const provider = new GoogleAuthProvider();
@@ -51,9 +52,14 @@ export class AuthService {
   async handleRedirectResult() {
     try {
       const result = await getRedirectResult(this.auth);
+      this.initialized.set(true);
       return result?.user || null;
-    } catch (error) {
+    } catch (error: any) {
+      this.initialized.set(true);
       console.error('Redirect login failed:', error);
+      if (error.code === 'auth/unauthorized-domain') {
+        throw new Error('This domain is not authorized in Firebase Console. Please add your Vercel domain to the Authorized Domains list.');
+      }
       throw error;
     }
   }
