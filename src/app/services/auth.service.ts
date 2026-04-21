@@ -10,7 +10,9 @@ import {
   signInWithEmailAndPassword, 
   createUserWithEmailAndPassword,
   updateProfile,
-  User
+  User,
+  setPersistence,
+  browserLocalPersistence
 } from '@angular/fire/auth';
 import { Observable } from 'rxjs';
 import { toSignal } from '@angular/core/rxjs-interop';
@@ -51,6 +53,9 @@ export class AuthService {
 
   async handleRedirectResult() {
     try {
+      if (isPlatformBrowser(this.platformId)) {
+        await setPersistence(this.auth, browserLocalPersistence);
+      }
       const result = await getRedirectResult(this.auth);
       this.initialized.set(true);
       return result?.user || null;

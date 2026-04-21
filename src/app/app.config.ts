@@ -22,17 +22,7 @@ export const appConfig: ApplicationConfig = {
       const apps = getApps();
       return apps.length > 0 ? apps[0] : initializeApp(environment.firebase);
     }),
-    provideAuth(() => {
-      const platformId = inject(PLATFORM_ID);
-      const app = getApp();
-      if (isPlatformBrowser(platformId)) {
-        return initializeAuth(app, {
-          persistence: browserLocalPersistence
-        });
-      } else {
-        return getAuth(app);
-      }
-    }),
+    provideAuth(() => getAuth()),
     provideFirestore(() => {
       const platformId = inject(PLATFORM_ID);
       const app = getApp();
