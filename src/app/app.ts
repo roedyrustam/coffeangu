@@ -68,7 +68,17 @@ import { ToastService } from './services/toast.service';
       </div>
     </nav>
     
-    <main>
+    </nav>
+
+    <div class="auth-init-overlay" *ngIf="auth.authLoading()">
+      <div class="loader-content">
+        <div class="brand-font loading-title">{{ t('APP_TITLE') }}</div>
+        <div class="loading-spinner"></div>
+        <p class="loading-text">Authenticating...</p>
+      </div>
+    </div>
+
+    <main [class.blur-content]="auth.authLoading()">
       <router-outlet></router-outlet>
     </main>
 
@@ -458,6 +468,53 @@ import { ToastService } from './services/toast.service';
         justify-content: center;
         gap: 15px;
       }
+    }
+
+    /* AUTH LOADING UI */
+    .auth-init-overlay {
+      position: fixed;
+      inset: 0;
+      z-index: 9999;
+      background: var(--bg-color);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .loader-content {
+      text-align: center;
+      animation: pulse 2s infinite ease-in-out;
+    }
+    .loading-title {
+      font-size: 2.5rem;
+      background: var(--primary-gradient);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      margin-bottom: 20px;
+    }
+    .loading-spinner {
+      width: 40px;
+      height: 40px;
+      border: 3px solid rgba(255,255,255,0.1);
+      border-top: 3px solid var(--primary-color);
+      border-radius: 50%;
+      margin: 0 auto 15px;
+      animation: spin 1s linear infinite;
+    }
+    .loading-text {
+      color: var(--text-dim);
+      font-size: 0.8rem;
+      text-transform: uppercase;
+      letter-spacing: 2px;
+      font-weight: 800;
+    }
+    .blur-content {
+      filter: blur(10px);
+      pointer-events: none;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    @keyframes pulse { 
+      0%, 100% { transform: scale(1); opacity: 1; }
+      50% { transform: scale(0.98); opacity: 0.8; }
     }
   `]
 })

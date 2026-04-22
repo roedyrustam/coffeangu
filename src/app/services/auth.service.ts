@@ -38,6 +38,7 @@ export class AuthService {
   user$ = user(this.auth);
   currentUser = toSignal(this.user$);
   initialized = signal(false);
+  authLoading = signal(true); // Track initial load/redirect state
 
   private redirectResultPromise: Promise<User | null> | null = null;
 
@@ -98,9 +99,14 @@ export class AuthService {
    * Global handler for redirect results. Ensures getRedirectResult is called only once
    * and can be safely awaited by multiple components (App and Login).
    */
+  /**
+   * Global handler for redirect results. Ensures getRedirectResult is called only once
+   * and can be safely awaited by multiple components (App and Login).
+   */
   async handleRedirectResult(): Promise<User | null> {
     if (!isPlatformBrowser(this.platformId)) {
       this.initialized.set(true);
+      this.authLoading.set(false);
       return null;
     }
 
@@ -108,6 +114,7 @@ export class AuthService {
       return this.redirectResultPromise;
     }
 
+    this.authLoading.set(true);
     this.redirectResultPromise = (async () => {
       try {
         // Ensure persistence is set before checking redirect result
@@ -115,6 +122,7 @@ export class AuthService {
         
         const result = await getRedirectResult(this.auth);
         this.initialized.set(true);
+        this.authLoading.set(false);
         
         if (result?.user) {
           console.log('Redirect login successful:', result.user.displayName);
@@ -122,6 +130,7 @@ export class AuthService {
         return result?.user || null;
       } catch (error: any) {
         this.initialized.set(true);
+        this.authLoading.set(false);
         console.error('Redirect login failed:', error);
         
         if (error.code === 'auth/unauthorized-domain') {
@@ -130,10 +139,6 @@ export class AuthService {
           throw new Error(msg);
         }
         
-        if (error.code === 'auth/cross-origin-auth-not-allowed') {
-          this.toast.error('Login error: Cross-origin authentication not allowed in this browser.');
-        }
-
         return null;
       }
     })();
