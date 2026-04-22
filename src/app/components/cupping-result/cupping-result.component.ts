@@ -107,15 +107,15 @@ Chart.register(RadarController, RadialLinearScale, PointElement, LineElement, Fi
               <div class="intensity-bars-row">
                   <div class="int-bar-item">
                      <label>{{ t('ACIDITY') }}</label>
-                     <div class="int-track"><div class="int-fill glow-perunggu" [style.width.%]="(session.intensities?.acidity || 0) * 10"></div></div>
+                     <div class="int-track"><div class="int-fill" [style.background]="getScoreColor('acidity')" [style.width.%]="(session.intensities?.acidity || 0) * 10"></div></div>
                   </div>
                   <div class="int-bar-item">
                      <label>{{ t('BODY') }}</label>
-                     <div class="int-track"><div class="int-fill glow-perunggu" [style.width.%]="(session.intensities?.body || 0) * 10"></div></div>
+                     <div class="int-track"><div class="int-fill" [style.background]="getScoreColor('body')" [style.width.%]="(session.intensities?.body || 0) * 10"></div></div>
                   </div>
                   <div class="int-bar-item">
                      <label>{{ t('SWEETNESS') }}</label>
-                     <div class="int-track"><div class="int-fill glow-perunggu" [style.width.%]="(session.intensities?.sweetness || 0) * 10"></div></div>
+                     <div class="int-track"><div class="int-fill" [style.background]="getScoreColor('sweetness')" [style.width.%]="(session.intensities?.sweetness || 0) * 10"></div></div>
                   </div>
               </div>
            </div>
@@ -126,11 +126,11 @@ Chart.register(RadarController, RadialLinearScale, PointElement, LineElement, Fi
            <div class="sensory-bars">
               <div class="bar-item" *ngFor="let item of sensoryItems">
                  <div class="bar-header">
-                    <span>{{ item.label }}</span>
+                    <span [style.color]="getScoreColor(item.key)">{{ item.label }}</span>
                     <span>{{ item.value }}</span>
                  </div>
                  <div class="bar-bg">
-                    <div class="bar-fill" [style.width.%]="(item.value - 6) * 25"></div>
+                    <div class="bar-fill" [style.background]="getScoreColor(item.key)" [style.width.%]="(item.value - 6) * 25"></div>
                  </div>
               </div>
            </div>
@@ -745,10 +745,26 @@ export class CuppingResultComponent implements OnInit, AfterViewInit, OnDestroy 
           fill: true,
           backgroundColor: 'rgba(189, 142, 98, 0.15)',
           borderColor: '#BD8E62',
-          pointBackgroundColor: '#E5BC7D',
+          pointBackgroundColor: [
+            this.getScoreColor('fragranceAroma'),
+            this.getScoreColor('flavor'),
+            this.getScoreColor('aftertaste'),
+            this.getScoreColor('acidity'),
+            this.getScoreColor('body'),
+            this.getScoreColor('balance'),
+            this.getScoreColor('overall')
+          ],
           pointBorderColor: '#0c0c0e',
           pointHoverBackgroundColor: '#0c0c0e',
-          pointHoverBorderColor: '#E5BC7D',
+          pointHoverBorderColor: [
+            this.getScoreColor('fragranceAroma'),
+            this.getScoreColor('flavor'),
+            this.getScoreColor('aftertaste'),
+            this.getScoreColor('acidity'),
+            this.getScoreColor('body'),
+            this.getScoreColor('balance'),
+            this.getScoreColor('overall')
+          ],
           borderWidth: 4,
           tension: 0.2
         }]
@@ -873,16 +889,32 @@ export class CuppingResultComponent implements OnInit, AfterViewInit, OnDestroy 
     this.seo.addJsonLd(jsonLd);
   }
 
+  getScoreColor(key: string): string {
+    const colors: Record<string, string> = {
+      fragranceAroma: '#9b59b6', // Purple
+      flavor: '#f1c40f',         // Gold
+      aftertaste: '#ff6b6b',     // Salmon
+      acidity: '#e67e22',        // Orange
+      body: '#8e5a35',           // Brown
+      balance: '#3498db',        // Blue
+      uniformity: '#2ecc71',     // Green
+      cleanCup: '#1abc9c',       // Teal
+      sweetness: '#ff85a2',      // Pink
+      overall: '#bd8e62'          // Bronze
+    };
+    return colors[key] || '#bd8e62';
+  }
+
   prepareSensoryItems() {
     if (!this.session) return;
     const scores = this.session.scores;
     this.sensoryItems = [
-      { label: 'Aroma', value: scores.fragranceAroma },
-      { label: 'Flavor', value: scores.flavor },
-      { label: 'Aftertaste', value: scores.aftertaste },
-      { label: 'Acidity', value: scores.acidity },
-      { label: 'Body', value: scores.body },
-      { label: 'Balance', value: scores.balance }
+      { label: 'Aroma', value: scores.fragranceAroma, key: 'fragranceAroma' },
+      { label: 'Flavor', value: scores.flavor, key: 'flavor' },
+      { label: 'Aftertaste', value: scores.aftertaste, key: 'aftertaste' },
+      { label: 'Acidity', value: scores.acidity, key: 'acidity' },
+      { label: 'Body', value: scores.body, key: 'body' },
+      { label: 'Balance', value: scores.balance, key: 'balance' }
     ];
   }
 

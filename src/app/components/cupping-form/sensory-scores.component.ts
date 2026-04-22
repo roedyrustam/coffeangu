@@ -12,10 +12,10 @@ import { CuppingSession } from '../../models/cupping.model';
     <section class="form-section">
       <h3 class="section-title">Descriptive Intensity</h3>
       <div class="intensity-grid">
-        <div class="intensity-item" *ngFor="let item of intensityKeys">
+        <div class="intensity-item" *ngFor="let item of intensityKeys" [style.--accent-color]="getScoreColor(item.key + 'Int')">
           <div class="intensity-header">
             <label>{{ item.label }}</label>
-            <span>{{ session.intensities![item.key] }}</span>
+            <span [style.color]="getScoreColor(item.key + 'Int')">{{ session.intensities![item.key] }}</span>
           </div>
           <input type="range" min="1" max="10" step="1" [(ngModel)]="session.intensities![item.key]" [name]="'int-' + item.key">
         </div>
@@ -25,10 +25,10 @@ import { CuppingSession } from '../../models/cupping.model';
     <section class="form-section">
       <h3 class="section-title">Affective Quality Scores</h3>
       <div class="intensity-grid">
-        <div class="score-card" *ngFor="let key of scoreKeys">
+        <div class="score-card" *ngFor="let key of scoreKeys" [style.--accent-color]="getScoreColor(key)">
           <div class="score-header">
             <label>{{ formatLabel(key) }}</label>
-            <span class="value">{{ session.scores[key] | number:'1.2-2' }}</span>
+            <span class="value" [style.color]="getScoreColor(key)">{{ session.scores[key] | number:'1.2-2' }}</span>
           </div>
           <div class="slider-row">
             <button type="button" class="btn-step" (click)="stepScore(key, -0.25)">-</button>
@@ -65,6 +65,33 @@ import { CuppingSession } from '../../models/cupping.model';
   `,
   styles: [`
     .slider-row { display: flex; gap: 10px; align-items: center; }
+    
+    /* Dynamic Range Styling */
+    input[type="range"] {
+      accent-color: var(--accent-color, var(--primary-color));
+      height: 6px;
+      border-radius: 3px;
+      background: rgba(255,255,255,0.05);
+    }
+
+    .btn-step {
+      background: transparent;
+      border: 1px solid var(--accent-color, var(--primary-color));
+      color: var(--accent-color, var(--primary-color));
+      width: 32px;
+      height: 32px;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 800;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .btn-step:active { transform: scale(0.9); background: var(--accent-color); color: #000; }
+
+    .value { font-weight: 800; font-family: var(--font-brand); font-size: 1.1rem; }
+
     .defects-calculator { margin-top: 30px; padding: 20px; background: rgba(255,69,58,0.05); border: 1px solid rgba(255,69,58,0.2); border-radius: var(--radius-md); }
     .cup-grid { display: flex; gap: 15px; margin: 15px 0; justify-content: space-between; }
     .cup-item { flex: 1; aspect-ratio: 1/1; border: 1px solid var(--glass-border); border-radius: 12px; display: flex; flex-direction: column; align-items: center; justify-content: center; cursor: pointer; transition: all 0.3s; position: relative; }
@@ -124,6 +151,26 @@ export class SensoryScoresComponent implements OnInit {
     const newVal = Math.min(10, Math.max(6, (this.session.scores[key] || 0) + step));
     this.session.scores[key] = newVal;
     this.onScoreInput();
+  }
+
+  getScoreColor(key: string): string {
+    const colors: Record<string, string> = {
+      fragranceAroma: '#9b59b6', // Purple
+      flavor: '#f1c40f',         // Gold
+      aftertaste: '#ff6b6b',     // Salmon
+      acidity: '#e67e22',        // Orange
+      body: '#8e5a35',           // Brown
+      balance: '#3498db',        // Blue
+      uniformity: '#2ecc71',     // Green
+      cleanCup: '#1abc9c',       // Teal
+      sweetness: '#ff85a2',      // Pink
+      overall: '#bd8e62',         // Bronze
+      // Intensities
+      acidityInt: '#e67e22',
+      bodyInt: '#8e5a35',
+      sweetnessInt: '#ff85a2'
+    };
+    return colors[key] || '#8e5a35';
   }
 
   onScoreInput() {

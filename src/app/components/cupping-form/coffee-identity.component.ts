@@ -88,9 +88,10 @@ import { CuppingSession } from '../../models/cupping.model';
       border-color: var(--primary-color);
     }
     .photo-box {
-      border: 2px dashed var(--glass-border);
+      border: 1px dashed var(--glass-border);
       border-radius: var(--radius-md);
-      aspect-ratio: 1/1;
+      aspect-ratio: 16/9;
+      max-width: 360px;
       display: flex;
       flex-direction: column;
       align-items: center;
@@ -98,11 +99,13 @@ import { CuppingSession } from '../../models/cupping.model';
       cursor: pointer;
       overflow: hidden;
       position: relative;
-      background: rgba(0,0,0,0.2);
+      background: rgba(0,0,0,0.1);
+      margin-top: 10px;
     }
     .photo-preview { width: 100%; height: 100%; object-fit: cover; }
-    .photo-placeholder { display: flex; flex-direction: column; align-items: center; gap: 10px; color: var(--text-dim); }
-    .photo-placeholder .icon { font-size: 2rem; }
+    .photo-placeholder { display: flex; flex-direction: column; align-items: center; gap: 8px; color: var(--text-dim); }
+    .photo-placeholder .icon { font-size: 1.5rem; }
+    .photo-placeholder span { font-size: 0.8rem; font-weight: 600; }
     .photo-overlay {
       position: absolute; inset: 0; background: rgba(0,0,0,0.6);
       display: flex; align-items: center; justify-content: center;
