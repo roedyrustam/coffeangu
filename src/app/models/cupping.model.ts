@@ -32,6 +32,7 @@ export interface CuppingSession {
   flavorNotes: string[]; // SCA Flavor Wheel categories
   scores: SensoryScores;
   defects: number;
+  defectCupStates?: number[]; // [0, 2, 4, 0, 0]
   finalScore: number;
   notes?: string;
   isPublic?: boolean;

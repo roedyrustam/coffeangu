@@ -21,18 +21,50 @@ service cloud.firestore {
       // Public cuppings are readable by anyone. Private ones by owner only.
       allow read: if resource.data.isPublic == true || isOwner(resource.data.userId);
       
-      // Creating requires auth and matching userId.
-      allow create: if isAuthenticated() && request.resource.data.userId == request.auth.uid;
+      // Creating requires auth, matching userId, and Pro check for buyLink.
+      allow create: if isAuthenticated() 
+        && request.resource.data.userId == request.auth.uid
+        && (
+          !('buyLink' in request.resource.data) || 
+          get(/databases/$(database)/documents/profiles/$(request.auth.uid)).data.membership in ['pro', 'roastery']
+        );
       
-      // Owner can update CONTENT fields only (not social or verification fields)
+      // Owners can update CONTENT fields only (not social or verification fields)
       allow update: if isOwner(resource.data.userId)
         && !request.resource.data.diff(resource.data).affectedKeys()
-            .hasAny(['likesCount', 'likedBy', 'savedBy', 'isVerifiedRoastery', 'isPro']);
+            .hasAny(['likesCount', 'likedBy', 'savedBy', 'isVerifiedRoastery', 'isPro'])
+        // MONETIZATION ENFORCEMENT: Only Pro/Roastery can have a buyLink
+        && (
+          !request.resource.data.diff(resource.data).affectedKeys().hasAny(['buyLink']) ||
+          get(/databases/$(database)/documents/profiles/$(request.auth.uid)).data.membership in ['pro', 'roastery']
+        );
 
       // Any authenticated user can toggle likes/saves (social interaction)
+      // Logic check: increment/decrement must match the array change and the UID must be the caller's.
       allow update: if isAuthenticated()
         && request.resource.data.diff(resource.data).affectedKeys()
-            .hasOnly(['likesCount', 'likedBy', 'savedBy']);
+            .hasOnly(['likesCount', 'likedBy', 'savedBy'])
+        && (
+           // Case 1: Liking
+           (request.resource.data.likesCount == resource.data.likesCount + 1 
+            && request.resource.data.likedBy.size() == resource.data.likedBy.size() + 1
+            && request.auth.uid in request.resource.data.likedBy
+            && !(request.auth.uid in resource.data.likedBy))
+           ||
+           // Case 2: Unliking
+           (request.resource.data.likesCount == resource.data.likesCount - 1 
+            && request.resource.data.likedBy.size() == resource.data.likedBy.size() - 1
+            && !(request.auth.uid in request.resource.data.likedBy)
+            && request.auth.uid in resource.data.likedBy)
+           ||
+           // Case 3: Saving/Unsaving (only array changes, no count)
+           (request.resource.data.likesCount == resource.data.likesCount
+            && request.resource.data.likedBy == resource.data.likedBy
+            && (
+              (request.resource.data.savedBy.size() == resource.data.savedBy.size() + 1 && request.auth.uid in request.resource.data.savedBy) ||
+              (request.resource.data.savedBy.size() == resource.data.savedBy.size() - 1 && !(request.auth.uid in request.resource.data.savedBy))
+            ))
+        );
 
       // Only the owner can delete their cupping
       allow delete: if isOwner(resource.data.userId);

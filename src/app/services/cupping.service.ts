@@ -1,5 +1,5 @@
 import { Injectable, inject } from '@angular/core';
-import { Firestore, collection, collectionData, addDoc, query, orderBy, limit, doc, getDoc, getDocs, updateDoc, setDoc, where, increment, arrayUnion, arrayRemove, deleteDoc, QueryConstraint } from '@angular/fire/firestore';
+import { Firestore, collection, collectionData, addDoc, query, orderBy, limit, doc, getDoc, getDocs, updateDoc, setDoc, where, increment, arrayUnion, arrayRemove, deleteDoc, QueryConstraint, runTransaction, Timestamp } from '@angular/fire/firestore';
 import { Storage, ref, uploadBytes, getDownloadURL, deleteObject } from '@angular/fire/storage';
 import { Observable, of } from 'rxjs';
 import { CuppingSession, GlobalScore } from '../models/cupping.model';
@@ -186,24 +186,28 @@ export class CuppingService {
     const userId = this.auth.getUserId();
     if (!userId) throw new Error('User not authenticated');
 
-    // Denormalization Logic for Teams & Commerce Gating
-    let teamId = undefined;
-    let isVerifiedRoastery = false;
-    let buyLink = session.buyLink;
+    const cuppingRef = doc(collection(this.firestore, 'cuppings'));
+    const profileRef = doc(this.firestore, 'profiles', userId);
 
-    try {
-      const profileSnap = await getDoc(doc(this.firestore, 'profiles', userId));
+    const result = await runTransaction(this.firestore, async (transaction) => {
+      const profileSnap = await transaction.get(profileRef);
+      if (!profileSnap.exists()) throw new Error('Profile not found');
+      
       const profile = profileSnap.data() as UserProfile;
       const isAdmin = profile?.membership === 'roastery';
       const isPro = profile?.membership === 'pro' || isAdmin;
 
-      if (profile?.teamId) {
-        teamId = profile.teamId;
-        const teamSnap = await getDoc(doc(this.firestore, 'teams', teamId));
+      // Denormalization Logic for Teams & Commerce Gating
+      let teamId = profile.teamId || undefined;
+      let isVerifiedRoastery = false;
+      let buyLink = session.buyLink;
+
+      if (teamId) {
+        const teamRef = doc(this.firestore, 'teams', teamId);
+        const teamSnap = await transaction.get(teamRef);
         const team = teamSnap.data() as any;
         if (team) {
           isVerifiedRoastery = !!team.isVerified;
-          // Only override buyLink if session doesn't have a specific one and team has a default shop
           if (!buyLink && team.shopUrl) {
             buyLink = team.shopUrl;
           }
@@ -211,96 +215,89 @@ export class CuppingService {
       }
 
       // STRICT MONETIZATION GATE: Only Pro/Roastery can use custom buy links
-      // Classic users lose the buyLink unless it's a Roastery team default
       if (!isPro && !isVerifiedRoastery) {
         buyLink = undefined;
       }
 
-      // Store isPro status for badges
-      (session as any).isPro = isPro;
-    } catch (e) {
-      console.warn('Roastery denormalization failed:', e);
-    }
+      // Calculate XP Gain (Atomic)
+      let xpGain = 100;
+      if (session.finalScore >= 80) xpGain += 50;
+      xpGain += (session.flavorNotes?.length || 0) * 10;
 
-    const cuppingDoc = await addDoc(this.cuppingCollection, {
-      ...session,
-      userId,
-      teamId,
-      isVerifiedRoastery,
-      isPro: (session as any).isPro,
-      buyLink,
-      isPublic: session.isPublic ?? true,
-      likesCount: 0,
-      likedBy: [],
-      savedBy: [],
-      timestamp: new Date()
-    });
-
-    // Update user profile statistics
-    await this.updateProfileStats(userId, session);
-
-    return cuppingDoc;
-  }
-
-  private async updateProfileStats(userId: string, session: CuppingSession) {
-    const profileRef = doc(this.firestore, 'profiles', userId);
-    const snap = await getDoc(profileRef);
-    
-    if (!snap.exists()) return;
-
-    let profile = snap.data() as UserProfile;
-    
-    // Calculate new XP: 100 base + 50 if specialty (80+) + 10 per flavor note
-    let xpGain = 100;
-    if (session.finalScore >= 80) xpGain += 50;
-    xpGain += (session.flavorNotes?.length || 0) * 10;
-
-    const newXp = (profile.xp || 0) + xpGain;
-    const newSessions = (profile.totalSessions || 0) + 1;
-    
-    // Determine Level
-    let newLevel = profile.level;
-    for (let i = LEVEL_THRESHOLDS.length - 1; i >= 0; i--) {
-      if (newXp >= LEVEL_THRESHOLDS[i]) {
-        newLevel = i + 1;
-        break;
+      const newXp = (profile.xp || 0) + xpGain;
+      const newSessions = (profile.totalSessions || 0) + 1;
+      
+      // Determine Level
+      let newLevel = profile.level || 1;
+      for (let i = LEVEL_THRESHOLDS.length - 1; i >= 0; i--) {
+        if (newXp >= LEVEL_THRESHOLDS[i]) {
+          newLevel = i + 1;
+          break;
+        }
       }
-    }
 
-    // Determine Avatar Stage
-    let avatarStage: UserProfile['avatarStage'] = 'seedling';
-    if (newLevel >= 5) avatarStage = 'harvest';
-    else if (newLevel >= 4) avatarStage = 'cherry';
-    else if (newLevel >= 3) avatarStage = 'flowering';
-    else if (newLevel >= 2) avatarStage = 'sprout';
+      // Determine Avatar Stage
+      let avatarStage: UserProfile['avatarStage'] = 'seedling';
+      if (newLevel >= 5) avatarStage = 'harvest';
+      else if (newLevel >= 4) avatarStage = 'cherry';
+      else if (newLevel >= 3) avatarStage = 'flowering';
+      else if (newLevel >= 2) avatarStage = 'sprout';
 
-    // Check for new badges
-    const currentBadgeIds = (profile.badges || []).map(b => b.id);
-    const newBadges: Badge[] = [...(profile.badges || [])];
+      // Check for badges
+      const currentBadgeIds = (profile.badges || []).map(b => b.id);
+      const newBadges: Badge[] = [...(profile.badges || [])];
+      if (!currentBadgeIds.includes('first_cupping')) {
+        const badge = ALL_BADGES.find(b => b.id === 'first_cupping');
+        if (badge) newBadges.push({ ...badge, unlockedAt: new Date() });
+      }
 
-    // Example badge logic: First Cupping
-    if (!currentBadgeIds.includes('first_cupping')) {
-      const badge = ALL_BADGES.find(b => b.id === 'first_cupping');
-      if (badge) newBadges.push({ ...badge, unlockedAt: new Date() });
-    }
+      // 1. Write Cupping
+      transaction.set(cuppingRef, {
+        ...session,
+        id: cuppingRef.id,
+        userId,
+        teamId,
+        isVerifiedRoastery,
+        isPro,
+        buyLink,
+        isPublic: session.isPublic ?? true,
+        likesCount: 0,
+        likedBy: [],
+        savedBy: [],
+        timestamp: Timestamp.now()
+      });
 
-    // Specialty Seeker (80+ count)
-    // In a real app, we'd query local count or keep a counter in profile
-    // For now, let's just use totalSessions as a proxy or assume we check later
+      // 2. Write Profile Update (ATOMIC)
+      transaction.update(profileRef, {
+        xp: newXp,
+        totalSessions: newSessions,
+        level: newLevel,
+        avatarStage: avatarStage,
+        badges: newBadges,
+        updatedAt: Timestamp.now()
+      });
 
-    await updateDoc(profileRef, {
-      xp: newXp,
-      totalSessions: newSessions,
-      level: newLevel,
-      avatarStage: avatarStage,
-      badges: newBadges,
-      updatedAt: new Date()
+      return { id: cuppingRef.id, xpGain };
     });
+
+    return result;
   }
+
+  // updateProfileStats logic is now handled inside addCupping transaction for atomicity.
+
+  private suggestionsCache: Record<string, { data: string[], expiry: number }> = {};
 
   async getSmartSuggestions(filters: { beanName?: string, postHarvest?: string }): Promise<string[]> {
+    const cacheKey = filters.postHarvest || 'general';
+    const now = Date.now();
+    
+    if (this.suggestionsCache[cacheKey] && this.suggestionsCache[cacheKey].expiry > now) {
+      return this.suggestionsCache[cacheKey].data;
+    }
+
     const cuppingsRef = collection(this.firestore, 'cuppings');
-    let qConstraints: QueryConstraint[] = [where('isPublic', '==', true), limit(30)];
+    // Reduced limit from 30 to 12 for efficiency - we only need top trends
+    let qConstraints: QueryConstraint[] = [where('isPublic', '==', true), limit(12)];
     
     if (filters.postHarvest) {
       qConstraints.push(where('postHarvest', '==', filters.postHarvest));
@@ -317,19 +314,19 @@ export class CuppingService {
       });
     });
 
-    // Sort by frequency and get top 8
     const topNotes = Object.keys(flavorCounts)
       .sort((a, b) => flavorCounts[b] - flavorCounts[a])
       .slice(0, 8);
 
-    // Fallback to defaults if no community data exists yet
-    if (topNotes.length === 0) {
-      return filters.postHarvest === 'Natural' 
+    const result = topNotes.length > 0 ? topNotes : 
+      (filters.postHarvest === 'Natural' 
         ? ['Berry', 'Fermented', 'Chocolate', 'Winey', 'Smooth', 'Dried Fruit']
-        : ['Citrus', 'Floral', 'Tea', 'Clean', 'Jasmine', 'Green Apple'];
-    }
+        : ['Citrus', 'Floral', 'Tea', 'Clean', 'Jasmine', 'Green Apple']);
+
+    // Cache for 10 minutes to reduce reads
+    this.suggestionsCache[cacheKey] = { data: result, expiry: now + (10 * 60 * 1000) };
     
-    return topNotes;
+    return result;
   }
 
   async toggleLike(id: string, userId: string, currentlyLiked: boolean) {

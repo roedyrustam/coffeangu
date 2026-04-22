@@ -31,6 +31,13 @@
   --radius-md: 18px;
   
   --spacing-unit: 8px;
+
+  /* Layering / Z-Index Strategy */
+  --z-content: 1;
+  --z-sticky: 500;
+  --z-nav: 1000;
+  --z-overlay: 2000;
+  --z-modal: 3000;
 }
 
 /* PREMIUM GLOBAL SCROLLBAR */
@@ -214,7 +221,8 @@ input:focus {
     position: relative;
     overflow: hidden;
     border: 1px solid var(--primary-color);
-    box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+    z-index: var(--z-nav);
+    box-shadow: 0 20px 50px rgba(0,0,0,0.8);
     transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
 }
 

@@ -106,7 +106,7 @@ import { SeoService } from './services/seo.service';
       border-bottom: 1px solid var(--glass-border);
       position: sticky;
       top: 0;
-      z-index: 1000;
+      z-index: var(--z-nav);
       height: 90px;
       transition: all 0.4s;
     }
@@ -205,7 +205,7 @@ import { SeoService } from './services/seo.service';
       left: 15px;
       right: 15px;
       height: 68px;
-      z-index: 1000;
+      z-index: var(--z-nav);
       justify-content: space-between;
       align-items: center;
       padding: 0 5px;
