@@ -211,7 +211,7 @@ import { SeoService } from './services/seo.service';
     .mobile-bottom-nav {
       display: none;
       position: fixed;
-      bottom: 15px;
+      bottom: calc(15px + env(safe-area-inset-bottom, 0px));
       left: 15px;
       right: 15px;
       height: 68px;
@@ -223,13 +223,13 @@ import { SeoService } from './services/seo.service';
     .nav-blur-bg {
       position: absolute;
       inset: 0;
-      background: rgba(12, 12, 14, 0.85);
+      background: var(--glass-bg);
       backdrop-filter: blur(25px);
       -webkit-backdrop-filter: blur(25px);
       border: 1px solid var(--glass-border);
       border-radius: 24px;
       z-index: -1;
-      box-shadow: 0 20px 50px rgba(0,0,0,0.8);
+      box-shadow: 0 10px 30px rgba(0,0,0,0.08);
     }
     .bottom-nav-link {
       flex: 1;

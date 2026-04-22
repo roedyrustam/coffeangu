@@ -57,6 +57,13 @@
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   text-rendering: optimizeLegibility;
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* Prevent text selection on interactive elements like native apps */
+button, a, .glass-card, .btn-primary, .center-fab, .nav-link, .bottom-nav-link {
+  user-select: none;
+  -webkit-user-select: none;
 }
 
 body {
@@ -67,7 +74,12 @@ body {
     radial-gradient(circle at 100% 100%, rgba(0, 122, 255, 0.05) 0%, transparent 50%);
   color: var(--text-main);
   min-height: 100vh;
+  min-height: -webkit-fill-available;
   overflow-x: hidden;
+}
+
+html {
+  height: -webkit-fill-available;
 }
 
 h1, h2, h3, .brand-font {
