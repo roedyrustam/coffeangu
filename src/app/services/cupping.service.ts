@@ -189,98 +189,95 @@ export class CuppingService {
     const cuppingRef = doc(collection(this.firestore, 'cuppings'));
     const profileRef = doc(this.firestore, 'profiles', userId);
 
-    const result = await runTransaction(this.firestore, async (transaction) => {
-      const profileSnap = await transaction.get(profileRef);
-      if (!profileSnap.exists()) throw new Error('Profile not found');
-      
-      const profile = profileSnap.data() as UserProfile;
-      const isAdmin = profile?.membership === 'roastery';
-      const isPro = profile?.membership === 'pro' || isAdmin;
+    // Get profile data (reads from offline cache if available)
+    const profileSnap = await getDoc(profileRef);
+    if (!profileSnap.exists()) throw new Error('Profile not found');
+    
+    const profile = profileSnap.data() as UserProfile;
+    const isAdmin = profile?.membership === 'roastery';
+    const isPro = profile?.membership === 'pro' || isAdmin;
 
-      // Denormalization Logic for Teams & Commerce Gating
-      let teamId = profile.teamId || undefined;
-      let isVerifiedRoastery = false;
-      let buyLink = session.buyLink;
+    // Denormalization Logic for Teams & Commerce Gating
+    let teamId = profile.teamId || undefined;
+    let isVerifiedRoastery = false;
+    let buyLink = session.buyLink;
 
-      if (teamId) {
-        const teamRef = doc(this.firestore, 'teams', teamId);
-        const teamSnap = await transaction.get(teamRef);
-        const team = teamSnap.data() as any;
-        if (team) {
-          isVerifiedRoastery = !!team.isVerified;
-          if (!buyLink && team.shopUrl) {
-            buyLink = team.shopUrl;
-          }
+    if (teamId) {
+      const teamRef = doc(this.firestore, 'teams', teamId);
+      const teamSnap = await getDoc(teamRef);
+      const team = teamSnap.data() as any;
+      if (team) {
+        isVerifiedRoastery = !!team.isVerified;
+        if (!buyLink && team.shopUrl) {
+          buyLink = team.shopUrl;
         }
       }
+    }
 
-      // STRICT MONETIZATION GATE: Only Pro/Roastery can use custom buy links
-      if (!isPro && !isVerifiedRoastery) {
-        buyLink = undefined;
+    // STRICT MONETIZATION GATE: Only Pro/Roastery can use custom buy links
+    if (!isPro && !isVerifiedRoastery) {
+      buyLink = undefined;
+    }
+
+    // Calculate XP Gain (Optimistic Client-Side)
+    let xpGain = 100;
+    if (session.finalScore >= 80) xpGain += 50;
+    xpGain += (session.flavorNotes?.length || 0) * 10;
+
+    const newXp = (profile.xp || 0) + xpGain;
+    const newSessions = (profile.totalSessions || 0) + 1;
+    
+    // Determine Level
+    let newLevel = profile.level || 1;
+    for (let i = LEVEL_THRESHOLDS.length - 1; i >= 0; i--) {
+      if (newXp >= LEVEL_THRESHOLDS[i]) {
+        newLevel = i + 1;
+        break;
       }
+    }
 
-      // Calculate XP Gain (Atomic)
-      let xpGain = 100;
-      if (session.finalScore >= 80) xpGain += 50;
-      xpGain += (session.flavorNotes?.length || 0) * 10;
+    // Determine Avatar Stage
+    let avatarStage: UserProfile['avatarStage'] = 'seedling';
+    if (newLevel >= 5) avatarStage = 'harvest';
+    else if (newLevel >= 4) avatarStage = 'cherry';
+    else if (newLevel >= 3) avatarStage = 'flowering';
+    else if (newLevel >= 2) avatarStage = 'sprout';
 
-      const newXp = (profile.xp || 0) + xpGain;
-      const newSessions = (profile.totalSessions || 0) + 1;
-      
-      // Determine Level
-      let newLevel = profile.level || 1;
-      for (let i = LEVEL_THRESHOLDS.length - 1; i >= 0; i--) {
-        if (newXp >= LEVEL_THRESHOLDS[i]) {
-          newLevel = i + 1;
-          break;
-        }
-      }
+    // Check for badges
+    const currentBadgeIds = (profile.badges || []).map(b => b.id);
+    const newBadges: Badge[] = [...(profile.badges || [])];
+    if (!currentBadgeIds.includes('first_cupping')) {
+      const badge = ALL_BADGES.find(b => b.id === 'first_cupping');
+      if (badge) newBadges.push({ ...badge, unlockedAt: new Date() });
+    }
 
-      // Determine Avatar Stage
-      let avatarStage: UserProfile['avatarStage'] = 'seedling';
-      if (newLevel >= 5) avatarStage = 'harvest';
-      else if (newLevel >= 4) avatarStage = 'cherry';
-      else if (newLevel >= 3) avatarStage = 'flowering';
-      else if (newLevel >= 2) avatarStage = 'sprout';
-
-      // Check for badges
-      const currentBadgeIds = (profile.badges || []).map(b => b.id);
-      const newBadges: Badge[] = [...(profile.badges || [])];
-      if (!currentBadgeIds.includes('first_cupping')) {
-        const badge = ALL_BADGES.find(b => b.id === 'first_cupping');
-        if (badge) newBadges.push({ ...badge, unlockedAt: new Date() });
-      }
-
-      // 1. Write Cupping
-      transaction.set(cuppingRef, {
-        ...session,
-        id: cuppingRef.id,
-        userId,
-        teamId,
-        isVerifiedRoastery,
-        isPro,
-        buyLink,
-        isPublic: session.isPublic ?? true,
-        likesCount: 0,
-        likedBy: [],
-        savedBy: [],
-        timestamp: Timestamp.now()
-      });
-
-      // 2. Write Profile Update (ATOMIC)
-      transaction.update(profileRef, {
-        xp: newXp,
-        totalSessions: newSessions,
-        level: newLevel,
-        avatarStage: avatarStage,
-        badges: newBadges,
-        updatedAt: Timestamp.now()
-      });
-
-      return { id: cuppingRef.id, xpGain };
+    // 1. Write Cupping (Offline supported)
+    await setDoc(cuppingRef, {
+      ...session,
+      id: cuppingRef.id,
+      userId,
+      teamId,
+      isVerifiedRoastery,
+      isPro,
+      buyLink,
+      isPublic: session.isPublic ?? true,
+      likesCount: 0,
+      likedBy: [],
+      savedBy: [],
+      timestamp: Timestamp.now()
     });
 
-    return result;
+    // 2. Write Profile Update (Optimistic update, offline supported)
+    await updateDoc(profileRef, {
+      xp: newXp,
+      totalSessions: newSessions,
+      level: newLevel,
+      avatarStage: avatarStage,
+      badges: newBadges,
+      updatedAt: Timestamp.now()
+    });
+
+    return { id: cuppingRef.id, xpGain };
   }
 
   // updateProfileStats logic is now handled inside addCupping transaction for atomicity.

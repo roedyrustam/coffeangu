@@ -50,3 +50,68 @@ exports.finalizeUpgrade = functions.https.onCall(async (data, context) => {
     );
   }
 });
+
+const LEVEL_THRESHOLDS = [0, 500, 1200, 2500, 5000, 10000];
+const ALL_BADGES = [
+  { id: 'first_cupping', name: 'First Sip', icon: '🌱', description: 'Completed your first cupping session.' }
+];
+
+exports.processCuppingGamification = functions.firestore
+  .document('cuppings/{cuppingId}')
+  .onCreate(async (snap, context) => {
+    const session = snap.data();
+    const userId = session.userId;
+    if (!userId) return null;
+
+    const profileRef = admin.firestore().collection('profiles').doc(userId);
+    
+    return admin.firestore().runTransaction(async (transaction) => {
+      const profileSnap = await transaction.get(profileRef);
+      if (!profileSnap.exists) return null;
+      
+      const profile = profileSnap.data();
+      
+      // Calculate XP
+      let xpGain = 100;
+      if (session.finalScore >= 80) xpGain += 50;
+      xpGain += (session.flavorNotes?.length || 0) * 10;
+
+      const newXp = (profile.xp || 0) + xpGain;
+      const newSessions = (profile.totalSessions || 0) + 1;
+      
+      // Determine Level
+      let newLevel = profile.level || 1;
+      for (let i = LEVEL_THRESHOLDS.length - 1; i >= 0; i--) {
+        if (newXp >= LEVEL_THRESHOLDS[i]) {
+          newLevel = i + 1;
+          break;
+        }
+      }
+
+      // Determine Avatar Stage
+      let avatarStage = 'seedling';
+      if (newLevel >= 5) avatarStage = 'harvest';
+      else if (newLevel >= 4) avatarStage = 'cherry';
+      else if (newLevel >= 3) avatarStage = 'flowering';
+      else if (newLevel >= 2) avatarStage = 'sprout';
+
+      // Check Badges
+      const currentBadgeIds = (profile.badges || []).map(b => b.id);
+      const newBadges = [...(profile.badges || [])];
+      if (!currentBadgeIds.includes('first_cupping')) {
+        const badge = ALL_BADGES.find(b => b.id === 'first_cupping');
+        if (badge) {
+          newBadges.push({ ...badge, unlockedAt: admin.firestore.Timestamp.now() });
+        }
+      }
+
+      transaction.update(profileRef, {
+        xp: newXp,
+        totalSessions: newSessions,
+        level: newLevel,
+        avatarStage: avatarStage,
+        badges: newBadges,
+        updatedAt: admin.firestore.FieldValue.serverTimestamp()
+      });
+    });
+  });
