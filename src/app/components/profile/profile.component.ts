@@ -1007,7 +1007,7 @@ export class ProfileComponent implements OnInit {
   private updateSeo(name: string) {
     this.seo.updateMeta({
       title: `${name}'s Profile`,
-      description: `Explore specialty coffee evaluations and sensory insights by ${name} on CaffeeScore.`,
+      description: `Explore specialty coffee evaluations and sensory insights by ${name} on CuppingNotes.`,
       type: 'profile'
     });
   }

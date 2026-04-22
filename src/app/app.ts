@@ -95,7 +95,7 @@ import { SeoService } from './services/seo.service';
     </nav>
 
     <footer class="main-footer">
-      <p>&copy; 2026 CaffeeScore - Professional Coffee Cupping Platform</p>
+      <p>&copy; 2026 CuppingNotes - Professional Coffee Cupping Platform</p>
     </footer>
   `,
   styles: [`

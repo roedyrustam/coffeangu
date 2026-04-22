@@ -833,7 +833,7 @@ export class CuppingResultComponent implements OnInit, AfterViewInit, OnDestroy 
       "@type": "Product",
       "name": data.beanName,
       "image": [
-        data.productImageUrl || data.shareImageUrl || "https://coffeescore.app/assets/og-image.png"
+        data.productImageUrl || data.shareImageUrl || "https://cuppingnotes.online/assets/og-image.png"
       ],
       "description": `Coffee evaluation for ${data.beanName} by ${data.roastery}. SCA Score: ${data.finalScore.toFixed(2)}`,
       "brand": {
@@ -849,7 +849,7 @@ export class CuppingResultComponent implements OnInit, AfterViewInit, OnDestroy 
         },
         "author": {
           "@type": "Person",
-          "name": data.cupperName || "CaffeeScore Professional"
+          "name": data.cupperName || "CuppingNotes Professional"
         }
       },
       "aggregateRating": {

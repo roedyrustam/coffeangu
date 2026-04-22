@@ -12,7 +12,7 @@ import { AuthService } from '../../services/auth.service';
     <div class="pricing-container animate-fade">
       <header class="pricing-header">
         <h1 class="brand-font">Choose Your Journey</h1>
-        <p class="subtitle">Elevate your sensory experience with CaffeeScore Pro</p>
+        <p class="subtitle">Elevate your sensory experience with CuppingNotes Pro</p>
       </header>
 
       <div class="pricing-grid">

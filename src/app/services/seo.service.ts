@@ -23,7 +23,7 @@ export class SeoService {
   private platformId = inject(PLATFORM_ID);
 
   updateMeta(options: SeoOptions = {}) {
-    const siteName = 'CaffeeScore';
+    const siteName = 'CuppingNotes';
     const baseTitle = options.title || 'Professional Coffee Cupping Platform';
     const baseDesc = options.description || 'Evaluate, score, and share specialty coffee sensory profiles with precision.';
     
