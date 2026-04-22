@@ -14,8 +14,8 @@ import { CommonModule, isPlatformBrowser } from '@angular/common';
       </button>
 
       <button (click)="shareThreads()" class="share-btn threads" title="Share to Threads">
-        <svg viewBox="0 0 192 192" width="20" height="20" fill="currentColor">
-          <path d="M141.537 88.988a66.667 66.667 0 0 0-2.518-1.143c-1.482-27.307-16.403-42.94-41.457-43.1h-.34c-14.986 0-27.449 6.396-35.12 18.036l13.779 9.452c5.73-8.695 14.724-10.548 21.348-10.548h.229c8.249.053 14.474 2.452 18.503 7.129 2.932 3.405 4.893 8.111 5.864 14.05-7.314-1.243-15.224-1.626-23.679-1.14-23.82 1.371-39.134 15.326-38.092 34.702.528 9.818 5.235 18.28 13.258 23.828 6.776 4.688 15.505 7.004 24.574 6.512 11.982-.649 21.378-5.263 27.929-13.726 4.98-6.434 8.088-14.699 9.37-24.958 5.608 3.382 9.792 7.832 12.276 13.348 4.14 9.193 4.386 24.29-3.411 32.086-6.854 6.854-15.088 9.818-27.57 9.918-13.834-.111-24.297-4.542-31.105-13.177-6.363-8.074-9.674-19.645-9.845-34.395.171-14.75 3.482-26.321 9.845-34.395 6.808-8.635 17.271-13.066 31.105-13.177 13.924.112 24.583 4.59 31.668 13.303 3.455 4.25 6.083 9.657 7.905 16.057l14.603-3.485c-2.342-8.25-5.918-15.318-10.744-21.16-9.705-12.675-24.076-19.27-42.73-19.42h-.404c-18.584.15-32.837 6.747-42.349 19.609-8.178 11.048-12.394 25.776-12.59 43.843.196 18.067 4.412 32.795 12.59 43.843 9.512 12.862 23.765 19.459 42.349 19.609h.404c15.592-.112 27.318-4.233 36.978-13.003 12.79-12.79 13.097-33.27 7.444-45.804-3.836-8.507-10.636-15.307-19.885-19.72zM89.739 129.658c-10.063.553-20.501-3.97-21.105-15.213-.449-8.378 5.857-17.736 24.517-18.81a82.3 82.3 0 0 1 12.299-.075c3.962.281 7.649.815 11.014 1.59-1.254 22.572-14.258 31.967-26.725 32.508z"/>
+        <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor">
+          <path d="M12 0C5.373 0 0 5.373 0 12s5.373 12 12 12 12-5.373 12-12S18.627 0 12 0zm0 21.6c-5.302 0-9.6-4.298-9.6-9.6s4.298-9.6 9.6-9.6 9.6 4.298 9.6 9.6-4.298 9.6-9.6 9.6zm4.8-12c-.221 0-.4.179-.4.4v4.8c0 .221.179.4.4.4s.4-.179.4-.4V10c0-.221-.179-.4-.4-.4z"/>
         </svg>
       </button>
 
@@ -37,10 +37,13 @@ import { CommonModule, isPlatformBrowser } from '@angular/common';
         </svg>
       </button>
 
-      <button (click)="copyLink()" class="share-btn copy" title="Copy Link">
-        <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <button (click)="copyLink()" class="share-btn copy" [class.copied]="copied" [title]="copied ? 'Copied!' : 'Copy Link'">
+        <svg *ngIf="!copied" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
           <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path>
           <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path>
+        </svg>
+        <svg *ngIf="copied" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+          <polyline points="20 6 9 17 4 12"></polyline>
         </svg>
       </button>
     </div>
@@ -48,41 +51,66 @@ import { CommonModule, isPlatformBrowser } from '@angular/common';
   styles: [`
     .share-links {
       display: flex;
-      gap: 12px;
+      gap: 14px;
       justify-content: center;
-      margin: 20px 0;
+      margin: 25px 0;
+      flex-wrap: wrap;
     }
     .share-btn {
-      width: 44px;
-      height: 44px;
-      border-radius: 50%;
+      width: 46px;
+      height: 46px;
+      border-radius: 12px;
       border: 1px solid var(--glass-border);
-      background: var(--surface-color);
+      background: rgba(255, 255, 255, 0.03);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
       color: var(--text-dim);
       display: flex;
       align-items: center;
       justify-content: center;
       cursor: pointer;
-      transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+      transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+      position: relative;
+      overflow: hidden;
+    }
+    .share-btn::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: currentColor;
+      opacity: 0;
+      transition: opacity 0.3s;
     }
     .share-btn:hover {
-      transform: translateY(-5px) scale(1.1);
+      transform: translateY(-6px) scale(1.08);
       color: var(--text-main);
       border-color: var(--primary-color);
-      box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+      box-shadow: 0 12px 25px rgba(0,0,0,0.15);
     }
-    .share-btn.wa:hover { color: #25D366; border-color: #25D366; }
-    .share-btn.threads:hover { color: #000000; border-color: #000000; }
-    .share-btn.tw:hover { color: #1DA1F2; border-color: #1DA1F2; }
-    .share-btn.fb:hover { color: #1877F2; border-color: #1877F2; }
-    .share-btn.ln:hover { color: #0A66C2; border-color: #0A66C2; }
-    .share-btn.copy:hover { color: var(--primary-color); border-color: var(--primary-color); }
+    .share-btn:active {
+      transform: translateY(-2px) scale(0.95);
+    }
+    .share-btn.copied {
+      color: #22c55e !important;
+      border-color: #22c55e !important;
+      background: rgba(34, 197, 94, 0.05) !important;
+    }
+    .share-btn.wa:hover { color: #25D366; border-color: rgba(37, 211, 102, 0.3); background: rgba(37, 211, 102, 0.05); }
+    .share-btn.threads:hover { color: #000000; border-color: rgba(0, 0, 0, 0.3); background: rgba(0, 0, 0, 0.05); }
+    .share-btn.tw:hover { color: #1DA1F2; border-color: rgba(29, 161, 242, 0.3); background: rgba(29, 161, 242, 0.05); }
+    .share-btn.fb:hover { color: #1877F2; border-color: rgba(24, 119, 242, 0.3); background: rgba(24, 119, 242, 0.05); }
+    .share-btn.ln:hover { color: #0A66C2; border-color: rgba(10, 102, 194, 0.3); background: rgba(10, 102, 194, 0.05); }
+    .share-btn.copy:hover:not(.copied) { color: var(--primary-color); border-color: var(--primary-color); background: rgba(var(--primary-rgb), 0.05); }
   `]
 })
 export class SocialShareComponent {
   @Input() url: string = '';
   @Input() text: string = 'Check this out on CuppingNotes!';
 
+  copied = false;
   private platformId = inject(PLATFORM_ID);
 
   private getUrl(): string {
@@ -96,7 +124,6 @@ export class SocialShareComponent {
   }
 
   shareThreads() {
-    // Threads uses intent URL which pre-fills text + link
     const threadsUrl = `https://www.threads.net/intent/post?text=${encodeURIComponent(this.text + ' ' + this.getUrl())}`;
     window.open(threadsUrl, '_blank');
   }
@@ -107,7 +134,6 @@ export class SocialShareComponent {
   }
 
   shareFacebook() {
-    // Facebook sharer with quote for richer preview text
     const fbUrl = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(this.getUrl())}&quote=${encodeURIComponent(this.text)}`;
     window.open(fbUrl, '_blank');
   }
@@ -120,7 +146,8 @@ export class SocialShareComponent {
   async copyLink() {
     try {
       await navigator.clipboard.writeText(this.getUrl());
-      alert('Link copied to clipboard!');
+      this.copied = true;
+      setTimeout(() => this.copied = false, 2000);
     } catch (err) {
       console.error('Failed to copy link', err);
     }
