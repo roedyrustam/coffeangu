@@ -12,7 +12,18 @@ Google Login will fail on Vercel unless you authorize your production URL.
 5.  Add your custom domain: `cuppingnotes.online`.
 6.  Add your Vercel system URL (e.g., `coffeescore-cupping.vercel.app`).
 
-## 2. SPA Routing (404 Fix)
+## 2. Facebook Authentication Setup
+To enable Facebook Login, you must configure the provider in Firebase:
+
+1.  Go to the [Meta for Developers](https://developers.facebook.com/) dashboard.
+2.  Ensure your App ID `1954208565467291` is active.
+3.  Add the **Facebook Login** product and set the **Valid OAuth Redirect URIs** to your Firebase Auth redirect URL (usually `https://coffeescore-cupping-2024.firebaseapp.com/__/auth/handler`).
+4.  In [Firebase Console](https://console.firebase.google.com/), go to **Authentication** > **Sign-in method**.
+5.  Click **Add new provider** > **Facebook**.
+6.  Enter your **App ID** and **App Secret** (provided in your records).
+7.  Save changes.
+
+## 3. SPA Routing (404 Fix)
 The project includes a `vercel.json` file that handles Single Page Application (SPA) routing. This ensures that deep links like `/result/XYZ` work correctly when refreshed. 
 
 **DO NOT remove the `rewrites` section from `vercel.json`.**

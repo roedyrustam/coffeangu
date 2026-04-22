@@ -6,6 +6,7 @@ import {
   signInWithRedirect,
   getRedirectResult,
   GoogleAuthProvider, 
+  FacebookAuthProvider,
   signOut, 
   signInWithEmailAndPassword, 
   createUserWithEmailAndPassword,
@@ -46,7 +47,25 @@ export class AuthService {
         return { user: result.user, redirected: false };
       }
     } catch (error) {
-      console.error('Login failed:', error);
+      console.error('Google login failed:', error);
+      throw error;
+    }
+  }
+
+  async loginWithFacebook(): Promise<{ user: User | null; redirected: boolean }> {
+    const provider = new FacebookAuthProvider();
+    // provider.addScope('email'); // Added by default by Firebase usually
+    
+    try {
+      if (this.isMobile()) {
+        await signInWithRedirect(this.auth, provider);
+        return { user: null, redirected: true };
+      } else {
+        const result = await signInWithPopup(this.auth, provider);
+        return { user: result.user, redirected: false };
+      }
+    } catch (error) {
+      console.error('Facebook login failed:', error);
       throw error;
     }
   }
