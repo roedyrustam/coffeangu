@@ -36,28 +36,43 @@ export class AuthService {
   currentUser = toSignal(this.user$);
   initialized = signal(false);
 
+  private redirectResultPromise: Promise<User | null> | null = null;
+
   async loginWithGoogle(): Promise<{ user: User | null; redirected: boolean }> {
     const provider = new GoogleAuthProvider();
     provider.setCustomParameters({ prompt: 'select_account' });
     
+    if (this.isInAppBrowser()) {
+      this.toast.info('You are using an in-app browser. If login fails, please open this site in Chrome or Safari.', 5000);
+    }
+
     try {
       if (this.isMobile()) {
+        console.log('Mobile detected, using signInWithRedirect');
         await signInWithRedirect(this.auth, provider);
         return { user: null, redirected: true };
       } else {
         const result = await signInWithPopup(this.auth, provider);
         return { user: result.user, redirected: false };
       }
-    } catch (error) {
+    } catch (error: any) {
       console.error('Google login failed:', error);
+      if (error.code === 'auth/popup-blocked') {
+        this.toast.error('Login popup was blocked. Using redirect instead...');
+        await signInWithRedirect(this.auth, provider);
+        return { user: null, redirected: true };
+      }
       throw error;
     }
   }
 
   async loginWithFacebook(): Promise<{ user: User | null; redirected: boolean }> {
     const provider = new FacebookAuthProvider();
-    // provider.addScope('email'); // Added by default by Firebase usually
     
+    if (this.isInAppBrowser()) {
+      this.toast.info('You are using an in-app browser. If login fails, please open this site in Chrome or Safari.', 5000);
+    }
+
     try {
       if (this.isMobile()) {
         await signInWithRedirect(this.auth, provider);
@@ -66,43 +81,84 @@ export class AuthService {
         const result = await signInWithPopup(this.auth, provider);
         return { user: result.user, redirected: false };
       }
-    } catch (error) {
-      console.error('Facebook login failed:', error);
-      throw error;
-    }
-  }
-
-  async handleRedirectResult() {
-    try {
-      if (isPlatformBrowser(this.platformId)) {
-        await setPersistence(this.auth, browserLocalPersistence);
-      }
-      const result = await getRedirectResult(this.auth);
-      this.initialized.set(true);
-      if (result?.user) {
-        console.log('Redirect login successful:', result.user.displayName);
-      }
-      return result?.user || null;
     } catch (error: any) {
-      this.initialized.set(true);
-      console.error('Redirect login failed:', error);
-      if (error.code === 'auth/unauthorized-domain') {
-        this.toast.error('This domain is not authorized in Firebase Console.');
-        throw new Error('This domain is not authorized in Firebase Console. Please add your Vercel domain to the Authorized Domains list.');
+      console.error('Facebook login failed:', error);
+      if (error.code === 'auth/popup-blocked') {
+        await signInWithRedirect(this.auth, provider);
+        return { user: null, redirected: true };
       }
       throw error;
     }
   }
 
-  private isMobile(): boolean {
+  /**
+   * Global handler for redirect results. Ensures getRedirectResult is called only once
+   * and can be safely awaited by multiple components (App and Login).
+   */
+  async handleRedirectResult(): Promise<User | null> {
+    if (!isPlatformBrowser(this.platformId)) {
+      this.initialized.set(true);
+      return null;
+    }
+
+    if (this.redirectResultPromise) {
+      return this.redirectResultPromise;
+    }
+
+    this.redirectResultPromise = (async () => {
+      try {
+        // Ensure persistence is set before checking redirect result
+        await setPersistence(this.auth, browserLocalPersistence);
+        
+        const result = await getRedirectResult(this.auth);
+        this.initialized.set(true);
+        
+        if (result?.user) {
+          console.log('Redirect login successful:', result.user.displayName);
+        }
+        return result?.user || null;
+      } catch (error: any) {
+        this.initialized.set(true);
+        console.error('Redirect login failed:', error);
+        
+        if (error.code === 'auth/unauthorized-domain') {
+          const msg = 'This domain is not authorized. Please add your domain to Authorized Domains in Firebase Console.';
+          this.toast.error(msg);
+          throw new Error(msg);
+        }
+        
+        if (error.code === 'auth/cross-origin-auth-not-allowed') {
+          this.toast.error('Login error: Cross-origin authentication not allowed in this browser.');
+        }
+
+        return null;
+      }
+    })();
+
+    return this.redirectResultPromise;
+  }
+
+  isMobile(): boolean {
     if (!isPlatformBrowser(this.platformId)) return false;
     const ua = navigator.userAgent;
     const isUA = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(ua);
-    const isSmallScreen = window.innerWidth <= 1024; // Including tablets
+    const isSmallScreen = window.innerWidth <= 1024;
     const isTouch = ('ontouchstart' in window) || (navigator.maxTouchPoints > 0);
-    // Many modern mobile browsers claim to be Macintosh (Desktop Site)
     const isMacTouch = /Macintosh/i.test(ua) && isTouch;
-    return isUA || isMacTouch || (isSmallScreen && isTouch);
+    
+    // Check for In-App Browsers (Instagram, FB, LINE, etc)
+    const isInApp = /Instagram|FBAN|FBAV|Line/i.test(ua);
+    if (isInApp) {
+      console.warn('In-app browser detected');
+    }
+
+    return isUA || isMacTouch || (isSmallScreen && isTouch) || isInApp;
+  }
+
+  isInAppBrowser(): boolean {
+    if (!isPlatformBrowser(this.platformId)) return false;
+    const ua = navigator.userAgent;
+    return /Instagram|FBAN|FBAV|Line|WhatsApp/i.test(ua);
   }
 
   async loginWithEmail(email: string, pass: string) {
