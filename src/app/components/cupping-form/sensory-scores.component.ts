@@ -20,7 +20,8 @@ import { CuppingSession } from '../../models/cupping.model';
           <div class="slider-row">
             <button type="button" class="btn-step" (click)="stepIntensity(item.key, -1)">-</button>
             <div class="slider-container">
-              <input type="range" min="1" max="10" step="1" [(ngModel)]="session.intensities![item.key]" [name]="'int-' + item.key">
+              <input type="range" min="1" max="10" step="1" [(ngModel)]="session.intensities![item.key]" [name]="'int-' + item.key"
+                     [style.background]="'linear-gradient(to right, var(--accent-color) ' + ((session.intensities![item.key]-1)/9*100) + '%, rgba(255,255,255,0.05) ' + ((session.intensities![item.key]-1)/9*100) + '%)'">
               <div class="slider-labels">
                 <span>Low</span>
                 <span>High</span>
@@ -42,7 +43,8 @@ import { CuppingSession } from '../../models/cupping.model';
           </div>
           <div class="slider-row">
             <button type="button" class="btn-step" (click)="stepScore(key, -0.25)">-</button>
-            <input type="range" min="6" max="10" step="0.25" [(ngModel)]="session.scores[key]" [name]="key" (input)="onScoreInput()">
+            <input type="range" min="6" max="10" step="0.25" [(ngModel)]="session.scores[key]" [name]="key" (input)="onScoreInput()"
+                   [style.background]="'linear-gradient(to right, var(--accent-color) ' + ((session.scores[key]-6)/4*100) + '%, rgba(255,255,255,0.05) ' + ((session.scores[key]-6)/4*100) + '%)'">
             <button type="button" class="btn-step" (click)="stepScore(key, 0.25)">+</button>
           </div>
         </div>
@@ -133,13 +135,13 @@ import { CuppingSession } from '../../models/cupping.model';
     
     input[type="range"] {
       flex: 1;
-      accent-color: var(--accent-color, var(--primary-color));
-      height: 6px;
+      height: 8px;
       border-radius: 10px;
-      background: rgba(0, 0, 0, 0.05);
       cursor: pointer;
       -webkit-appearance: none;
-      transition: all 0.3s;
+      transition: all 0.2s ease;
+      outline: none;
+      border: 1px solid rgba(255,255,255,0.05);
     }
 
     input[type="range"]::-webkit-slider-thumb {
