@@ -1,5 +1,5 @@
 {
-  "name": "caffeescore",
+  "name": "cuppingnotes",
   "version": "1.6.0",
   "scripts": {
     "ng": "ng",
@@ -8,7 +8,7 @@
     "build": "ng build",
     "watch": "ng build --watch --configuration development",
     "test": "ng test",
-    "serve:ssr:coffeescore": "node dist/coffeescore/server/server.mjs"
+    "serve:ssr:cuppingnotes": "node dist/cuppingnotes/server/server.mjs"
   },
   "private": true,
   "packageManager": "npm@10.9.2",
@@ -59,7 +59,7 @@
     "typescript": "~5.9.0",
     "vitest": "^4.1.4"
   },
-  "description": "CaffeeScore is a premium, enterprise-grade digital cupping form designed to modernize the specialty coffee evaluation process. Completely replacing standard paper workflows, it enforces the strict guidelines of the **SCA 2025 Coffee Value Assessment (CVA)** protocol while operating seamlessly without an internet connection in farms or roasting laboratories.",
+  "description": "CuppingNotes is a premium, enterprise-grade digital cupping form designed to modernize the specialty coffee evaluation process. Completely replacing standard paper workflows, it enforces the strict guidelines of the **SCA 2025 Coffee Value Assessment (CVA)** protocol while operating seamlessly without an internet connection in farms or roasting laboratories.",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/roedyrustam/coffeangu.git"

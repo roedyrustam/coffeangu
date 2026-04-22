@@ -1,12 +1,13 @@
-# Product Requirements Document (PRD) v1.6.0
+# Product Requirements Document (PRD) v1.7.0
 
 ## 1. Product Vision
-**CaffeeScore** is designed to digitize and elevate the professional coffee sensory evaluation process. Our goal is to replace archaic paper forms with a premium, responsive, and robust offline-first digital application that adheres strictly to the **Specialty Coffee Association (SCA) 2025 CVA Protocol**.
+**CuppingNotes** (formerly CaffeeScore) is designed to digitize and elevate the professional coffee sensory evaluation process. Our goal is to replace archaic paper forms with a premium, responsive, and robust offline-first digital application that adheres strictly to the **Specialty Coffee Association (SCA) 2025 CVA Protocol**.
 
 ## 2. Target Audience
 1. **Q-Graders & Professional Cuppers**: Individuals certifying specialty coffee grades.
 2. **Roasters**: Businesses conducting routine quality control on production roasts.
 3. **Coffee Farmers/Producers**: Stakeholders analyzing harvest outputs in field environments.
+4. **Specialty Enthusiasts**: Home brewers tracking their sensory journey.
 
 ## 3. Core Features
 ### 3.1. SCA Gatekeeping Protocol
@@ -14,27 +15,30 @@
 - **Goal:** Drive protocol homogeneity (8.25g / 150ml, 92-94C water, 4 min steep time).
 
 ### 3.2. CVA Evaluation Matrix
-- **Requirement:** Granular numerical input forms supporting precise interval integers/decimals between 6.0 and 10.0 across 10 independent flavor categories.
-- **Attributes Analyzed:** Fragrance, Flavor, Aftertaste, Acidity, Body, Balance, Uniformity, Clean Cup, Sweetness, Overall.
+- **Requirement:** Granular numerical input forms supporting precise interval integers/decimals between 6.0 and 10.0 across flavor categories.
+- **Attributes Analyzed:** Fragrance/Aroma, Flavor, Aftertaste, Acidity, Body, Balance, Overall.
 
-### 3.3. Advanced Radar Visualization
+### 3.3. Advanced Radar Visualization & Sharing
 - **Requirement:** Aggregate scoring dimensions into an interactive Radar Chart.
-- **Goal:** Enable reviewers to identify flavor biases or defects visually within seconds. Includes native "Screenshot/Share" logic for social broadcasting.
+- **New Feature:** Integrated Social Sharing buttons for WhatsApp, X (Twitter), and Facebook.
+- **Goal:** Enable reviewers to share results instantly with professional formatting and Open Graph rich media.
 
 ### 3.4. Uncompromising Offline Capability (PWA)
 - **Requirement:** 100% operational in areas with 0 Mbps internet speed.
-- **Goal:** Firebase Local Persistance caches forms inside browser IndexedDB. Angular Service Worker caches the JS engine and UI components. All features must be usable locally, utilizing an auto-sync engine logic upon reconnection.
+- **Goal:** Firebase Local Persistance caches forms inside browser IndexedDB. Angular Service Worker caches the UI components.
+
+### 3.5. Professional Identity (Public Profiles)
+- **Requirement:** Vanity handles (e.g., `@cupper123`) for public sharing.
+- **Feature:** Dynamic "Sensory Avatar" that evolves based on the user's historical cupping data.
 
 ## 4. UI/UX Specifications
+- **Domain**: `cuppingnotes.online`
 - **Theme**: "Obsidian & Radiant Ember" 2026 Edition (`#0c0c0e` Root).
 - **Typography**: Outfit (Primary) & Playfair Display (Accent/Scores).
-- **Responsive Target**: 
-    - **Headerless Mobile**: Vertical viewports <= 768px with 0px header offset to maximize data scannability.
-    - **High-Fidelity Bento Discovery**: Magazine-style asymmetrical grid for community feeds.
-    - **Nano-Auth Focus**: Hyper-minimalist centered authentication cards (320px width) for improved user conversion.
-    - **Tablet Landscape**: Data-density visualization for lab use (1080x720px).
+- **Routing**: SPA Rewrites via Vercel to support deep linking to results and profiles.
 
 ## 5. Success Metrics
 - 0% data loss during offline rural cupping scenarios.
 - Reduction of session logging time compared to manual paper systems.
-- High social sharing rate via the Cupping Result Radar Chart artifact.
+- Growth in professional network engagement through Social Sharing of cupping results.
+- Successful resolution of "404 on Refresh" via Vercel edge configuration.

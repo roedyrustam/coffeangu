@@ -1,6 +1,6 @@
-# CaffeeScore Vercel Deployment Guide
+# CuppingNotes Vercel Deployment Guide
 
-To ensure everything works correctly after deploying CaffeeScore to Vercel, please follow these steps.
+To ensure everything works correctly after deploying **CuppingNotes** to Vercel, please follow these steps.
 
 ## 1. Firebase Authorized Domains [CRITICAL]
 Google Login will fail on Vercel unless you authorize your production URL.
@@ -9,29 +9,28 @@ Google Login will fail on Vercel unless you authorize your production URL.
 2.  Select your project.
 3.  Go to **Authentication** > **Settings** > **Authorized Domains**.
 4.  Click **Add Domain**.
-5.  Add your Vercel URL (e.g., `coffeescore-cupping.vercel.app`).
-6.  *Recommended*: Also add your custom domain if you have one.
+5.  Add your custom domain: `cuppingnotes.online`.
+6.  Add your Vercel system URL (e.g., `coffeescore-cupping.vercel.app`).
 
-## 2. Environment Variables
-Ensure your Vercel project has the correct environment variables. These should match your `src/environments/environment.prod.ts` or `environment.ts`.
+## 2. SPA Routing (404 Fix)
+The project includes a `vercel.json` file that handles Single Page Application (SPA) routing. This ensures that deep links like `/result/XYZ` work correctly when refreshed. 
 
-| Variable | Description |
-| :--- | :--- |
-| `FIREBASE_API_KEY` | Your Firebase Web API Key |
-| `FIREBASE_AUTH_DOMAIN` | e.g., `your-app.firebaseapp.com` |
-| `FIREBASE_PROJECT_ID` | Your project ID |
+**DO NOT remove the `rewrites` section from `vercel.json`.**
 
-> [!NOTE]
-> In Angular, these are usually baked into the build. Make sure your `environment.prod.ts` is updated before running the build command on Vercel.
+## 3. SEO & Open Graph (OG)
+For social sharing to work perfectly:
+1.  Ensure `siteUrl` in `src/environments/environment.ts` is set to `https://cuppingnotes.online`.
+2.  The application automatically generates radar chart images and uploads them to Firebase Storage. 
+3.  Ensure your Firestore rules allow `read` access to the `sessions` collection for public viewing.
 
-## 3. Storage CORS (Optional)
-If you encounter issues uploading or viewing avatar images on Vercel, you may need to set CORS on your Firebase Storage bucket.
+## 4. Storage CORS
+If social images or user avatars do not load on external platforms, you may need to set CORS on your Firebase Storage bucket.
 
 Create a `cors.json` file:
 ```json
 [
   {
-    "origin": ["https://your-app.vercel.app"],
+    "origin": ["https://cuppingnotes.online", "https://*.vercel.app"],
     "method": ["GET", "POST", "PUT", "DELETE", "HEAD"],
     "responseHeader": ["Content-Type", "x-goog-resumable"],
     "maxAgeSeconds": 3600
@@ -39,14 +38,10 @@ Create a `cors.json` file:
 ]
 ```
 Then run:
-`gsutil cors set cors.json gs://your-app.appspot.com`
+`gsutil cors set cors.json gs://coffeescore-cupping-2024.firebasestorage.app`
 
-## 4. PWA and Service Worker
-Vercel handles static assets well, but ensure that:
-- `manifest.webmanifest` is accessible.
-- `ngsw-worker.js` is correctly served from the root.
+## 5. Environment Config
+Ensure your `src/environments/environment.ts` contains the production Firebase credentials and the correct `siteUrl`.
 
-## Troubleshooting
-If Google Login still redirects you to a blank page:
-- Check the **Console** in Chrome DevTools for `auth/unauthorized-domain`.
-- Ensure `authDomain` in your Firebase config points to the `*.firebaseapp.com` domain, NOT the Vercel domain.
+---
+*Maintained for CuppingNotes Production Stability.*
