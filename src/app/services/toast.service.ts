@@ -33,16 +33,16 @@ export class ToastService {
     return id;
   }
 
-  success(message: string, duration?: number) {
-    return this.show(message, 'success', duration);
+  success(message: string, duration?: number, action?: Toast['action']) {
+    return this.show(message, 'success', duration, action);
   }
 
-  error(message: string, duration?: number) {
-    return this.show(message, 'error', duration);
+  error(message: string, duration?: number, action?: Toast['action']) {
+    return this.show(message, 'error', duration, action);
   }
 
-  info(message: string, duration?: number) {
-    return this.show(message, 'info', duration);
+  info(message: string, duration?: number, action?: Toast['action']) {
+    return this.show(message, 'info', duration, action);
   }
 
   remove(id: number) {
