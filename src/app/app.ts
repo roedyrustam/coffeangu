@@ -67,8 +67,6 @@ import { ToastService } from './services/toast.service';
         </div>
       </div>
     </nav>
-    
-    </nav>
 
     <div class="auth-init-overlay" *ngIf="auth.authLoading()">
       <div class="loader-content">
