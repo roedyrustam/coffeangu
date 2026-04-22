@@ -43,7 +43,7 @@ export class SeoService {
     this.meta.updateTag({ property: 'og:title', content: fullTitle });
     this.meta.updateTag({ property: 'og:description', content: baseDesc });
     this.meta.updateTag({ property: 'og:type', content: options.type || 'website' });
-    this.meta.updateTag({ property: 'og:locale', content: this.ts.currentLang() === 'id' ? 'id_ID' : 'en_US' });
+    this.meta.updateTag({ property: 'og:locale', content: this.ts.currentLocale() === 'id' ? 'id_ID' : 'en_US' });
     
     if (options.url) {
       this.meta.updateTag({ property: 'og:url', content: options.url });
