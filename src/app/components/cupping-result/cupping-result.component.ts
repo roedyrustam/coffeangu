@@ -149,6 +149,13 @@ Chart.register(RadarController, RadialLinearScale, PointElement, LineElement, Fi
           <div class="media-share-section" *ngIf="session.isPublic">
              <span class="section-label">Quick Share</span>
              <app-social-share [text]="'Check out my coffee cupping notes for ' + session.beanName + ' (' + session.finalScore.toFixed(2) + ' pts)!'"></app-social-share>
+             
+             <button (click)="downloadImage()" class="btn-download-image animate-fade-in" [disabled]="generatingScreenshot">
+               <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.5">
+                 <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3"/>
+               </svg>
+               <span>{{ generatingScreenshot ? 'Preparing Image...' : 'Download Result Image' }}</span>
+             </button>
           </div>
           
           <!-- Buy Link Section (Monetized) -->
@@ -192,6 +199,7 @@ Chart.register(RadarController, RadialLinearScale, PointElement, LineElement, Fi
       text-align: center;
       padding: 60px;
       position: relative;
+      box-shadow: 0 40px 100px rgba(0,0,0,0.25);
     }
     .media-share-section { margin-top: 40px; padding-top: 30px; border-top: 1px solid var(--glass-border); }
     .media-share-section .section-label { display: block; margin-bottom: 15px; }
@@ -571,6 +579,54 @@ Chart.register(RadarController, RadialLinearScale, PointElement, LineElement, Fi
     .radiant-theme .rating-label {
        color: #8b5e34;
     }
+
+    .btn-download-image {
+      margin-top: 20px;
+      width: 100%;
+      background: rgba(255,255,255,0.05);
+      border: 1px solid var(--glass-border);
+      color: var(--text-main);
+      padding: 14px;
+      border-radius: 14px;
+      font-weight: 800;
+      font-size: 0.85rem;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+      cursor: pointer;
+      transition: all 0.3s;
+    }
+    .btn-download-image:hover:not(:disabled) {
+      background: var(--surface-hover);
+      border-color: var(--primary-color);
+      transform: translateY(-2px);
+    }
+    .btn-download-image:disabled { opacity: 0.5; cursor: wait; }
+
+    @media (max-width: 768px) {
+      .result-container { padding: 0 15px; margin: 30px auto; }
+      .result-card { padding: 40px 20px; }
+      .brand-font { font-size: 2.2rem; }
+      .score-circle { width: 180px; height: 180px; }
+      .score-circle .value { font-size: 3.5rem; }
+      .metadata-grid { grid-template-columns: 1fr 1fr; gap: 20px; padding: 20px; }
+      .chart-section { padding: 20px; }
+      .chart-wrapper { height: 300px; }
+      .btn-commerce-luxury { padding: 20px; border-radius: 18px; }
+      .c-action { font-size: 1.1rem; }
+    }
+
+    @media (max-width: 480px) {
+      .brand-font { font-size: 1.8rem; }
+      .roastery { font-size: 1rem; }
+      .metadata-grid { grid-template-columns: 1fr; }
+      .sensory-summary { padding: 25px 15px; }
+      .score-circle { width: 150px; height: 150px; }
+      .score-circle .value { font-size: 3rem; }
+    }
   `]
 })
 export class CuppingResultComponent implements OnInit, AfterViewInit, OnDestroy {
@@ -603,6 +659,12 @@ export class CuppingResultComponent implements OnInit, AfterViewInit, OnDestroy 
   isSaved() {
     const userId = this.auth.getUserId();
     return !!this.session?.savedBy?.includes(userId || '');
+  }
+
+  shareThreads() {
+    if (!this.session) return;
+    const url = `https://www.threads.net/intent/post?text=${encodeURIComponent('Check out my coffee cupping results for ' + this.session.beanName + '!')}&url=${encodeURIComponent(window.location.href)}`;
+    window.open(url, '_blank');
   }
 
   setTheme(theme: 'obsidian' | 'radiant') {
@@ -810,10 +872,15 @@ export class CuppingResultComponent implements OnInit, AfterViewInit, OnDestroy 
       if (!element) return;
 
       const canvas = await html2canvas(element, {
-        backgroundColor: '#0c0c0e',
+        backgroundColor: this.selectedTheme() === 'radiant' ? '#fdfdfd' : '#0c0c0e',
         scale: 2,
         useCORS: true,
-        logging: false
+        logging: false,
+        onclone: (doc) => {
+          // Hide actions in the screenshot
+          const actions = doc.querySelector('.actions');
+          if (actions) (actions as HTMLElement).style.display = 'none';
+        }
       });
 
       const blob = await new Promise<Blob | null>(resolve => canvas.toBlob(resolve, 'image/png'));
@@ -825,6 +892,36 @@ export class CuppingResultComponent implements OnInit, AfterViewInit, OnDestroy 
       }
     } catch (e) {
       console.error('Screenshot generation failed', e);
+    } finally {
+      this.generatingScreenshot = false;
+    }
+  }
+
+  async downloadImage() {
+    if (this.generatingScreenshot) return;
+    
+    this.generatingScreenshot = true;
+    try {
+      const element = document.getElementById('result-card');
+      if (!element) return;
+
+      const canvas = await html2canvas(element, {
+        backgroundColor: this.selectedTheme() === 'radiant' ? '#fdfdfd' : '#0c0c0e',
+        scale: 3, // Higher scale for download
+        useCORS: true,
+        logging: false,
+        onclone: (doc) => {
+          const actions = doc.querySelector('.actions');
+          if (actions) (actions as HTMLElement).style.display = 'none';
+        }
+      });
+
+      const link = document.createElement('a');
+      link.download = `cupping-result-${this.session?.beanName.replace(/\s+/g, '-').toLowerCase()}.png`;
+      link.href = canvas.toDataURL('image/png');
+      link.click();
+    } catch (e) {
+      console.error('Download failed', e);
     } finally {
       this.generatingScreenshot = false;
     }

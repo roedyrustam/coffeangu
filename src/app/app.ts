@@ -89,12 +89,12 @@ import { SeoService } from './services/seo.service';
       </div>
 
       <a routerLink="/profile" class="bottom-nav-link" routerLinkActive="active" [routerLinkActiveOptions]="{queryParams: 'exact'}">
-        <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2H2v10c0 1.1.9 2 2 2h12a2 2 0 0 0 2-2V2h-4"/><path d="M2 10h16"/><path d="m17 21 3-3-3-3"/><path d="M3 18h14"/></svg>
+        <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2C7 2 3 7 3 12s4 10 9 10 9-4.5 9-10S17 2 12 2z"/><path d="M12 22c-2.5-2.5-4-6-4-10s1.5-7.5 4-10c2.5 2.5 4 6 4 10s-1.5 7.5-4 10z"/><path d="M3 12h18"/></svg>
         <span>{{ t('NAV_HISTORY') }}</span>
       </a>
 
       <a [routerLink]="auth.currentUser() ? '/profile' : '/login'" class="bottom-nav-link" routerLinkActive="active">
-        <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+        <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
         <span>{{ auth.currentUser() ? (t('NAV_ME') || 'Me') : t('BTN_LOGIN') }}</span>
       </a>
     </nav>

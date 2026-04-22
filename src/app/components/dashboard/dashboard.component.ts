@@ -248,7 +248,7 @@ import { CuppingSession } from '../../models/cupping.model';
     }
     .sessions-list {
       display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(360px, 1fr));
+      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
       gap: 30px;
     }
     .session-item {
@@ -370,10 +370,25 @@ import { CuppingSession } from '../../models/cupping.model';
       padding: 120px 20px;
     }
 
-    @media (max-width: 600px) {
-      .hero h1 { font-size: 3.5rem; }
+    @media (max-width: 768px) {
       .dashboard-container { padding: 40px 20px; }
-      .session-performance { padding: 15px; }
+      .hero { min-height: 300px; padding: 30px; margin-bottom: 40px; }
+      .hero h1 { font-size: 3rem; }
+      .hero-sub { font-size: 0.9rem; letter-spacing: 2px; }
+      .stat-card { min-width: 160px; padding: 25px; }
+      .stat-value { font-size: 3rem; }
+      .sessions-list { grid-template-columns: 1fr; gap: 20px; }
+      .session-item { padding: 20px; }
+      .session-image { width: calc(100% + 40px); margin: -20px -20px 0 -20px; height: 140px; }
+    }
+
+    @media (max-width: 480px) {
+      .dashboard-container { padding: 30px 15px; }
+      .hero { min-height: 250px; padding: 20px; }
+      .hero h1 { font-size: 2.5rem; }
+      .mini-profile { width: 50px; height: 50px; }
+      .stat-value { font-size: 2.5rem; }
+      .section-title { font-size: 1.4rem; }
     }
   `]
 })
