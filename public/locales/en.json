@@ -3,6 +3,8 @@
   "NAV_NEW": "New Session",
   "NAV_COMMUNITY": "Community",
   "NAV_DISCOVER": "Discover",
+  "NAV_ME": "Me",
+  "NAV_HISTORY": "History",
   "APP_TITLE": "CuppingNotes",
   "HERO_SUBTITLE": "Global Coffee Cupping Intelligence",
   "STAT_TOTAL_SESSIONS": "Total Sessions",
@@ -65,5 +67,7 @@
   "EMPTY_HISTORY_DESC": "You haven't recorded any cupping sessions yet.",
   "SAVED_SESSIONS": "Saved Impressions",
   "BTN_SETTINGS": "Settings",
-  "BTN_CANCEL": "Cancel"
+  "BTN_CANCEL": "Cancel",
+  "VIEW_ANALYTICS": "View Analytics",
+  "BTN_EXPORT": "Export CSV"
 }

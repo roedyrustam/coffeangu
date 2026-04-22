@@ -139,22 +139,21 @@ import { environment } from '../../../environments/environment';
       <section class="feed-section">
         <!-- HISTORY VIEW -->
         <div class="history-view" *ngIf="activeTab() === 'history'">
-          <div class="section-title-row" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 40px;">
-            <h2 class="section-title" style="margin-bottom: 0;">{{ t('PERSONAL_HISTORY') }}</h2>
-            <div class="row-actions" style="display: flex; gap: 10px;">
-              <button class="btn-secondary" 
-                      style="padding: 8px 15px; font-size: 0.75rem;"
+          <div class="section-title-row">
+            <h2 class="section-title">{{ t('PERSONAL_HISTORY') }}</h2>
+            <div class="row-actions">
+              <button class="btn-action-sm btn-secondary" 
                       (click)="goToAnalytics(tier.id)">
                  <span *ngIf="tier.id === 'classic'">🔒 </span>
-                 📊 {{ t('VIEW_ANALYTICS') || 'Analytics' }}
+                 📊 {{ t('VIEW_ANALYTICS') }}
               </button>
-              <button [class.btn-secondary]="tier.id !== 'classic'" 
+              <button [class.btn-action-sm]="true"
+                      [class.btn-secondary]="tier.id !== 'classic'" 
                       [class.btn-locked]="tier.id === 'classic'"
                       (click)="tier.id === 'classic' ? showUpgradeNotice() : downloadHistory()" 
-                      *ngIf="(cuppings$ | async)?.length" 
-                      style="padding: 8px 15px; font-size: 0.75rem; position: relative;">
+                      *ngIf="(cuppings$ | async)?.length">
                  <span *ngIf="tier.id === 'classic'">🔒 </span>
-                 📥 Export CSV
+                 📥 {{ t('BTN_EXPORT') }}
               </button>
             </div>
           </div>
@@ -465,9 +464,9 @@ import { environment } from '../../../environments/environment';
     .user-details h1 { font-size: 3.5rem; margin-bottom: 8px; line-height: 1; text-shadow: 0 5px 20px rgba(0,0,0,0.5); }
     .email { color: var(--text-main); font-size: 1.1rem; margin-bottom: 15px; opacity: 0.8; }
     .profile-share-public { margin-top: 25px; padding-top: 20px; border-top: 1px solid var(--glass-border); max-width: 300px; }
-    .profile-share-public .share-label { font-size: 0.75rem; color: var(--text-dim); text-transform: uppercase; letter-spacing: 1px; display: block; margin-bottom: 10px; }
-    ::ng-deep .profile-share-public .share-links { margin: 0; justify-content: flex-start; gap: 8px; }
-    ::ng-deep .profile-share-public .share-btn { width: 32px; height: 32px; }
+    .profile-share-public .share-label { font-size: 0.7rem; color: var(--text-dim); text-transform: uppercase; letter-spacing: 2px; display: block; margin-bottom: 12px; }
+    ::ng-deep .profile-share-public .share-links { margin: 0; justify-content: flex-start; gap: 12px; }
+    ::ng-deep .profile-share-public .share-btn { width: 36px; height: 36px; }
     .cupper-rank .rank-label {
       background: var(--primary-gradient);
       color: #0c0c0e;
@@ -539,16 +538,31 @@ import { environment } from '../../../environments/environment';
       box-shadow: 0 10px 25px rgba(189, 142, 98, 0.5);
     }
 
-    .feed-section { margin-top: 50px; }
-    .section-title { font-size: 2rem; margin-bottom: 40px; font-weight: 800; position: relative; display: inline-block; }
+    .section-title-row {
+      display: flex; justify-content: space-between; align-items: center; margin-bottom: 40px; flex-wrap: wrap; gap: 20px;
+    }
+    .section-title { font-size: 2rem; margin-bottom: 0; font-weight: 800; position: relative; display: inline-block; }
     .section-title::after {
       content: '';
       position: absolute;
-      bottom: -10px;
+      bottom: -12px;
       left: 0;
-      width: 60px;
-      height: 3px;
-      background: var(--primary-color);
+      width: 100%;
+      max-width: 80px;
+      height: 4px;
+      background: var(--primary-gradient);
+      border-radius: 2px;
+    }
+    .row-actions { display: flex; gap: 12px; }
+    .btn-action-sm {
+      padding: 10px 20px;
+      font-size: 0.8rem;
+      border-radius: 12px;
+      font-weight: 800;
+      letter-spacing: 0.5px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
     }
 
     .history-feed { display: grid; gap: 20px; }
