@@ -10,6 +10,7 @@ export interface UserProfile {
   uid: string;
   displayName: string;
   username?: string;
+  handle?: string;
   photoURL?: string;
   totalSessions: number;
   totalCuppingHours: number;
