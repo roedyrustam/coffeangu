@@ -311,51 +311,62 @@ import { environment } from '../../../environments/environment';
       </ng-template>
 
       <!-- SETTINGS MODAL -->
-      <div class="modal-overlay" *ngIf="showSettings()">
-        <div class="modal glass-card animate-scale">
-          <h3>{{ t('BTN_SETTINGS') }}</h3>
-          <div class="form-group" style="text-align: left; margin: 20px 0;">
-            <label>{{ t('LABEL_NAME') }}</label>
-            <input type="text" [(ngModel)]="newName" placeholder="Display Name">
-          </div>
-          <div class="form-group" style="text-align: left; margin: 20px 0;">
-            <label>Username / Handle (@)</label>
-            <input type="text" 
-                   [(ngModel)]="newUsername" 
-                   (ngModelChange)="checkUsername($event)"
-                   placeholder="e.g. coffee_guru"
-                   style="text-transform: lowercase;">
-            <p class="input-hint" 
-               [style.color]="usernameStatus() === 'available' ? 'var(--primary-color)' : 'var(--danger)'"
-               *ngIf="usernameStatus()">
-               {{ usernameStatus() === 'checking' ? 'Checking...' : 
-                  usernameStatus() === 'available' ? '✓ Handle is available' : 
-                  usernameStatus() === 'taken' ? '✗ Already taken' : '✗ Invalid handle' }}
-            </p>
+      <div class="modal-overlay" *ngIf="showSettings()" (click)="showSettings.set(false)">
+        <div class="modal-premium glass-card animate-scale" (click)="$event.stopPropagation()">
+          <header class="modal-header">
+            <h3 class="brand-font">{{ t('BTN_SETTINGS') }}</h3>
+            <button class="close-btn" (click)="showSettings.set(false)">×</button>
+          </header>
+          
+          <div class="modal-body native-scroll">
+            <section class="settings-section">
+              <h4 class="section-subtitle">General Profile</h4>
+              <div class="form-group">
+                <label><span class="icon">👤</span> {{ t('LABEL_NAME') }}</label>
+                <input type="text" [(ngModel)]="newName" placeholder="Your display name">
+              </div>
+              <div class="form-group">
+                <label><span class="icon">@</span> Username / Handle</label>
+                <input type="text" 
+                       [(ngModel)]="newUsername" 
+                       (ngModelChange)="checkUsername($event)"
+                       placeholder="e.g. coffee_guru"
+                       style="text-transform: lowercase;">
+                <p class="input-hint" 
+                   [style.color]="usernameStatus() === 'available' ? 'var(--primary-color)' : 'var(--danger)'"
+                   *ngIf="usernameStatus()">
+                   {{ usernameStatus() === 'checking' ? 'Checking availability...' : 
+                      usernameStatus() === 'available' ? '✓ Handle is available' : 
+                      usernameStatus() === 'taken' ? '✗ Already taken' : '✗ Invalid handle' }}
+                </p>
+              </div>
+            </section>
+
+            <!-- Password Section (Only for Email/Pass users) -->
+            <section *ngIf="isPasswordUser()" class="settings-section password-section">
+              <h4 class="section-subtitle">Account Security</h4>
+              <p class="section-desc">Keep your account secure by using a strong password.</p>
+              <div class="form-group">
+                <label><span class="icon">🔑</span> Current Password</label>
+                <input type="password" [(ngModel)]="currentPassword" placeholder="Required to change password">
+              </div>
+              <div class="form-group">
+                <label><span class="icon">✨</span> New Password</label>
+                <input type="password" [(ngModel)]="newPassword" placeholder="Min. 6 characters">
+              </div>
+              <div class="form-group">
+                <label><span class="icon">🔄</span> Confirm New Password</label>
+                <input type="password" [(ngModel)]="confirmPassword" placeholder="Repeat new password">
+              </div>
+            </section>
           </div>
 
-          <!-- Password Section (Only for Email/Pass users) -->
-          <div *ngIf="isPasswordUser()" class="password-change-section" style="border-top: 1px solid var(--glass-border); padding-top: 20px; margin-top: 20px;">
-            <h4 style="margin-bottom: 15px; text-align: left; font-size: 0.9rem; color: var(--primary-color);">{{ t('CHANGE_PASSWORD') || 'Change Password' }}</h4>
-            <div class="form-group" style="text-align: left; margin: 10px 0;">
-              <label>Current Password</label>
-              <input type="password" [(ngModel)]="currentPassword" placeholder="Required for security">
-            </div>
-            <div class="form-group" style="text-align: left; margin: 10px 0;">
-              <label>New Password</label>
-              <input type="password" [(ngModel)]="newPassword" placeholder="Min 6 characters">
-            </div>
-            <div class="form-group" style="text-align: left; margin: 10px 0;">
-              <label>Confirm New Password</label>
-              <input type="password" [(ngModel)]="confirmPassword" placeholder="Repeat new password">
-            </div>
-          </div>
-          <div class="modal-actions">
-             <button class="btn-secondary" (click)="showSettings.set(false)" [disabled]="updating()">Cancel</button>
-             <button class="btn-primary" (click)="updateProfile()" [disabled]="updating()">
+          <footer class="modal-actions-fixed">
+             <button class="btn-secondary-outline" (click)="showSettings.set(false)" [disabled]="updating()">Cancel</button>
+             <button class="btn-primary-glow" (click)="updateProfile()" [disabled]="updating()">
                {{ updating() ? 'Updating...' : t('BTN_SAVE') }}
              </button>
-          </div>
+          </footer>
         </div>
       </div>
 
@@ -675,6 +686,69 @@ import { environment } from '../../../environments/environment';
     .modal-actions { display: flex; gap: 15px; justify-content: center; }
     .btn-danger { background: var(--danger); color: white; border: none; padding: 12px 30px; border-radius: 100px; font-weight: 700; cursor: pointer; }
     .btn-secondary { background: var(--surface-hover); color: var(--text-main); border: 1px solid var(--glass-border); padding: 12px 30px; border-radius: 100px; font-weight: 700; cursor: pointer; }
+
+    /* PREMIUM MODAL REFINEMENT */
+    .modal-premium {
+      width: 100%;
+      max-width: 550px;
+      padding: 0;
+      display: flex;
+      flex-direction: column;
+      max-height: 85vh;
+      border: 1px solid var(--glass-border);
+      box-shadow: 0 40px 100px rgba(0,0,0,0.5);
+      background: var(--glass-bg);
+      backdrop-filter: blur(40px);
+    }
+    .modal-header {
+      padding: 30px 40px;
+      border-bottom: 1px solid var(--glass-border);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .modal-header h3 { margin: 0; font-size: 1.4rem; color: var(--primary-color); letter-spacing: -0.5px; }
+    .close-btn { background: transparent; border: none; color: var(--text-dim); font-size: 2rem; cursor: pointer; line-height: 1; padding: 0; transition: color 0.3s; }
+    .close-btn:hover { color: var(--danger); }
+    
+    .modal-body {
+      padding: 30px 40px;
+      overflow-y: auto;
+      flex: 1;
+    }
+    .settings-section { margin-bottom: 35px; }
+    .section-subtitle { 
+      font-size: 0.75rem; 
+      font-weight: 900; 
+      text-transform: uppercase; 
+      color: var(--text-dim); 
+      letter-spacing: 2px; 
+      margin-bottom: 25px; 
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .section-subtitle::after { content: ''; flex: 1; height: 1px; background: var(--glass-border); }
+    .section-desc { font-size: 0.8rem; color: var(--text-dim); margin-bottom: 20px; opacity: 0.8; }
+    
+    .modal-actions-fixed {
+      padding: 25px 40px;
+      background: rgba(255,255,255,0.02);
+      border-top: 1px solid var(--glass-border);
+      display: flex;
+      gap: 15px;
+      justify-content: flex-end;
+    }
+    .btn-secondary-outline { background: transparent; border: 1px solid var(--glass-border); color: var(--text-main); padding: 12px 25px; border-radius: 100px; font-weight: 700; cursor: pointer; transition: all 0.3s; }
+    .btn-secondary-outline:hover { background: var(--surface-hover); }
+    .btn-primary-glow { background: var(--primary-gradient); color: #fff; border: none; padding: 12px 35px; border-radius: 100px; font-weight: 800; cursor: pointer; box-shadow: 0 10px 20px var(--primary-glow); transition: all 0.3s; }
+    .btn-primary-glow:hover { transform: translateY(-2px); box-shadow: 0 15px 30px var(--primary-glow); }
+    .btn-primary-glow:disabled { opacity: 0.5; transform: none; cursor: not-allowed; }
+
+    .icon { margin-right: 8px; font-size: 1.1rem; vertical-align: middle; }
+
+    .animate-scale { animation: scaleUp 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
+    @keyframes scaleUp { from { transform: scale(0.9) translateY(20px); opacity: 0; } to { transform: scale(1) translateY(0); opacity: 1; } }
 
     .badges-section {
       margin-top: 30px;
