@@ -11,6 +11,9 @@ import {
   signInWithEmailAndPassword, 
   createUserWithEmailAndPassword,
   updateProfile,
+  updatePassword,
+  reauthenticateWithCredential,
+  EmailAuthProvider,
   User,
   setPersistence,
   browserLocalPersistence
@@ -209,6 +212,39 @@ export class AuthService {
       this.toast.error('Failed to update profile image.');
       throw error;
     }
+  }
+
+  async updateUserPassword(newPass: string, oldPass?: string) {
+    const user = this.auth.currentUser;
+    if (!user) throw new Error('No user logged in');
+
+    try {
+      // If old password is provided, re-authenticate first (required for password updates)
+      if (oldPass && user.email) {
+        const credential = EmailAuthProvider.credential(user.email, oldPass);
+        await reauthenticateWithCredential(user, credential);
+      }
+      
+      await updatePassword(user, newPass);
+      this.toast.success('Password updated successfully!');
+      return true;
+    } catch (error: any) {
+      console.error('Password update failed:', error);
+      if (error.code === 'auth/requires-recent-login') {
+        this.toast.error('Please logout and login again to change password (Security requirement).');
+      } else if (error.code === 'auth/wrong-password') {
+        this.toast.error('Current password is incorrect.');
+      } else {
+        this.toast.error('Failed to update password: ' + error.message);
+      }
+      throw error;
+    }
+  }
+
+  isPasswordUser(): boolean {
+    const user = this.auth.currentUser;
+    if (!user) return false;
+    return user.providerData.some(p => p.providerId === 'password');
   }
 
   async logout() {

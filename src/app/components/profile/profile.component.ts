@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { RouterLink, Router } from '@angular/router';
 import { CuppingService } from '../../services/cupping.service';
 import { AuthService } from '../../services/auth.service';
+import { ToastService } from '../../services/toast.service';
 import { MembershipService, TierDetails } from '../../services/membership.service';
 import { TranslationService } from '../../services/translation.service';
 import { CuppingSession } from '../../models/cupping.model';
@@ -331,6 +332,23 @@ import { environment } from '../../../environments/environment';
                   usernameStatus() === 'available' ? '✓ Handle is available' : 
                   usernameStatus() === 'taken' ? '✗ Already taken' : '✗ Invalid handle' }}
             </p>
+          </div>
+
+          <!-- Password Section (Only for Email/Pass users) -->
+          <div *ngIf="isPasswordUser()" class="password-change-section" style="border-top: 1px solid var(--glass-border); padding-top: 20px; margin-top: 20px;">
+            <h4 style="margin-bottom: 15px; text-align: left; font-size: 0.9rem; color: var(--primary-color);">{{ t('CHANGE_PASSWORD') || 'Change Password' }}</h4>
+            <div class="form-group" style="text-align: left; margin: 10px 0;">
+              <label>Current Password</label>
+              <input type="password" [(ngModel)]="currentPassword" placeholder="Required for security">
+            </div>
+            <div class="form-group" style="text-align: left; margin: 10px 0;">
+              <label>New Password</label>
+              <input type="password" [(ngModel)]="newPassword" placeholder="Min 6 characters">
+            </div>
+            <div class="form-group" style="text-align: left; margin: 10px 0;">
+              <label>Confirm New Password</label>
+              <input type="password" [(ngModel)]="confirmPassword" placeholder="Repeat new password">
+            </div>
           </div>
           <div class="modal-actions">
              <button class="btn-secondary" (click)="showSettings.set(false)" [disabled]="updating()">Cancel</button>
@@ -686,6 +704,27 @@ import { environment } from '../../../environments/environment';
     .badge-name { font-size: 0.75rem; font-weight: 800; text-transform: uppercase; letter-spacing: 1px; color: var(--primary-color); }
     .badge-placeholder { font-size: 0.8rem; color: var(--text-dim); font-style: italic; }
 
+    .form-group { margin-bottom: 20px; }
+    .form-group label { 
+      display: block; 
+      font-size: 0.75rem; 
+      font-weight: 800; 
+      text-transform: uppercase; 
+      color: var(--primary-color); 
+      letter-spacing: 1px; 
+      margin-bottom: 8px; 
+    }
+    .form-group input { width: 100%; }
+
+    .password-change-section {
+      text-align: left;
+    }
+    .input-hint {
+      font-size: 0.7rem;
+      margin-top: 5px;
+      font-weight: 600;
+    }
+
     @media (max-width: 900px) {
       .profile-container { padding: 0 15px; margin: 20px auto; }
       .profile-header { min-height: auto; padding-bottom: 20px; }
@@ -728,6 +767,7 @@ export class ProfileComponent implements OnInit {
   private cuppingService = inject(CuppingService);
   private membershipService = inject(MembershipService);
   private teamService = inject(TeamService);
+  private toast = inject(ToastService);
   private ts = inject(TranslationService);
   private seo = inject(SeoService);
   private router = inject(Router);
@@ -757,10 +797,19 @@ export class ProfileComponent implements OnInit {
   newName = this.auth.currentUser()?.displayName || '';
   newUsername = '';
   newShopUrl = '';
+  
+  // Password change
+  currentPassword = '';
+  newPassword = '';
+  confirmPassword = '';
+  isPasswordUser = signal(false);
+
   usernameStatus = signal<'available' | 'taken' | 'invalid' | 'checking' | null>(null);
   private usernameDebounce: any;
 
   ngOnInit() {
+    this.isPasswordUser.set(this.auth.isPasswordUser());
+    
     this.cuppings$ = this.auth.user$.pipe(
       filter(user => !!user),
       switchMap(user => this.refreshTrigger.pipe(
@@ -878,25 +927,44 @@ export class ProfileComponent implements OnInit {
 
   async updateProfile() {
     const user = this.auth.currentUser();
-    if (!user || !this.newName.trim()) return;
+    if (!user) return;
     
     this.updating.set(true);
     try {
-      // Update Display Name in Auth
-      if (this.newName !== user.displayName) {
+      // 1. Update Display Name
+      if (this.newName.trim() && this.newName !== user.displayName) {
         await this.auth.updateDisplayName(this.newName);
       }
 
-      // Update Username in Firestore
+      // 2. Update Username
       if (this.newUsername.trim()) {
         const clean = this.newUsername.toLowerCase().replace('@', '');
         await this.cuppingService.updateUsername(user.uid, clean);
       }
 
+      // 3. Update Password if fields are filled
+      if (this.newPassword) {
+        if (this.newPassword !== this.confirmPassword) {
+           throw new Error('New passwords do not match');
+        }
+        if (this.newPassword.length < 6) {
+           throw new Error('Password must be at least 6 characters');
+        }
+        await this.auth.updateUserPassword(this.newPassword, this.currentPassword);
+        // Reset password fields
+        this.currentPassword = '';
+        this.newPassword = '';
+        this.confirmPassword = '';
+      }
+
       this.showSettings.set(false);
       this.refreshTrigger.next();
     } catch (e: any) {
-      alert(e.message || 'Failed to update profile');
+      console.error('Update failed:', e);
+      // Only alert if it's not a handled auth error (auth service already toasts those)
+      if (!e.code || !e.code.startsWith('auth/')) {
+        alert(e.message || 'Failed to update profile');
+      }
     } finally {
       this.updating.set(false);
     }
