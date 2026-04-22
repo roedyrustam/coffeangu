@@ -1,8 +1,8 @@
 {
-  "name": "CaffeeScore",
-  "short_name": "CaffeeScore",
-  "theme_color": "#121212",
-  "background_color": "#121212",
+  "name": "CuppingNotes",
+  "short_name": "CuppingNotes",
+  "theme_color": "#0c0c0e",
+  "background_color": "#0c0c0e",
   "display": "standalone",
   "scope": "./",
   "start_url": "./",
@@ -50,7 +50,7 @@
       "purpose": "maskable any"
     },
     {
-      "src": "icons/icon-512x512.png",
+      "src": "assets/hero-og.png",
       "sizes": "512x512",
       "type": "image/png",
       "purpose": "maskable any"

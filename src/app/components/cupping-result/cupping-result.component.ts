@@ -821,7 +821,7 @@ export class CuppingResultComponent implements OnInit, AfterViewInit, OnDestroy 
     
     // Facebook & Threads require absolute URLs for og:image
     const baseUrl = environment.siteUrl;
-    let imageUrl = this.session.shareImageUrl || `${baseUrl}/assets/og-image.png`;
+    let imageUrl = this.session.shareImageUrl || `${baseUrl}/assets/hero-og.png`;
     // Ensure absolute URL
     if (imageUrl.startsWith('/')) {
       imageUrl = `${baseUrl}${imageUrl}`;
@@ -845,7 +845,7 @@ export class CuppingResultComponent implements OnInit, AfterViewInit, OnDestroy 
       "@type": "Product",
       "name": data.beanName,
       "image": [
-        data.productImageUrl || data.shareImageUrl || `${environment.siteUrl}/assets/og-image.png`
+        data.productImageUrl || data.shareImageUrl || `${environment.siteUrl}/assets/hero-og.png`
       ],
       "description": `Coffee evaluation for ${data.beanName} by ${data.roastery}. SCA Score: ${data.finalScore.toFixed(2)}`,
       "brand": {
