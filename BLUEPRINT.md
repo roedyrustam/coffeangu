@@ -4,14 +4,13 @@
 CuppingNotes is a modern web application built on **Angular 21** utilizing the new `@angular/build:application` builder. It is fundamentally designed as an **Offline-First Progressive Web App (PWA)** with a professional production deployment on **Vercel**.
 
 ### Core Tech Stack:
-- **Framework**: Angular 21 (Standalone Components, Signal-based State)
+- **Framework**: Angular 21 (Standalone Components, Signal-based State, **Angular SSR**)
 - **Deployment**: Vercel (Production: `cuppingnotes.online`)
 - **Styling**: Pure CSS3 variables with the **2026 Obsidian & Radiant Ember** design system.
 - **Backend/Database**: Firebase V11 (Firestore & Storage)
 - **Authentication**: Firebase Auth (Google Redirect for Mobile, Pop-up for Desktop)
 - **Visualization**: Chart.js 4 (Radar Chart) + html2canvas for social sharing artifacts.
-- **OCR Engine**: Tesseract.js (AI autofill via package sticker scanning).
-- **Social Ecosystem**: Integrated Social Sharing API for WhatsApp, X (Twitter), Facebook, and LinkedIn.
+- **Social Ecosystem**: Integrated Social Sharing API with **True SSR Meta-tag Injection** for Threads, WhatsApp, and Facebook.
 - **B2B Infrastructure**: Role-based team management with Verified Roastery badges and Shop URL integration.
 
 ## 2. Directory Structure
@@ -33,10 +32,10 @@ CuppingNotes/
 │   │   └── app.component.ts     # Main Shell & Glassmorphism Nav
 │   ├── styles.css           # Global Design System (Color Tokens, Mesh Glows)
 │   └── index.html
-├── vercel.json              # Production routing and SPA rewrite rules
+├── vercel.json              # Production routing and **SSR Gateway** configuration
 ├── ngsw-config.json         # Service Worker aggressive caching rules
 ├── firebase.json            # Security rules and backend configuration
-└── package.json             # Core dependency map (v1.6.0)
+└── package.json             # Core dependency map (v1.7.0)
 ```
 
 ## 3. Data Flow Model
@@ -49,8 +48,9 @@ CuppingNotes/
 
 ## 4. Key Design Decisions
 - **Obsidian & Radiant Ember Palette**: `#0c0c0e` background. Bronze gradients for primary actions. Acid Lime (`#d4e157`) for specialty grade (80+).
-- **Vercel Rewrite Rules**: Implemented `rewrites` in `vercel.json` to handle client-side routing for deep links (`/result/:id`, `/u/:id`).
+- **Angular SSR Implementation**: Migrated from static rewrites to true Server-Side Rendering via `@angular/ssr` on Vercel. This enables dynamic Open Graph (OG) tag injection for premium social media link previews (Threads, Facebook, etc.).
 - **Mobile Handshake**: Detects mobile user agents to force `signInWithRedirect`, preventing traditional pop-up blocking issues.
+- **Premium Coffee Iconography**: Custom coffee-themed SVG icons for mobile navigation (Coffee Cup for Discover, Coffee Bean for History).
 - **Handle-based Routing**: Supports professional vanity URLs (e.g., `cuppingnotes.online/u/@handle`) for public profiles.
 - **B2B Commerce Bridge**: Roastery-verified sessions include denormalized commerce links (`buyLink`) to facilitate direct sales.
 - **Bento Discovery Architecture**: magazine-style grid using `grid-auto-flow: dense` for community feeds.

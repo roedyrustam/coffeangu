@@ -35,10 +35,10 @@
 - **Domain**: `cuppingnotes.online`
 - **Theme**: "Obsidian & Radiant Ember" 2026 Edition (`#0c0c0e` Root).
 - **Typography**: Outfit (Primary) & Playfair Display (Accent/Scores).
-- **Routing**: SPA Rewrites via Vercel to support deep linking to results and profiles.
+- **Routing**: **Angular SSR** on Vercel to support dynamic SEO metadata and deep linking.
 
 ## 5. Success Metrics
 - 0% data loss during offline rural cupping scenarios.
 - Reduction of session logging time compared to manual paper systems.
-- Growth in professional network engagement through Social Sharing of cupping results.
-- Successful resolution of "404 on Refresh" via Vercel edge configuration.
+- Growth in professional network engagement through **Dynamic Social Link Previews**.
+- Successful migration to **Full Angular SSR** on Vercel infrastructure.
