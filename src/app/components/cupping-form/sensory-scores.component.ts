@@ -15,9 +15,13 @@ import { CuppingSession } from '../../models/cupping.model';
         <div class="intensity-item" *ngFor="let item of intensityKeys" [style.--accent-color]="getScoreColor(item.key + 'Int')">
           <div class="intensity-header">
             <label>{{ item.label }}</label>
-            <span [style.color]="getScoreColor(item.key + 'Int')">{{ session.intensities![item.key] }}</span>
+            <span class="intensity-value" [style.color]="getScoreColor(item.key + 'Int')">{{ session.intensities![item.key] }}</span>
           </div>
-          <input type="range" min="1" max="10" step="1" [(ngModel)]="session.intensities![item.key]" [name]="'int-' + item.key">
+          <div class="slider-row">
+            <button type="button" class="btn-step" (click)="stepIntensity(item.key, -1)">-</button>
+            <input type="range" min="1" max="10" step="1" [(ngModel)]="session.intensities![item.key]" [name]="'int-' + item.key">
+            <button type="button" class="btn-step" (click)="stepIntensity(item.key, 1)">+</button>
+          </div>
         </div>
       </div>
     </section>
@@ -74,11 +78,14 @@ import { CuppingSession } from '../../models/cupping.model';
     }
 
     .intensity-item {
-      background: rgba(255,255,255,0.02);
-      padding: 15px;
+      background: rgba(255,255,255,0.04);
+      padding: 20px;
       border-radius: var(--radius-md);
       border: 1px solid var(--glass-border);
+      box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+      transition: all 0.3s;
     }
+    .intensity-item:hover { border-color: var(--accent-color); background: rgba(255,255,255,0.06); }
 
     .intensity-header {
       display: flex;
@@ -94,15 +101,17 @@ import { CuppingSession } from '../../models/cupping.model';
       letter-spacing: 0.5px;
       color: var(--text-main);
     }
+    .intensity-value { font-weight: 950; font-family: var(--font-brand); font-size: 1.4rem; }
 
     .score-card {
-      background: rgba(255,255,255,0.02);
-      padding: 18px;
+      background: rgba(255,255,255,0.04);
+      padding: 20px;
       border-radius: var(--radius-md);
       border: 1px solid var(--glass-border);
+      box-shadow: 0 4px 15px rgba(0,0,0,0.05);
       transition: all 0.3s;
     }
-    .score-card:hover { border-color: var(--accent-color); background: rgba(255,255,255,0.04); }
+    .score-card:hover { border-color: var(--accent-color); background: rgba(255,255,255,0.06); }
 
     .score-header {
       display: flex;
@@ -119,8 +128,14 @@ import { CuppingSession } from '../../models/cupping.model';
       accent-color: var(--accent-color, var(--primary-color));
       height: 6px;
       border-radius: 3px;
-      background: rgba(0,0,0,0.1);
+      background: rgba(189, 142, 98, 0.1);
       cursor: pointer;
+      -webkit-appearance: none;
+    }
+    input[type="range"]::-webkit-slider-runnable-track {
+      background: rgba(0,0,0,0.1);
+      border-radius: 3px;
+      height: 6px;
     }
 
     .btn-step {
@@ -199,6 +214,12 @@ export class SensoryScoresComponent implements OnInit {
     
     this.session.defectCupStates = [...this.defectCups];
     this.session.defects = this.defectCups.reduce((a, b) => a + b, 0);
+    this.onScoreInput();
+  }
+
+  stepIntensity(key: 'acidity' | 'body' | 'sweetness', step: number) {
+    const newVal = Math.min(10, Math.max(1, (this.session.intensities![key] || 0) + step));
+    this.session.intensities![key] = newVal;
     this.onScoreInput();
   }
 
