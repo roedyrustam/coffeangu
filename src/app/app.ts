@@ -436,8 +436,15 @@ export class App {
   showUserMenu = signal(false);
   parallaxTransform = signal('translate3d(0,0,0) scale(1.1)');
 
-  ngOnInit() {
+  async ngOnInit() {
     this.seo.updateMeta(); // Default SEO initialization
+    
+    // Global handle for Firebase Auth redirects (Crucial for Mobile)
+    try {
+      await this.auth.handleRedirectResult();
+    } catch (err) {
+      console.error('Global Auth Redirect Error:', err);
+    }
     
     window.addEventListener('mousemove', (e) => {
       const x = (e.clientX / window.innerWidth - 0.5) * 30;

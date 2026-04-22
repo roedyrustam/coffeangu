@@ -58,6 +58,9 @@ export class AuthService {
       }
       const result = await getRedirectResult(this.auth);
       this.initialized.set(true);
+      if (result?.user) {
+        console.log('Redirect login successful:', result.user.displayName);
+      }
       return result?.user || null;
     } catch (error: any) {
       this.initialized.set(true);
@@ -71,7 +74,13 @@ export class AuthService {
 
   private isMobile(): boolean {
     if (!isPlatformBrowser(this.platformId)) return false;
-    return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+    const ua = navigator.userAgent;
+    const isUA = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(ua);
+    const isSmallScreen = window.innerWidth <= 1024; // Including tablets
+    const isTouch = ('ontouchstart' in window) || (navigator.maxTouchPoints > 0);
+    // Many modern mobile browsers claim to be Macintosh (Desktop Site)
+    const isMacTouch = /Macintosh/i.test(ua) && isTouch;
+    return isUA || isMacTouch || (isSmallScreen && isTouch);
   }
 
   async loginWithEmail(email: string, pass: string) {
