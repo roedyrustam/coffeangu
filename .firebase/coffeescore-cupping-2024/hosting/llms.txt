@@ -1,0 +1,50 @@
+# CuppingNotes - Professional Coffee Cupping Platform
+
+> CuppingNotes is a modern, SCA-standard coffee evaluation platform for specialty coffee professionals, roasters, and cuppers worldwide.
+
+## What is CuppingNotes?
+
+CuppingNotes is a web application that enables professional coffee cupping with SCA (Specialty Coffee Association) standards. It provides precision sensory logging, scoring, and sharing capabilities for specialty coffee professionals.
+
+## Core Features
+
+- **SCA-Standard Cupping Forms**: Score coffee using the official SCA cupping protocol with attributes including Fragrance/Aroma, Flavor, Aftertaste, Acidity, Body, Balance, Uniformity, Clean Cup, Sweetness, and Overall
+- **Sensory Radar Charts**: Visual representation of coffee quality profiles using interactive radar charts
+- **Community Board**: Share and discover cupping results from verified roasteries and professional cuppers worldwide
+- **Analytics Dashboard**: Track cupping history, identify trends, and analyze sensory preferences over time
+- **OCR Bean Recognition**: Use Tesseract.js-powered OCR to scan coffee bean labels for quick data entry
+- **Team/Roastery Management**: Create and manage roastery teams with verified badge status
+- **Gamification**: XP-based leveling system that rewards consistent cupping activity
+- **Multi-language Support**: Available in English, Indonesian (Bahasa), and Spanish
+- **PWA (Progressive Web App)**: Install on mobile devices for offline-capable, native-like experience
+
+## Scoring System
+
+CuppingNotes uses the SCA 100-point scoring system:
+- **90+**: Outstanding — Specialty coffee of exceptional quality
+- **85-89.99**: Excellent — Specialty coffee with distinctive character
+- **80-84.99**: Very Good — Meets specialty grade threshold
+- **Below 80**: Commercial grade — Below specialty standards
+
+## Technology
+
+- Built with Angular 21 and Firebase
+- Real-time data synchronization via Cloud Firestore
+- Offline-first architecture for use in remote farming/roastery locations
+- Responsive mobile-first design optimized for field use
+
+## Target Users
+
+- Specialty coffee roasters
+- Professional Q-Graders and cuppers
+- Coffee importers and exporters
+- Roastery quality control teams
+- Coffee enthusiasts pursuing specialty knowledge
+
+## URL
+
+https://cuppingnotes.online
+
+## Contact
+
+For inquiries, visit https://cuppingnotes.online/contact

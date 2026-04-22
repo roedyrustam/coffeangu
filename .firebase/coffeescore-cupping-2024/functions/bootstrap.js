@@ -5,10 +5,10 @@
         const socket = 'express.sock';
         process.env.PORT = socket;
 
-        import(`./dist/coffeescore/server/server.mjs`).then(({ default: defHandler, reqHandler, app }) => {
+        import(`./dist/cuppingnotes/server/server.mjs`).then(({ default: defHandler, reqHandler, app }) => {
           const handler = app?.() ?? reqHandler ?? defHandler;
           if (!handler) {
-            reject(`The file at "./dist/coffeescore/server/server.mjs" did not export a valid request handler. Expected exports: 'app', 'default', or 'reqHandler'.`);
+            reject(`The file at "./dist/cuppingnotes/server/server.mjs" did not export a valid request handler. Expected exports: 'app', 'default', or 'reqHandler'.`);
           } else {
             process.env.PORT = port;
             resolve(handler);
