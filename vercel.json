@@ -4,8 +4,19 @@
   "trailingSlash": false,
   "rewrites": [
     {
+      "source": "/result/:id",
+      "destination": "/index.html"
+    },
+    {
       "source": "/((?!assets/|icons/|locales/|.*\\.(?:js|css|png|jpg|jpeg|gif|ico|svg|webp|avif|webmanifest|xml)).*)",
       "destination": "/index.html"
+    }
+  ],
+  "redirects": [
+    {
+      "source": "/results/:id",
+      "destination": "/result/:id",
+      "permanent": true
     }
   ],
   "headers": [
