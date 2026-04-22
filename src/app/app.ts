@@ -27,34 +27,39 @@ import { SeoService } from './services/seo.service';
             <a routerLink="/cupping" class="nav-link" routerLinkActive="active">{{ t('NAV_NEW') }}</a>
             <a routerLink="/community" class="nav-link" routerLinkActive="active">{{ t('NAV_COMMUNITY') }}</a>
             
-            <ng-container *ngIf="!auth.currentUser()">
+            @if (!auth.currentUser()) {
               <a routerLink="/login" class="btn-primary login-btn">{{ t('BTN_LOGIN') }}</a>
-            </ng-container>
-
-            <div class="user-profile" *ngIf="auth.currentUser()">
-              <div class="avatar" (click)="showUserMenu.set(!showUserMenu())">
-                <span *ngIf="!auth.currentUser()?.photoURL">{{ auth.currentUser()?.displayName?.charAt(0) || 'U' }}</span>
-                <img *ngIf="auth.currentUser()?.photoURL" [src]="auth.currentUser()?.photoURL" alt="Profile">
-              </div>
-              
-              <div class="user-menu glass-card" *ngIf="showUserMenu()">
-                <div class="menu-header">
-                  <p class="user-name">{{ auth.currentUser()?.displayName }}</p>
-                  <p class="user-email">{{ auth.currentUser()?.email }}</p>
+            } @else {
+              <div class="user-profile">
+                <div class="avatar" (click)="showUserMenu.set(!showUserMenu())">
+                  @if (!auth.currentUser()?.photoURL) {
+                    <span>{{ auth.currentUser()?.displayName?.charAt(0) || 'U' }}</span>
+                  } @else {
+                    <img [src]="auth.currentUser()?.photoURL" alt="Profile">
+                  }
                 </div>
-                <div class="menu-divider"></div>
                 
-                <a routerLink="/profile" (click)="showUserMenu.set(false)" class="menu-item">
-                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
-                  <span>{{ t('PROFILE_TITLE') }}</span>
-                </a>
+                @if (showUserMenu()) {
+                  <div class="user-menu glass-card">
+                    <div class="menu-header">
+                      <p class="user-name">{{ auth.currentUser()?.displayName }}</p>
+                      <p class="user-email">{{ auth.currentUser()?.email }}</p>
+                    </div>
+                    <div class="menu-divider"></div>
+                    
+                    <a routerLink="/profile" (click)="showUserMenu.set(false)" class="menu-item">
+                      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+                      <span>{{ t('PROFILE_TITLE') }}</span>
+                    </a>
 
-                <button (click)="auth.logout(); showUserMenu.set(false)" class="logout-btn">
-                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
-                  {{ t('BTN_LOGOUT') }}
-                </button>
+                    <button (click)="auth.logout(); showUserMenu.set(false)" class="logout-btn">
+                      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+                      {{ t('BTN_LOGOUT') }}
+                    </button>
+                  </div>
+                }
               </div>
-            </div>
+            }
           </div>
         </div>
       </div>
@@ -95,6 +100,11 @@ import { SeoService } from './services/seo.service';
     </nav>
 
     <footer class="main-footer">
+      <div class="footer-links">
+        <a routerLink="/tos">Terms of Service</a>
+        <a routerLink="/privacy">Privacy Policy</a>
+        <a routerLink="/contact">Contact</a>
+      </div>
       <p>&copy; {{ currentYear }} {{ t('APP_TITLE') }} - Professional Coffee Cupping Platform</p>
     </footer>
   `,
@@ -412,6 +422,20 @@ import { SeoService } from './services/seo.service';
       padding: 10px 24px;
       font-size: 0.75rem;
       text-decoration: none;
+    }
+    .footer-links {
+      display: flex;
+      gap: 20px;
+      margin-bottom: 10px;
+    }
+    .footer-links a {
+      color: var(--text-dim);
+      text-decoration: none;
+      font-size: 0.8rem;
+      transition: color 0.3s;
+    }
+    .footer-links a:hover {
+      color: var(--text-main);
     }
     @media (max-width: 768px) {
       .main-nav { display: none; }

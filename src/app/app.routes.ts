@@ -11,5 +11,8 @@ export const routes: Routes = [
   { path: 'analytics', loadComponent: () => import('./components/analytics/analytics.component').then(m => m.AnalyticsComponent), canActivate: [authGuard] },
   { path: 'pricing', loadComponent: () => import('./components/pricing/pricing.component').then(m => m.PricingComponent) },
   { path: 'u/:id', loadComponent: () => import('./components/public-profile/public-profile.component').then(m => m.PublicProfileComponent) },
+  { path: 'tos', loadComponent: () => import('./components/legal/tos/tos.component').then(m => m.TosComponent) },
+  { path: 'privacy', loadComponent: () => import('./components/legal/privacy/privacy.component').then(m => m.PrivacyComponent) },
+  { path: 'contact', loadComponent: () => import('./components/legal/contact/contact.component').then(m => m.ContactComponent) },
   { path: '**', redirectTo: '' }
 ];

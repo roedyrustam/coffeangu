@@ -1,6 +1,6 @@
 export const environment = {
   production: false,
-  siteUrl: 'https://cuppingnotes.online',
+  siteUrl: 'localhost',
   firebase: {
     projectId: 'coffeescore-cupping-2024',
     appId: '1:460876837418:web:0a9bd7f78677249402c953',
