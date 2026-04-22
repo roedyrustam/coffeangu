@@ -58,29 +58,33 @@ export class CuppingService {
 
   async updateUsername(uid: string, newUsername: string) {
     const profileRef = doc(this.firestore, 'profiles', uid);
-    const profileSnap = await getDoc(profileRef);
-    if (!profileSnap.exists()) throw new Error('Profile not found');
-
-    const profile = profileSnap.data() as UserProfile;
-    const oldUsername = profile.username?.toLowerCase().replace('@', '');
     const cleanNewUsername = newUsername.toLowerCase().replace('@', '');
 
-    if (oldUsername === cleanNewUsername) return;
+    await runTransaction(this.firestore, async (transaction) => {
+      const profileSnap = await transaction.get(profileRef);
+      if (!profileSnap.exists()) throw new Error('Profile not found');
 
-    // 1. Check uniqueness
-    const isAvailable = await this.isUsernameAvailable(cleanNewUsername);
-    if (!isAvailable) throw new Error('Username already taken');
+      const profile = profileSnap.data() as UserProfile;
+      const oldUsername = profile.username?.toLowerCase().replace('@', '');
 
-    // 2. Claim new username
-    await setDoc(doc(this.firestore, 'usernames', cleanNewUsername), { uid });
+      if (oldUsername === cleanNewUsername) return;
 
-    // 3. Update profile
-    await updateDoc(profileRef, { username: `@${cleanNewUsername}` });
+      // 1. Check uniqueness (inside transaction for safety)
+      const newUsernameRef = doc(this.firestore, 'usernames', cleanNewUsername);
+      const usernameSnap = await transaction.get(newUsernameRef);
+      if (usernameSnap.exists()) throw new Error('Username already taken');
 
-    // 4. Release old username if exists
-    if (oldUsername) {
-      await deleteDoc(doc(this.firestore, 'usernames', oldUsername));
-    }
+      // 2. Claim new username
+      transaction.set(newUsernameRef, { uid });
+
+      // 3. Update profile
+      transaction.update(profileRef, { username: `@${cleanNewUsername}` });
+
+      // 4. Release old username if exists
+      if (oldUsername) {
+        transaction.delete(doc(this.firestore, 'usernames', oldUsername));
+      }
+    });
   }
 
   async ensureUserProfile(userId: string, displayName: string, photoURL?: string) {
@@ -189,95 +193,98 @@ export class CuppingService {
     const cuppingRef = doc(collection(this.firestore, 'cuppings'));
     const profileRef = doc(this.firestore, 'profiles', userId);
 
-    // Get profile data (reads from offline cache if available)
-    const profileSnap = await getDoc(profileRef);
-    if (!profileSnap.exists()) throw new Error('Profile not found');
-    
-    const profile = profileSnap.data() as UserProfile;
-    const isAdmin = profile?.membership === 'roastery';
-    const isPro = profile?.membership === 'pro' || isAdmin;
+    const result = await runTransaction(this.firestore, async (transaction) => {
+      const profileSnap = await transaction.get(profileRef);
+      if (!profileSnap.exists()) throw new Error('Profile not found');
+      
+      const profile = profileSnap.data() as UserProfile;
+      const isAdmin = profile?.membership === 'roastery';
+      const isPro = profile?.membership === 'pro' || isAdmin;
 
-    // Denormalization Logic for Teams & Commerce Gating
-    let teamId = profile.teamId || undefined;
-    let isVerifiedRoastery = false;
-    let buyLink = session.buyLink;
+      // Denormalization Logic for Teams & Commerce Gating
+      let teamId = profile.teamId || undefined;
+      let isVerifiedRoastery = false;
+      let buyLink = session.buyLink;
 
-    if (teamId) {
-      const teamRef = doc(this.firestore, 'teams', teamId);
-      const teamSnap = await getDoc(teamRef);
-      const team = teamSnap.data() as any;
-      if (team) {
-        isVerifiedRoastery = !!team.isVerified;
-        if (!buyLink && team.shopUrl) {
-          buyLink = team.shopUrl;
+      if (teamId) {
+        const teamRef = doc(this.firestore, 'teams', teamId);
+        const teamSnap = await transaction.get(teamRef);
+        const team = teamSnap.data() as any;
+        if (team) {
+          isVerifiedRoastery = !!team.isVerified;
+          if (!buyLink && team.shopUrl) {
+            buyLink = team.shopUrl;
+          }
         }
       }
-    }
 
-    // STRICT MONETIZATION GATE: Only Pro/Roastery can use custom buy links
-    if (!isPro && !isVerifiedRoastery) {
-      buyLink = undefined;
-    }
-
-    // Calculate XP Gain (Optimistic Client-Side)
-    let xpGain = 100;
-    if (session.finalScore >= 80) xpGain += 50;
-    xpGain += (session.flavorNotes?.length || 0) * 10;
-
-    const newXp = (profile.xp || 0) + xpGain;
-    const newSessions = (profile.totalSessions || 0) + 1;
-    
-    // Determine Level
-    let newLevel = profile.level || 1;
-    for (let i = LEVEL_THRESHOLDS.length - 1; i >= 0; i--) {
-      if (newXp >= LEVEL_THRESHOLDS[i]) {
-        newLevel = i + 1;
-        break;
+      // STRICT MONETIZATION GATE: Only Pro/Roastery can use custom buy links
+      if (!isPro && !isVerifiedRoastery) {
+        buyLink = undefined;
       }
-    }
 
-    // Determine Avatar Stage
-    let avatarStage: UserProfile['avatarStage'] = 'seedling';
-    if (newLevel >= 5) avatarStage = 'harvest';
-    else if (newLevel >= 4) avatarStage = 'cherry';
-    else if (newLevel >= 3) avatarStage = 'flowering';
-    else if (newLevel >= 2) avatarStage = 'sprout';
+      // Calculate XP Gain (Consistent Transactional Logic)
+      let xpGain = 100;
+      if (session.finalScore >= 80) xpGain += 50;
+      xpGain += (session.flavorNotes?.length || 0) * 10;
 
-    // Check for badges
-    const currentBadgeIds = (profile.badges || []).map(b => b.id);
-    const newBadges: Badge[] = [...(profile.badges || [])];
-    if (!currentBadgeIds.includes('first_cupping')) {
-      const badge = ALL_BADGES.find(b => b.id === 'first_cupping');
-      if (badge) newBadges.push({ ...badge, unlockedAt: new Date() });
-    }
+      const newXp = (profile.xp || 0) + xpGain;
+      const newSessions = (profile.totalSessions || 0) + 1;
+      
+      // Determine Level
+      let newLevel = profile.level || 1;
+      for (let i = LEVEL_THRESHOLDS.length - 1; i >= 0; i--) {
+        if (newXp >= LEVEL_THRESHOLDS[i]) {
+          newLevel = i + 1;
+          break;
+        }
+      }
 
-    // 1. Write Cupping (Offline supported)
-    await setDoc(cuppingRef, {
-      ...session,
-      id: cuppingRef.id,
-      userId,
-      teamId,
-      isVerifiedRoastery,
-      isPro,
-      buyLink,
-      isPublic: session.isPublic ?? true,
-      likesCount: 0,
-      likedBy: [],
-      savedBy: [],
-      timestamp: Timestamp.now()
+      // Determine Avatar Stage
+      let avatarStage: UserProfile['avatarStage'] = 'seedling';
+      if (newLevel >= 5) avatarStage = 'harvest';
+      else if (newLevel >= 4) avatarStage = 'cherry';
+      else if (newLevel >= 3) avatarStage = 'flowering';
+      else if (newLevel >= 2) avatarStage = 'sprout';
+
+      // Check for badges
+      const currentBadgeIds = (profile.badges || []).map(b => b.id);
+      const newBadges: Badge[] = [...(profile.badges || [])];
+      if (!currentBadgeIds.includes('first_cupping')) {
+        const badge = ALL_BADGES.find(b => b.id === 'first_cupping');
+        if (badge) newBadges.push({ ...badge, unlockedAt: new Date() });
+      }
+
+      // 1. Write Cupping
+      transaction.set(cuppingRef, {
+        ...session,
+        id: cuppingRef.id,
+        userId,
+        teamId,
+        isVerifiedRoastery,
+        isPro,
+        buyLink,
+        isPublic: session.isPublic ?? true,
+        likesCount: 0,
+        likedBy: [],
+        savedBy: [],
+        timestamp: Timestamp.now()
+      });
+
+      // 2. Write Profile Update
+      transaction.update(profileRef, {
+        xp: newXp,
+        totalSessions: newSessions,
+        level: newLevel,
+        avatarStage: avatarStage,
+        badges: newBadges,
+        updatedAt: Timestamp.now()
+      });
+
+      return { id: cuppingRef.id, xpGain };
     });
 
-    // 2. Write Profile Update (Optimistic update, offline supported)
-    await updateDoc(profileRef, {
-      xp: newXp,
-      totalSessions: newSessions,
-      level: newLevel,
-      avatarStage: avatarStage,
-      badges: newBadges,
-      updatedAt: Timestamp.now()
-    });
-
-    return { id: cuppingRef.id, xpGain };
+    return result;
   }
 
   // updateProfileStats logic is now handled inside addCupping transaction for atomicity.
@@ -369,8 +376,65 @@ export class CuppingService {
   async uploadShareImage(sessionId: string, blob: Blob): Promise<string> {
     const filePath = `shares/${sessionId}.png`;
     const storageRef = ref(this.storage, filePath);
-    await uploadBytes(storageRef, blob);
+    
+    // Auto-compress share images for better performance on social platforms
+    try {
+      const compressed = await this.compressBlob(blob, 1200, 0.85);
+      await uploadBytes(storageRef, compressed, { contentType: 'image/jpeg' });
+    } catch (e) {
+      // Fallback to original blob if compression fails
+      await uploadBytes(storageRef, blob);
+    }
+    
     return getDownloadURL(storageRef);
+  }
+
+  /**
+   * More generic compression for Blobs or Files
+   */
+  private compressBlob(blob: Blob, maxSize = 1024, quality = 0.8): Promise<Blob> {
+    return new Promise((resolve, reject) => {
+      const img = new Image();
+      const url = URL.createObjectURL(blob);
+
+      img.onload = () => {
+        try {
+          URL.revokeObjectURL(url);
+          let { width, height } = img;
+
+          if (width > maxSize || height > maxSize) {
+            if (width > height) {
+              height = Math.round((height / width) * maxSize);
+              width = maxSize;
+            } else {
+              width = Math.round((width / height) * maxSize);
+              height = maxSize;
+            }
+          }
+
+          const canvas = document.createElement('canvas');
+          canvas.width = width;
+          canvas.height = height;
+          const ctx = canvas.getContext('2d')!;
+          
+          // Use white background for JPEGs
+          ctx.fillStyle = '#0c0c0e';
+          ctx.fillRect(0, 0, width, height);
+          
+          ctx.drawImage(img, 0, 0, width, height);
+
+          canvas.toBlob(
+            (result) => result ? resolve(result) : reject(new Error('Compression failed')),
+            'image/jpeg',
+            quality
+          );
+        } catch (err) {
+          reject(err);
+        }
+      };
+      img.onerror = () => reject(new Error('Failed to load image'));
+      img.src = url;
+    });
   }
 
   /**
@@ -378,53 +442,7 @@ export class CuppingService {
    * Resizes to max 1024px on longest side and outputs as JPEG at 0.8 quality.
    */
   private compressImage(file: File, maxSize = 1024, quality = 0.8): Promise<Blob> {
-    return new Promise((resolve, reject) => {
-      const img = new Image();
-      const reader = new FileReader();
-
-      reader.onload = (e) => {
-        img.onload = () => {
-          try {
-            let { width, height } = img;
-
-            // Scale down proportionally
-            if (width > maxSize || height > maxSize) {
-              if (width > height) {
-                height = Math.round((height / width) * maxSize);
-                width = maxSize;
-              } else {
-                width = Math.round((width / height) * maxSize);
-                height = maxSize;
-              }
-            }
-
-            const canvas = document.createElement('canvas');
-            canvas.width = width;
-            canvas.height = height;
-            const ctx = canvas.getContext('2d')!;
-            ctx.drawImage(img, 0, 0, width, height);
-
-            canvas.toBlob(
-              (blob) => {
-                if (blob) {
-                  resolve(blob);
-                } else {
-                  reject(new Error('Canvas compression returned null blob'));
-                }
-              },
-              'image/jpeg',
-              quality
-            );
-          } catch (err) {
-            reject(err);
-          }
-        };
-        img.onerror = () => reject(new Error('Failed to load image for compression'));
-        img.src = e.target?.result as string;
-      };
-      reader.onerror = () => reject(new Error('Failed to read file'));
-      reader.readAsDataURL(file);
-    });
+    return this.compressBlob(file, maxSize, quality);
   }
 
   async uploadProductImage(file: File): Promise<string> {
