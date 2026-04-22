@@ -64,50 +64,109 @@ import { CuppingSession } from '../../models/cupping.model';
     </section>
   `,
   styles: [`
-    .slider-row { display: flex; gap: 10px; align-items: center; }
+    .intensity-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+      gap: 25px;
+    }
+    @media (max-width: 640px) {
+      .intensity-grid { grid-template-columns: 1fr; gap: 20px; }
+    }
+
+    .intensity-item {
+      background: rgba(255,255,255,0.02);
+      padding: 15px;
+      border-radius: var(--radius-md);
+      border: 1px solid var(--glass-border);
+    }
+
+    .intensity-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 12px;
+    }
+
+    .intensity-header label {
+      font-size: 0.85rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      color: var(--text-main);
+    }
+
+    .score-card {
+      background: rgba(255,255,255,0.02);
+      padding: 18px;
+      border-radius: var(--radius-md);
+      border: 1px solid var(--glass-border);
+      transition: all 0.3s;
+    }
+    .score-card:hover { border-color: var(--accent-color); background: rgba(255,255,255,0.04); }
+
+    .score-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 15px;
+    }
+    .score-header label { font-size: 0.8rem; font-weight: 700; color: var(--text-dim); text-transform: uppercase; }
+
+    .slider-row { display: flex; gap: 15px; align-items: center; }
     
-    /* Dynamic Range Styling */
     input[type="range"] {
+      flex: 1;
       accent-color: var(--accent-color, var(--primary-color));
       height: 6px;
       border-radius: 3px;
-      background: rgba(255,255,255,0.05);
+      background: rgba(0,0,0,0.1);
+      cursor: pointer;
     }
 
     .btn-step {
-      background: transparent;
-      border: 1px solid var(--accent-color, var(--primary-color));
-      color: var(--accent-color, var(--primary-color));
-      width: 32px;
-      height: 32px;
-      border-radius: 8px;
+      background: var(--surface-hover);
+      border: 1px solid var(--glass-border);
+      color: var(--text-main);
+      width: 36px;
+      height: 36px;
+      border-radius: 10px;
       display: flex;
       align-items: center;
       justify-content: center;
-      font-weight: 800;
+      font-weight: 900;
       cursor: pointer;
       transition: all 0.2s;
     }
-    .btn-step:active { transform: scale(0.9); background: var(--accent-color); color: #000; }
+    .btn-step:hover { border-color: var(--accent-color); color: var(--accent-color); }
+    .btn-step:active { transform: scale(0.9); }
 
-    .value { font-weight: 800; font-family: var(--font-brand); font-size: 1.1rem; }
+    .value { font-weight: 900; font-family: var(--font-brand); font-size: 1.3rem; }
 
-    .defects-calculator { margin-top: 30px; padding: 20px; background: rgba(255,69,58,0.05); border: 1px solid rgba(255,69,58,0.2); border-radius: var(--radius-md); }
-    .cup-grid { display: flex; gap: 15px; margin: 15px 0; justify-content: space-between; }
-    .cup-item { flex: 1; aspect-ratio: 1/1; border: 1px solid var(--glass-border); border-radius: 12px; display: flex; flex-direction: column; align-items: center; justify-content: center; cursor: pointer; transition: all 0.3s; position: relative; }
-    .cup-item.active { border-color: var(--danger); background: rgba(255,69,58,0.1); }
-    .cup-icon { font-size: 1.5rem; }
-    .cup-intensity { position: absolute; bottom: 5px; font-size: 0.6rem; font-weight: 800; text-transform: uppercase; color: var(--danger); }
-    .defect-total { text-align: right; font-weight: 800; color: var(--danger); font-size: 0.9rem; }
+    .defects-calculator { margin-top: 30px; padding: 25px; background: rgba(255,69,58,0.03); border: 1px solid rgba(255,69,58,0.1); border-radius: var(--radius-lg); }
+    .cup-grid { display: flex; gap: 10px; margin: 20px 0; overflow-x: auto; padding-bottom: 10px; }
+    .cup-item { flex: 0 0 70px; height: 85px; border: 1px solid var(--glass-border); border-radius: 16px; display: flex; flex-direction: column; align-items: center; justify-content: center; cursor: pointer; transition: all 0.3s; position: relative; background: var(--surface-color); }
+    .cup-item.active { border-color: var(--danger); background: rgba(255,69,58,0.1); transform: scale(1.05); }
+    .cup-icon { font-size: 1.8rem; }
+    .cup-intensity { position: absolute; bottom: 8px; font-size: 0.55rem; font-weight: 900; text-transform: uppercase; color: var(--danger); }
+    .defect-total { text-align: right; font-weight: 900; color: var(--danger); font-size: 1rem; letter-spacing: 0.5px; }
+
     .final-score-bar {
       margin-top: 40px; background: var(--surface-color); padding: 30px 40px;
       border-radius: var(--radius-lg); display: flex; justify-content: space-between;
       align-items: center; border: 1px solid var(--glass-border);
+      box-shadow: 0 15px 40px rgba(0,0,0,0.1);
     }
-    .final-score-bar.specialty { background: var(--primary-gradient) !important; border: none; }
-    .final-score-bar.specialty .score-label span, .final-score-bar.specialty .final-value { color: #0c0c0e !important; }
-    .final-value { font-size: 4rem; font-weight: 950; font-family: var(--font-brand); color: var(--primary-color); line-height: 1; }
-    .score-label small { font-weight: 900; letter-spacing: 1px; display: block; margin-top: 5px; }
+    .final-score-bar.specialty { background: var(--primary-gradient) !important; border: none; box-shadow: 0 20px 50px var(--primary-glow); }
+    .final-score-bar.specialty .score-label span, .final-score-bar.specialty .final-value { color: #ffffff !important; }
+    .final-value { font-size: 4.5rem; font-weight: 950; font-family: var(--font-brand); color: var(--primary-color); line-height: 1; letter-spacing: -2px; }
+    .score-label span { font-size: 1.2rem; font-weight: 800; display: block; }
+    .score-label small { font-weight: 900; letter-spacing: 2px; display: block; margin-top: 8px; opacity: 0.9; }
+
+    @media (max-width: 480px) {
+      .final-score-bar { padding: 25px; }
+      .final-value { font-size: 3.5rem; }
+      .score-label span { font-size: 1rem; }
+    }
   `]
 })
 export class SensoryScoresComponent implements OnInit {

@@ -216,7 +216,23 @@ import { SensoryScoresComponent } from './sensory-scores.component';
     .footer-visibility { padding-right: 15px; border-right: 1px solid rgba(255,255,255,0.1); }
     .footer-toggle .label-text { font-size: 0.8rem !important; text-transform: uppercase; letter-spacing: 1px; }
     .footer-actions { display: flex; align-items: center; gap: 20px; }
-    @media (max-width: 768px) { .form-section { padding: 25px; } .header-content h2 { font-size: 2rem; } .form-sticky-actions { bottom: 120px; padding: 10px 15px; gap: 10px; } .btn-submit { padding: 0 25px; font-size: 0.8rem; } .footer-toggle .label-text { display: none; } .footer-visibility { padding-right: 10px; } }
+    @media (max-width: 768px) { 
+      .form-section { padding: 20px; } 
+      .header-content { padding: 30px 20px; }
+      .header-content h2 { font-size: 1.8rem; } 
+      .form-sticky-actions { 
+        bottom: 100px; 
+        padding: 10px 15px; 
+        gap: 10px;
+        border-radius: 18px;
+        left: 10px;
+        right: 10px;
+      } 
+      .btn-submit { padding: 0 20px; font-size: 0.75rem; } 
+      .footer-toggle .label-text { display: none; } 
+      .footer-visibility { padding-right: 10px; } 
+      .section-title { font-size: 1.1rem; margin-bottom: 20px; }
+    }
     .w-full { width: 100%; height: 70px; font-size: 1.2rem; margin-top: 30px; border-radius: 100px; }
     .checkbox-container { display: flex; align-items: center; gap: 15px; cursor: pointer; user-select: none; font-weight: 700; color: #ffffff; padding: 10px 0; }
     .checkbox-container input { position: absolute; opacity: 0; cursor: pointer; }
