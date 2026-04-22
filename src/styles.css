@@ -4,21 +4,21 @@
 :root {
   --font-sans: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
   --font-brand: 'Poppins', sans-serif;
-  /* 2026 Trend: Obsidian & Radiant Ember */
-  --bg-color: #0c0c0e;
-  --surface-color: #16161a;
-  --surface-hover: #1c1c21;
-  --glass-bg: rgba(22, 22, 26, 0.8);
-  --glass-border: rgba(255, 255, 255, 0.05);
-  --primary-color: #bd8e62; /* Grounded Bronze */
-  --primary-gradient: linear-gradient(135deg, #bd8e62 0%, #e5bc7d 100%);
-  --primary-glow: rgba(189, 142, 98, 0.2);
-  --accent-neon: #d4e157; /* 2026 Acid Lime Accent */
+  /* 2026 Trend: Clean Native Light Mode (Bento/Glassmorphism) */
+  --bg-color: #F5F5F7; /* iOS/Native soft background */
+  --surface-color: #FFFFFF;
+  --surface-hover: #F2F2F7;
+  --glass-bg: rgba(255, 255, 255, 0.85);
+  --glass-border: rgba(0, 0, 0, 0.05);
+  --primary-color: #8E5A35; /* Deeper grounded coffee/bronze for better contrast */
+  --primary-gradient: linear-gradient(135deg, #8E5A35 0%, #C38B57 100%);
+  --primary-glow: rgba(142, 90, 53, 0.2);
+  --accent-neon: #007AFF; /* 2026 Native Accent Blue */
   
-  --text-main: #f8f0e3; /* Nature-forward Cream */
-  --text-dim: #8e8e93;
-  --danger: #ff453a;
-  --success: #32d74b;
+  --text-main: #1C1C1E; /* Deep native dark text */
+  --text-dim: #8E8E93;
+  --danger: #FF3B30;
+  --success: #34C759;
 
   /* UI/UX Expert Tokens */
   /* Anti-Gravity Premium Tokens */
@@ -64,8 +64,8 @@ body {
   font-family: var(--font-sans);
   background-color: var(--bg-color);
   background-image: 
-    radial-gradient(circle at 0% 0%, rgba(189, 142, 98, 0.05) 0%, transparent 50%),
-    radial-gradient(circle at 100% 100%, rgba(212, 225, 87, 0.03) 0%, transparent 50%);
+    radial-gradient(circle at 0% 0%, rgba(142, 90, 53, 0.08) 0%, transparent 50%),
+    radial-gradient(circle at 100% 100%, rgba(0, 122, 255, 0.05) 0%, transparent 50%);
   color: var(--text-main);
   min-height: 100vh;
   overflow-x: hidden;
@@ -112,7 +112,7 @@ p, span, div {
 
 .btn-primary {
   background: var(--primary-gradient);
-  color: #0c0c0e;
+  color: #FFFFFF;
   border: none;
   padding: 16px 32px;
   border-radius: 100px;
@@ -212,7 +212,7 @@ input:focus {
     flex-direction: column;
     align-items: center;
     gap: 5px;
-    background: linear-gradient(135deg, #1e1e1e 0%, #0c0c0e 100%);
+    background: linear-gradient(135deg, #2C2C2E 0%, #1C1C1E 100%);
     color: white;
     padding: 20px 40px;
     border-radius: 15px;
@@ -220,9 +220,9 @@ input:focus {
     font-weight: 800;
     position: relative;
     overflow: hidden;
-    border: 1px solid var(--primary-color);
+    border: 1px solid var(--glass-border);
     z-index: var(--z-nav);
-    box-shadow: 0 20px 50px rgba(0,0,0,0.8);
+    box-shadow: 0 20px 50px rgba(0,0,0,0.15);
     transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
 }
 
@@ -311,9 +311,9 @@ input:focus {
   position: fixed;
   inset: 0;
   background: 
-    radial-gradient(at 10% 20%, rgba(189, 142, 98, 0.2) 0px, transparent 50%),
-    radial-gradient(at 90% 10%, rgba(212, 225, 87, 0.15) 0px, transparent 50%),
-    radial-gradient(at 50% 100%, rgba(189, 142, 98, 0.1) 0px, transparent 50%);
+    radial-gradient(at 10% 20%, rgba(142, 90, 53, 0.15) 0px, transparent 50%),
+    radial-gradient(at 90% 10%, rgba(0, 122, 255, 0.1) 0px, transparent 50%),
+    radial-gradient(at 50% 100%, rgba(142, 90, 53, 0.1) 0px, transparent 50%);
   filter: blur(100px);
   z-index: -1;
   opacity: 0.6;
@@ -340,7 +340,7 @@ input:focus {
   height: 64px;
   border-radius: 20px;
   background: var(--primary-gradient);
-  color: #0c0c0e;
+  color: #FFFFFF;
   display: flex;
   align-items: center;
   justify-content: center;

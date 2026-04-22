@@ -155,7 +155,7 @@ import { SeoService } from './services/seo.service';
     }
     .lang-switcher button.active {
       background: var(--primary-color);
-      color: #0c0c0e;
+      color: #FFFFFF;
       border-color: transparent;
     }
     .brand {
@@ -290,8 +290,8 @@ import { SeoService } from './services/seo.service';
       display: flex;
       justify-content: center;
       align-items: center;
-      color: #0c0c0e;
-      box-shadow: 0 10px 25px rgba(189, 142, 98, 0.4);
+      color: #FFFFFF;
+      box-shadow: 0 10px 25px var(--primary-glow);
       cursor: pointer;
       position: absolute;
       top: -24px;
@@ -340,7 +340,7 @@ import { SeoService } from './services/seo.service';
       border-color: var(--primary-color);
     }
     .avatar span {
-      color: #0c0c0e;
+      color: #FFFFFF;
       font-weight: 800;
       font-size: 1.1rem;
     }
