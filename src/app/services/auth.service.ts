@@ -20,6 +20,7 @@ import { toSignal } from '@angular/core/rxjs-interop';
 import { Storage, ref, uploadBytes, getDownloadURL } from '@angular/fire/storage';
 import { isPlatformBrowser } from '@angular/common';
 import { PLATFORM_ID } from '@angular/core';
+import { ToastService } from './toast.service';
 
 @Injectable({
   providedIn: 'root'
@@ -28,6 +29,7 @@ export class AuthService {
   private auth = inject(Auth);
   private storage = inject(Storage);
   private platformId = inject(PLATFORM_ID);
+  private toast = inject(ToastService);
   
   // Expose user as a signal for the UI
   user$ = user(this.auth);
@@ -85,6 +87,7 @@ export class AuthService {
       this.initialized.set(true);
       console.error('Redirect login failed:', error);
       if (error.code === 'auth/unauthorized-domain') {
+        this.toast.error('This domain is not authorized in Firebase Console.');
         throw new Error('This domain is not authorized in Firebase Console. Please add your Vercel domain to the Authorized Domains list.');
       }
       throw error;
@@ -147,6 +150,7 @@ export class AuthService {
       return url;
     } catch (error) {
       console.error('Update avatar failed:', error);
+      this.toast.error('Failed to update profile image.');
       throw error;
     }
   }

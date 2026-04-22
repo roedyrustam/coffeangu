@@ -11,6 +11,7 @@ import { MembershipService } from '../../services/membership.service';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { CoffeeIdentityComponent } from './coffee-identity.component';
 import { SensoryScoresComponent } from './sensory-scores.component';
+import { ToastService } from '../../services/toast.service';
 
 @Component({
   selector: 'app-cupping-form',
@@ -256,6 +257,7 @@ export class CuppingFormComponent implements OnInit {
   private route = inject(ActivatedRoute);
   private cuppingService = inject(CuppingService);
   private membershipService = inject(MembershipService);
+  private toast = inject(ToastService);
 
   isPro = toSignal(this.membershipService.isPro$(), { initialValue: false });
   t = this.translationService.t();
@@ -313,7 +315,7 @@ export class CuppingFormComponent implements OnInit {
     if (session) {
       // Ownership check
       if (session.userId !== this.auth.getUserId()) {
-        alert('Unauthorized: You can only edit your own sessions.');
+        this.toast.error('Unauthorized: You can only edit your own sessions.');
         this.router.navigate(['/']);
         return;
       }
@@ -322,7 +324,7 @@ export class CuppingFormComponent implements OnInit {
         this.productImagePreview = this.session.productImageUrl;
       }
     } else {
-      alert('Session not found');
+      this.toast.error('Session not found');
       this.router.navigate(['/profile']);
     }
   }
@@ -398,7 +400,7 @@ export class CuppingFormComponent implements OnInit {
 
     } catch (err) {
       console.error('OCR Error:', err);
-      alert('Gagal mendeteksi teks. Pastikan gambar stiker jelas dan terang.');
+      this.toast.error('Gagal mendeteksi teks. Pastikan gambar stiker jelas.');
     } finally {
       this.isScanning = false;
       this.scannerStatus = '';
@@ -509,9 +511,9 @@ export class CuppingFormComponent implements OnInit {
     } catch (err: any) {
       console.error('Error saving cupping:', err);
       if (err?.message?.includes('not authenticated')) {
-        alert('❌ Sesi login Anda telah habis. Silakan login ulang.');
+        this.toast.error('Sesi login Anda telah habis. Silakan login ulang.');
       } else {
-        alert('❌ Gagal menyimpan sesi cupping. Silakan coba lagi.');
+        this.toast.error('Gagal menyimpan sesi cupping.');
       }
     } finally {
       this.loading = false;
@@ -523,8 +525,9 @@ export class CuppingFormComponent implements OnInit {
   }
 
   goToPricing() {
-    if (confirm('Direct commerce links are a Pro feature. Would you like to view our upgrade plans?')) {
-      this.router.navigate(['/pricing']);
-    }
+    this.toast.info('Direct commerce links are a Pro feature.', 5000, {
+      label: 'Upgrade',
+      callback: () => this.router.navigate(['/pricing'])
+    });
   }
 }

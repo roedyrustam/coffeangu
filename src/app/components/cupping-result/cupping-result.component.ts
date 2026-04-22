@@ -650,6 +650,7 @@ export class CuppingResultComponent implements OnInit, AfterViewInit, OnDestroy 
   private router = inject(Router);
   membership$ = this.membershipService.getCurrentMembership();
   selectedTheme = signal<'obsidian' | 'radiant'>('obsidian');
+  private sensoryChart: Chart | null = null;
 
   isLiked() {
     const userId = this.auth.getUserId();
@@ -797,7 +798,11 @@ export class CuppingResultComponent implements OnInit, AfterViewInit, OnDestroy 
       scores.body, scores.balance, scores.overall
     ];
 
-    new Chart(ctx, {
+    if (this.sensoryChart) {
+      this.sensoryChart.destroy();
+    }
+
+    this.sensoryChart = new Chart(ctx, {
       type: 'radar',
       data: {
         labels: labels,
@@ -1054,5 +1059,8 @@ export class CuppingResultComponent implements OnInit, AfterViewInit, OnDestroy 
 
   ngOnDestroy() {
     this.seo.clearJsonLd();
+    if (this.sensoryChart) {
+      this.sensoryChart.destroy();
+    }
   }
 }

@@ -1,4 +1,4 @@
-# CuppingNotes v1.7.0 Blueprint
+# CuppingNotes v1.8.0 Blueprint
 
 ## 1. System Architecture
 CuppingNotes is a modern web application built on **Angular 21** utilizing the new `@angular/build:application` builder. It is fundamentally designed as an **Offline-First Progressive Web App (PWA)** with a professional production deployment on **Vercel**.
@@ -35,7 +35,7 @@ CuppingNotes/
 ├── vercel.json              # Production routing and **SSR Gateway** configuration
 ├── ngsw-config.json         # Service Worker aggressive caching rules
 ├── firebase.json            # Security rules and backend configuration
-└── package.json             # Core dependency map (v1.7.0)
+└── package.json             # Core dependency map (v1.8.0)
 ```
 
 ## 3. Data Flow Model
@@ -55,3 +55,4 @@ CuppingNotes/
 - **B2B Commerce Bridge**: Roastery-verified sessions include denormalized commerce links (`buyLink`) to facilitate direct sales.
 - **Bento Discovery Architecture**: magazine-style grid using `grid-auto-flow: dense` for community feeds.
 - **Headerless Mobile UX**: Bottom navigation focus on devices <= `768px` to maximize data scannability.
+- **Deep Stability Audit (v1.8.0)**: Hardened Firestore/Storage security rules, memory leak prevention (Chart.js/Global Listeners), and a new reactive **Toast Notification System** for premium user feedback.

@@ -5,12 +5,15 @@ import { AuthService } from './services/auth.service';
 import { CommonModule } from '@angular/common';
 import { SwUpdate } from '@angular/service-worker';
 import { SeoService } from './services/seo.service';
+import { ToastComponent } from './components/toast/toast.component';
+import { ToastService } from './services/toast.service';
 
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [RouterOutlet, RouterLink, RouterLinkActive, CommonModule],
+  imports: [RouterOutlet, RouterLink, RouterLinkActive, CommonModule, ToastComponent],
   template: `
+    <app-toast></app-toast>
     <div class="mesh-bg" [style.transform]="parallaxTransform()"></div>
     
     <nav class="main-nav">
@@ -464,10 +467,17 @@ export class App {
   router = inject(Router);
   updates = inject(SwUpdate);
   seo = inject(SeoService);
+  toast = inject(ToastService);
   t = this.ts.t();
   showUserMenu = signal(false);
   parallaxTransform = signal('translate3d(0,0,0) scale(1.1)');
   currentYear = new Date().getFullYear();
+
+  private mouseMoveHandler = (e: MouseEvent) => {
+    const x = (e.clientX / window.innerWidth - 0.5) * 15;
+    const y = (e.clientY / window.innerHeight - 0.5) * 15;
+    this.parallaxTransform.set(`translate3d(${x}px, ${y}px, 0) scale(1.05)`);
+  };
 
   async ngOnInit() {
     this.seo.updateMeta(); // Default SEO initialization
@@ -479,20 +489,23 @@ export class App {
       console.error('Global Auth Redirect Error:', err);
     }
     
-    window.addEventListener('mousemove', (e) => {
-      const x = (e.clientX / window.innerWidth - 0.5) * 15;
-      const y = (e.clientY / window.innerHeight - 0.5) * 15;
-      this.parallaxTransform.set(`translate3d(${x}px, ${y}px, 0) scale(1.05)`);
-    });
+    
+    window.addEventListener('mousemove', this.mouseMoveHandler);
 
     if (this.updates.isEnabled) {
       this.updates.versionUpdates.subscribe((evt) => {
         if (evt.type === 'VERSION_READY') {
-          console.log('New PWA version ready! Reloading...');
-          window.location.reload();
+          this.toast.info('New version available!', 0, {
+            label: 'Update Now',
+            callback: () => window.location.reload()
+          });
         }
       });
     }
+  }
+
+  ngOnDestroy() {
+    window.removeEventListener('mousemove', this.mouseMoveHandler);
   }
 
   async onLogout() {

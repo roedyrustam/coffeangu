@@ -1,4 +1,4 @@
-# Product Requirements Document (PRD) v1.7.0
+# Product Requirements Document (PRD) v1.8.0
 
 ## 1. Product Vision
 **CuppingNotes** (formerly CaffeeScore) is designed to digitize and elevate the professional coffee sensory evaluation process. Our goal is to replace archaic paper forms with a premium, responsive, and robust offline-first digital application that adheres strictly to the **Specialty Coffee Association (SCA) 2025 CVA Protocol**.
