@@ -99,27 +99,46 @@ export class SeoService {
   }
 
   /**
-   * Adds JSON-LD structured data to the head
+   * Adds JSON-LD structured data to the head.
+   * Uses a data-seo-id attribute to allow multiple JSON-LD blocks.
    */
-  addJsonLd(data: any) {
+  addJsonLd(data: any, id: string = 'page') {
     if (!isPlatformBrowser(this.platformId)) return;
 
-    let script = this.document.querySelector('script[type="application/ld+json"]') as HTMLScriptElement;
+    let script = this.document.querySelector(`script[data-seo-id="${id}"]`) as HTMLScriptElement;
     if (!script) {
       script = this.document.createElement('script');
       script.type = 'application/ld+json';
+      script.setAttribute('data-seo-id', id);
       this.document.head.appendChild(script);
     }
     script.text = JSON.stringify(data);
   }
 
   /**
-   * Clears JSON-LD when leaving a page
+   * Adds BreadcrumbList structured data for page hierarchy.
+   * Helps Google & AI systems understand navigation context.
+   */
+  addBreadcrumb(items: { name: string; url: string }[]) {
+    const breadcrumb = {
+      '@context': 'https://schema.org',
+      '@type': 'BreadcrumbList',
+      'itemListElement': items.map((item, index) => ({
+        '@type': 'ListItem',
+        'position': index + 1,
+        'name': item.name,
+        'item': item.url
+      }))
+    };
+    this.addJsonLd(breadcrumb, 'breadcrumb');
+  }
+
+  /**
+   * Clears page-specific JSON-LD when leaving a page.
+   * Preserves global schemas (Organization, WebApplication) from index.html.
    */
   clearJsonLd() {
-    const script = this.document.querySelector('script[type="application/ld+json"]');
-    if (script) {
-      script.remove();
-    }
+    const scripts = this.document.querySelectorAll('script[data-seo-id]');
+    scripts.forEach(script => script.remove());
   }
 }
