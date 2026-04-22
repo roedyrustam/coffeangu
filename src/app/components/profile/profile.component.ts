@@ -866,7 +866,7 @@ export class ProfileComponent implements OnInit {
             suggestedMax: 10,
             pointLabels: {
               color: 'var(--text-dim)',
-              font: { size: 10, weight: '600' }
+              font: { size: 10, weight: 600 }
             },
             ticks: { display: false }
           }
