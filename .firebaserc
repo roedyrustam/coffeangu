@@ -1,5 +1,7 @@
 {
-  "projects": {},
+  "projects": {
+    "default": "coffeescore-cupping-2024"
+  },
   "targets": {},
   "etags": {}
 }
