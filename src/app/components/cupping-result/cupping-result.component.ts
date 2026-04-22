@@ -819,10 +819,20 @@ export class CuppingResultComponent implements OnInit, AfterViewInit, OnDestroy 
 
     const description = `Score: ${this.session.finalScore.toFixed(2)} | ${this.session.roastery} | ${this.session.type}. Cupped by ${this.session.cupperName || 'Professional'}.`;
     
+    // Facebook & Threads require absolute URLs for og:image
+    const baseUrl = environment.siteUrl;
+    let imageUrl = this.session.shareImageUrl || `${baseUrl}/assets/og-image.png`;
+    // Ensure absolute URL
+    if (imageUrl.startsWith('/')) {
+      imageUrl = `${baseUrl}${imageUrl}`;
+    }
+    const pageUrl = `${baseUrl}/result/${this.session.id}`;
+
     this.seo.updateMeta({
       title: `${this.session.beanName} Evaluation`,
       description: description,
-      image: this.session.shareImageUrl || '/assets/og-image.png',
+      image: imageUrl,
+      url: pageUrl,
       type: 'article',
       author: this.session.cupperName,
       origin: this.session.origin

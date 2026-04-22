@@ -53,12 +53,15 @@ export class SeoService {
 
     if (options.image) {
       this.meta.updateTag({ property: 'og:image', content: options.image });
+      this.meta.updateTag({ property: 'og:image:secure_url', content: options.image });
+      this.meta.updateTag({ property: 'og:image:type', content: 'image/png' });
       this.meta.updateTag({ property: 'og:image:alt', content: fullTitle });
-      this.meta.updateTag({ name: 'twitter:image', content: options.image });
-      this.meta.updateTag({ name: 'twitter:image:alt', content: fullTitle });
-      // Power move: add width/height for instant preview stability
       this.meta.updateTag({ property: 'og:image:width', content: '1200' });
       this.meta.updateTag({ property: 'og:image:height', content: '630' });
+
+      // Twitter / X
+      this.meta.updateTag({ name: 'twitter:image', content: options.image });
+      this.meta.updateTag({ name: 'twitter:image:alt', content: fullTitle });
     }
 
     // Twitter
@@ -71,6 +74,16 @@ export class SeoService {
     // GEO Tags
     if (options.origin) {
       this.meta.updateTag({ name: 'geo.placename', content: options.origin });
+    }
+
+    // Facebook / Threads article-specific tags
+    if (options.type === 'article') {
+      if (options.author) {
+        this.meta.updateTag({ property: 'article:author', content: options.author });
+      }
+      this.meta.updateTag({ property: 'article:published_time', content: new Date().toISOString() });
+      this.meta.updateTag({ property: 'article:section', content: 'Coffee' });
+      this.meta.updateTag({ property: 'article:tag', content: 'Specialty Coffee' });
     }
 
     this.setCanonicalUrl(options.url);
