@@ -305,14 +305,17 @@ import { SeoService } from './services/seo.service';
       transform: scale(0.9);
     }
     .main-footer {
-      height: 100px;
+      min-height: 120px;
+      padding: 20px 0;
       display: flex;
+      flex-direction: column;
       align-items: center;
       justify-content: center;
       border-top: 1px solid var(--glass-border);
       color: var(--text-dim);
       font-size: 0.85rem;
       letter-spacing: 1px;
+      background: var(--bg-card);
     }
     .user-profile {
       position: relative;
@@ -442,10 +445,15 @@ import { SeoService } from './services/seo.service';
       .mobile-bottom-nav { display: flex; }
       main { padding-bottom: 100px; }
       .main-footer {
-        padding-bottom: 100px;
-        height: 150px;
-        align-items: flex-start;
+        padding-bottom: 110px;
         padding-top: 40px;
+        align-items: center;
+        text-align: center;
+      }
+      .footer-links {
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 15px;
       }
     }
   `]
