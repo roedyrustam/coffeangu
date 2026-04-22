@@ -20,7 +20,7 @@ import { CommonModule } from '@angular/common';
               <span class="icon">✉️</span>
               <div class="details">
                 <strong>Email</strong>
-                <a href="mailto:support@cuppingnotes.online">support&#64;cuppingnotes.online</a>
+                <a href="mailto:support@bijidata.online">support&#64;bijidata.online</a>
               </div>
             </div>
             
@@ -121,4 +121,4 @@ import { CommonModule } from '@angular/common';
     }
   `]
 })
-export class ContactComponent {}
+export class ContactComponent { }
