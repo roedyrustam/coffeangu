@@ -13,6 +13,7 @@ import { TeamService } from '../../services/team.service';
 import { Team } from '../../models/team.model';
 import { SeoService } from '../../services/seo.service';
 import { SocialShareComponent } from '../social-share/social-share.component';
+import { environment } from '../../../environments/environment';
 
 Chart.register(RadarController, RadialLinearScale, PointElement, LineElement, Filler, Tooltip, Legend);
 
