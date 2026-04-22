@@ -686,6 +686,7 @@ import { environment } from '../../../environments/environment';
   `]
 })
 export class ProfileComponent implements OnInit {
+  public environment = environment;
   protected auth = inject(AuthService);
   private cuppingService = inject(CuppingService);
   private membershipService = inject(MembershipService);

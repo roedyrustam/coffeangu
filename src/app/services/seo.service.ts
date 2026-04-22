@@ -1,6 +1,7 @@
 import { Injectable, inject, PLATFORM_ID } from '@angular/core';
 import { DOCUMENT, isPlatformBrowser } from '@angular/common';
 import { Meta, Title } from '@angular/platform-browser';
+import { TranslationService } from './translation.service';
 
 export interface SeoOptions {
   title?: string;
