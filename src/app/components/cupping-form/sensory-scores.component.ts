@@ -1,4 +1,4 @@
-import { Component, Input, Output, EventEmitter } from '@angular/core';
+import { Component, Input, Output, EventEmitter, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule, ControlContainer, NgForm } from '@angular/forms';
 import { CuppingSession } from '../../models/cupping.model';
@@ -94,7 +94,7 @@ export class SensoryScoresComponent implements OnInit {
   ];
 
   scoreKeys: (keyof CuppingSession['scores'])[] = [
-    'fragrance', 'flavor', 'aftertaste', 'acidity', 'body', 'balance', 
+    'fragranceAroma', 'flavor', 'aftertaste', 'acidity', 'body', 'balance', 
     'uniformity', 'cleanCup', 'sweetness', 'overall'
   ];
 
