@@ -5,7 +5,8 @@
     "ng": "ng",
     "start": "ng serve",
     "dev": "ng serve --host 0.0.0.0",
-    "build": "ng build",
+    "build": "node scripts/set-env.js && ng build",
+    "config": "node scripts/set-env.js",
     "watch": "ng build --watch --configuration development",
     "test": "ng test",
     "serve:ssr:cuppingnotes": "node dist/cuppingnotes/server/server.mjs"
@@ -54,6 +55,7 @@
     "@angular/compiler-cli": "^21.2.0",
     "@types/express": "^5.0.0",
     "@types/node": "^22.0.0",
+    "dotenv": "^17.4.2",
     "jsdom": "^25.0.0",
     "prettier": "^3.4.1",
     "typescript": "~5.9.0",
