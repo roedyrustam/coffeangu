@@ -13,6 +13,7 @@ import { UserProfile } from '../../models/user-profile.model';
 import { TeamService } from '../../services/team.service';
 import { Team, TeamMemberProfile } from '../../models/team.model';
 import { SensoryAvatarComponent } from '../sensory-avatar/sensory-avatar.component';
+import { SocialShareComponent } from '../social-share/social-share.component';
 import { Chart, RadarController, RadialLinearScale, PointElement, LineElement, Filler, Tooltip, Legend } from 'chart.js';
 import { SeoService } from '../../services/seo.service';
 
@@ -21,7 +22,7 @@ Chart.register(RadarController, RadialLinearScale, PointElement, LineElement, Fi
 @Component({
   selector: 'app-profile',
   standalone: true,
-  imports: [CommonModule, RouterLink, FormsModule, SensoryAvatarComponent],
+  imports: [CommonModule, RouterLink, FormsModule, SensoryAvatarComponent, SocialShareComponent],
   template: `
     <div class="profile-container animate-fade" *ngIf="membership$ | async as tier">
       <!-- Tab Control -->
@@ -78,6 +79,14 @@ Chart.register(RadarController, RadialLinearScale, PointElement, LineElement, Fi
               </div>
               
               <app-sensory-avatar *ngIf="profile$ | async as profile" [profile]="profile"></app-sensory-avatar>
+
+              <div class="profile-share-public" *ngIf="profile$ | async as profile">
+                <span class="share-label">Your Public Profile:</span>
+                <app-social-share 
+                  [url]="'https://cuppingnotes.online/u/' + (profile.handle || profile.uid)"
+                  [text]="'Check out my coffee sensory profile on CuppingNotes!'">
+                </app-social-share>
+              </div>
             </div>
           </div>
 
@@ -453,6 +462,10 @@ Chart.register(RadarController, RadialLinearScale, PointElement, LineElement, Fi
     
     .user-details h1 { font-size: 3.5rem; margin-bottom: 8px; line-height: 1; text-shadow: 0 5px 20px rgba(0,0,0,0.5); }
     .email { color: var(--text-main); font-size: 1.1rem; margin-bottom: 15px; opacity: 0.8; }
+    .profile-share-public { margin-top: 25px; padding-top: 20px; border-top: 1px solid var(--glass-border); max-width: 300px; }
+    .profile-share-public .share-label { font-size: 0.75rem; color: var(--text-dim); text-transform: uppercase; letter-spacing: 1px; display: block; margin-bottom: 10px; }
+    ::ng-deep .profile-share-public .share-links { margin: 0; justify-content: flex-start; gap: 8px; }
+    ::ng-deep .profile-share-public .share-btn { width: 32px; height: 32px; }
     .cupper-rank .rank-label {
       background: var(--primary-gradient);
       color: #0c0c0e;

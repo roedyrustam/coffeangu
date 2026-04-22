@@ -12,13 +12,14 @@ import { Chart, RadarController, RadialLinearScale, PointElement, LineElement, F
 import { TeamService } from '../../services/team.service';
 import { Team } from '../../models/team.model';
 import { SeoService } from '../../services/seo.service';
+import { SocialShareComponent } from '../social-share/social-share.component';
 
 Chart.register(RadarController, RadialLinearScale, PointElement, LineElement, Filler, Tooltip, Legend);
 
 @Component({
   selector: 'app-cupping-result',
   standalone: true,
-  imports: [CommonModule, RouterLink],
+  imports: [CommonModule, RouterLink, SocialShareComponent],
   template: `
     <div class="result-container animate-fade" *ngIf="session">
       <div class="glass-card result-card" id="result-card" [class.radiant-theme]="selectedTheme() === 'radiant'">
@@ -150,6 +151,11 @@ Chart.register(RadarController, RadialLinearScale, PointElement, LineElement, Fi
           <button class="btn-primary share-btn" (click)="share()">
             <span class="icon">Share Graphic</span>
           </button>
+
+          <div class="media-share-section" *ngIf="session.isPublic">
+             <span class="section-label">Quick Share</span>
+             <app-social-share [text]="'Check out my coffee cupping notes for ' + session.beanName + ' (' + session.finalScore.toFixed(2) + ' pts)!'"></app-social-share>
+          </div>
           
           <!-- Buy Link Section (Monetized) -->
           <div class="commerce-bridge-luxury animate-slide-up" *ngIf="getBuyUrl()">
@@ -193,6 +199,8 @@ Chart.register(RadarController, RadialLinearScale, PointElement, LineElement, Fi
       padding: 60px;
       position: relative;
     }
+    .media-share-section { margin-top: 40px; padding-top: 30px; border-top: 1px solid var(--glass-border); }
+    .media-share-section .section-label { display: block; margin-bottom: 15px; }
     .badge {
       display: inline-block;
       background: var(--primary-gradient);

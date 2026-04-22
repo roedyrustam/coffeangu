@@ -9,6 +9,7 @@ import { map, switchMap, catchError, tap } from 'rxjs/operators';
 import { UserProfile } from '../../models/user-profile.model';
 import { SensoryAvatarComponent } from '../sensory-avatar/sensory-avatar.component';
 import { SeoService } from '../../services/seo.service';
+import { SocialShareComponent } from '../social-share/social-share.component';
 import { Chart, RadarController, RadialLinearScale, PointElement, LineElement, Filler, Tooltip, Legend } from 'chart.js';
 
 Chart.register(RadarController, RadialLinearScale, PointElement, LineElement, Filler, Tooltip, Legend);
@@ -16,7 +17,7 @@ Chart.register(RadarController, RadialLinearScale, PointElement, LineElement, Fi
 @Component({
   selector: 'app-public-profile',
   standalone: true,
-  imports: [CommonModule, RouterLink, SensoryAvatarComponent],
+  imports: [CommonModule, RouterLink, SensoryAvatarComponent, SocialShareComponent],
   template: `
     <div class="profile-container animate-fade" *ngIf="profile$ | async as profile; else loading">
       <header class="profile-header immersive glass-card">
@@ -36,6 +37,10 @@ Chart.register(RadarController, RadialLinearScale, PointElement, LineElement, Fi
               
               <!-- Sensory Avatar Integration -->
               <app-sensory-avatar [profile]="profile"></app-sensory-avatar>
+
+              <div class="profile-share">
+                <app-social-share [text]="'Check out ' + profile.displayName + \'\\\'s coffee sensory profile on CuppingNotes!\'"></app-social-share>
+              </div>
             </div>
           </div>
 
@@ -125,6 +130,9 @@ Chart.register(RadarController, RadialLinearScale, PointElement, LineElement, Fi
     .avatar-large img { width: 100%; height: 100%; object-fit: cover; }
     .avatar-large span { font-size: 3.5rem; font-weight: 800; color: #0c0c0e; }
     .user-details h1 { font-size: 3.8rem; margin-bottom: 20px; line-height: 1; text-shadow: 0 10px 30px rgba(0,0,0,0.8); }
+    .profile-share { margin-top: 20px; display: flex; justify-content: flex-start; }
+    ::ng-deep .profile-share .share-links { margin: 0; gap: 10px; }
+    ::ng-deep .profile-share .share-btn { width: 36px; height: 36px; }
     
     .stats-area { display: flex; gap: 50px; align-items: center; }
     .signature-section { width: 220px; text-align: left; }
