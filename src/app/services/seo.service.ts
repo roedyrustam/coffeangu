@@ -43,6 +43,7 @@ export class SeoService {
     this.meta.updateTag({ property: 'og:title', content: fullTitle });
     this.meta.updateTag({ property: 'og:description', content: baseDesc });
     this.meta.updateTag({ property: 'og:type', content: options.type || 'website' });
+    this.meta.updateTag({ property: 'og:locale', content: this.ts.currentLang() === 'id' ? 'id_ID' : 'en_US' });
     
     if (options.url) {
       this.meta.updateTag({ property: 'og:url', content: options.url });
@@ -52,7 +53,9 @@ export class SeoService {
 
     if (options.image) {
       this.meta.updateTag({ property: 'og:image', content: options.image });
+      this.meta.updateTag({ property: 'og:image:alt', content: fullTitle });
       this.meta.updateTag({ name: 'twitter:image', content: options.image });
+      this.meta.updateTag({ name: 'twitter:image:alt', content: fullTitle });
       // Power move: add width/height for instant preview stability
       this.meta.updateTag({ property: 'og:image:width', content: '1200' });
       this.meta.updateTag({ property: 'og:image:height', content: '630' });
@@ -62,6 +65,8 @@ export class SeoService {
     this.meta.updateTag({ name: 'twitter:card', content: 'summary_large_image' });
     this.meta.updateTag({ name: 'twitter:title', content: fullTitle });
     this.meta.updateTag({ name: 'twitter:description', content: baseDesc });
+    this.meta.updateTag({ name: 'twitter:site', content: '@cuppingnotes' });
+    this.meta.updateTag({ name: 'twitter:creator', content: '@cuppingnotes' });
 
     // GEO Tags
     if (options.origin) {
