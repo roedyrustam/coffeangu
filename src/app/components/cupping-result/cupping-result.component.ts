@@ -145,13 +145,6 @@ Chart.register(RadarController, RadialLinearScale, PointElement, LineElement, Fi
                <span *ngIf="tier.id === 'classic'">🔒 </span>Radiant
              </button>
           </div>
-          <div class="share-options" *ngIf="session.isPublic">
-             <span class="share-hint">Sharing technical assessment to {{ t('NAV_COMMUNITY') }}</span>
-          </div>
-          <button class="btn-primary share-btn" (click)="share()">
-            <span class="icon">Share Graphic</span>
-          </button>
-
           <div class="media-share-section" *ngIf="session.isPublic">
              <span class="section-label">Quick Share</span>
              <app-social-share [text]="'Check out my coffee cupping notes for ' + session.beanName + ' (' + session.finalScore.toFixed(2) + ' pts)!'"></app-social-share>
