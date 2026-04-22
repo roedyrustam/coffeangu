@@ -102,7 +102,7 @@ import { environment } from '../../../environments/environment';
             </button>
           </div>
 
-          <div class="stats-area" *ngIf="stats$ | async as stats">
+          <div class="stats-grid" *ngIf="stats$ | async as stats">
             <!-- Badges Section -->
             <div class="badges-section" *ngIf="profile$ | async as profile">
               <span class="section-label">Unlocked Achievements</span>
@@ -687,15 +687,38 @@ import { environment } from '../../../environments/environment';
     .badge-placeholder { font-size: 0.8rem; color: var(--text-dim); font-style: italic; }
 
     @media (max-width: 900px) {
-      .profile-header { flex-direction: column; text-align: center; padding: 40px; gap: 40px; }
-      .user-info { flex-direction: column; gap: 20px; }
-      .stats-grid { width: 100%; justify-content: center; }
+      .profile-container { padding: 0 15px; margin: 20px auto; }
+      .profile-header { min-height: auto; padding-bottom: 20px; }
+      .header-content { flex-direction: column; padding: 30px 20px; gap: 30px; }
+      .user-info { flex-direction: column; gap: 25px; text-align: center; width: 100%; }
+      .user-details h1 { font-size: 2.5rem; }
+      .name-row { justify-content: center; }
+      .profile-share-public { margin: 20px auto 0; }
+      
+      .stats-grid { width: 100%; flex-direction: column; gap: 30px; }
+      .signature-section { width: 100%; min-width: 0; }
+      .numeric-stats { width: 100%; flex-direction: row; justify-content: center; flex-wrap: wrap; }
+      .stat-card { flex: 1; min-width: 120px; padding: 15px; }
+      
+      .membership-status { align-items: center; width: 100%; }
       .team-grid { grid-template-columns: 1fr; }
     }
+
     @media (max-width: 640px) {
-      .history-card { flex-direction: column; align-items: flex-start; gap: 25px; }
+      .user-details h1 { font-size: 2rem; }
+      .avatar-large { width: 100px; height: 100px; border-radius: 30px; }
+      .section-title { font-size: 1.5rem; }
+      .history-card { padding: 20px; flex-direction: column; align-items: flex-start; gap: 20px; }
       .card-right { width: 100%; justify-content: space-between; }
-      .actions { flex-direction: row; }
+      .actions { flex-direction: row; gap: 10px; width: auto; }
+      .score-badge { width: 60px; height: 60px; font-size: 1.4rem; }
+      .bean-name { font-size: 1.2rem; }
+      
+      .tab-control { overflow-x: auto; padding-bottom: 5px; margin-bottom: 20px; -webkit-overflow-scrolling: touch; }
+      .tab-control button { white-space: nowrap; padding: 8px 18px; font-size: 0.75rem; }
+      
+      .numeric-stats { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+      .stat-card { min-width: 0; }
     }
   `]
 })
@@ -838,12 +861,12 @@ export class ProfileComponent implements OnInit {
         scales: {
           r: {
             angleLines: { color: 'rgba(255, 255, 255, 0.05)' },
-            grid: { color: 'rgba(255, 255, 255, 0.05)' },
+            grid: { color: 'rgba(0, 0, 0, 0.05)' },
             suggestedMin: 6,
             suggestedMax: 10,
             pointLabels: {
-              color: 'rgba(255,255,255,0.4)',
-              font: { size: 9, weight: 'bold' }
+              color: 'var(--text-dim)',
+              font: { size: 10, weight: '600' }
             },
             ticks: { display: false }
           }

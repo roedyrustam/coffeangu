@@ -19,7 +19,13 @@ import { CuppingSession } from '../../models/cupping.model';
           </div>
           <div class="slider-row">
             <button type="button" class="btn-step" (click)="stepIntensity(item.key, -1)">-</button>
-            <input type="range" min="1" max="10" step="1" [(ngModel)]="session.intensities![item.key]" [name]="'int-' + item.key">
+            <div class="slider-container">
+              <input type="range" min="1" max="10" step="1" [(ngModel)]="session.intensities![item.key]" [name]="'int-' + item.key">
+              <div class="slider-labels">
+                <span>Low</span>
+                <span>High</span>
+              </div>
+            </div>
             <button type="button" class="btn-step" (click)="stepIntensity(item.key, 1)">+</button>
           </div>
         </div>
@@ -122,20 +128,35 @@ import { CuppingSession } from '../../models/cupping.model';
     .score-header label { font-size: 0.8rem; font-weight: 700; color: var(--text-dim); text-transform: uppercase; }
 
     .slider-row { display: flex; gap: 15px; align-items: center; }
+    .slider-container { flex: 1; display: flex; flex-direction: column; gap: 4px; }
+    .slider-labels { display: flex; justify-content: space-between; font-size: 0.6rem; color: var(--text-dim); text-transform: uppercase; font-weight: 700; opacity: 0.6; }
     
     input[type="range"] {
       flex: 1;
       accent-color: var(--accent-color, var(--primary-color));
       height: 6px;
-      border-radius: 3px;
-      background: rgba(189, 142, 98, 0.1);
+      border-radius: 10px;
+      background: rgba(0, 0, 0, 0.05);
       cursor: pointer;
       -webkit-appearance: none;
+      transition: all 0.3s;
     }
-    input[type="range"]::-webkit-slider-runnable-track {
-      background: rgba(0,0,0,0.1);
-      border-radius: 3px;
-      height: 6px;
+
+    input[type="range"]::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      width: 20px;
+      height: 20px;
+      background: white;
+      border: 3px solid var(--accent-color);
+      border-radius: 50%;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+      cursor: pointer;
+      transition: all 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    }
+
+    input[type="range"]::-webkit-slider-thumb:hover {
+      transform: scale(1.2);
+      box-shadow: 0 6px 15px rgba(0,0,0,0.15);
     }
 
     .btn-step {

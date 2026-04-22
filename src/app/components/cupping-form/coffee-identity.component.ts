@@ -144,6 +144,7 @@ import { CuppingSession } from '../../models/cupping.model';
       border-radius: var(--radius-md);
       aspect-ratio: 16/10;
       width: 100%;
+      border-radius: var(--radius-md);
       display: flex; align-items: center; justify-content: center;
       cursor: pointer; overflow: hidden; position: relative;
       transition: all 0.3s;
@@ -164,8 +165,14 @@ import { CuppingSession } from '../../models/cupping.model';
       cursor: pointer;
       transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
       position: relative; overflow: hidden;
+      animation: pulse-ai 3s infinite;
     }
-    .ocr-btn-premium:hover:not(:disabled) { transform: translateY(-3px); box-shadow: 0 10px 20px var(--primary-glow); }
+    @keyframes pulse-ai {
+      0% { box-shadow: 0 0 0 0 rgba(142, 90, 53, 0.4); }
+      70% { box-shadow: 0 0 0 10px rgba(142, 90, 53, 0); }
+      100% { box-shadow: 0 0 0 0 rgba(142, 90, 53, 0); }
+    }
+    .ocr-btn-premium:hover:not(:disabled) { transform: translateY(-3px); box-shadow: 0 10px 25px var(--primary-glow); animation: none; }
     .ocr-btn-premium:active { transform: scale(0.95); }
     
     .btn-content { display: flex; align-items: center; gap: 12px; text-align: left; color: #0c0c0e; }
