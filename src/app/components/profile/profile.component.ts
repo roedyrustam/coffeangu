@@ -19,6 +19,8 @@ import { SeoService } from '../../services/seo.service';
 
 Chart.register(RadarController, RadialLinearScale, PointElement, LineElement, Filler, Tooltip, Legend);
 
+import { environment } from '../../../environments/environment';
+
 @Component({
   selector: 'app-profile',
   standalone: true,
@@ -83,7 +85,7 @@ Chart.register(RadarController, RadialLinearScale, PointElement, LineElement, Fi
               <div class="profile-share-public" *ngIf="profile$ | async as profile">
                 <span class="share-label">Your Public Profile:</span>
                 <app-social-share 
-                  [url]="'https://cuppingnotes.online/u/' + (profile.handle || profile.uid)"
+                  [url]="environment.siteUrl + '/u/' + (profile.handle || profile.uid)"
                   [text]="'Check out my coffee sensory profile on CuppingNotes!'">
                 </app-social-share>
               </div>

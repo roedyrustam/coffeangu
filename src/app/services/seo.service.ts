@@ -22,8 +22,11 @@ export class SeoService {
   private document = inject(DOCUMENT);
   private platformId = inject(PLATFORM_ID);
 
+  private ts = inject(TranslationService);
+  private t = this.ts.t();
+
   updateMeta(options: SeoOptions = {}) {
-    const siteName = 'CuppingNotes';
+    const siteName = this.t('APP_TITLE');
     const baseTitle = options.title || 'Professional Coffee Cupping Platform';
     const baseDesc = options.description || 'Evaluate, score, and share specialty coffee sensory profiles with precision.';
     

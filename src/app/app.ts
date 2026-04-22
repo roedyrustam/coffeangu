@@ -95,7 +95,7 @@ import { SeoService } from './services/seo.service';
     </nav>
 
     <footer class="main-footer">
-      <p>&copy; 2026 CuppingNotes - Professional Coffee Cupping Platform</p>
+      <p>&copy; {{ currentYear }} {{ t('APP_TITLE') }} - Professional Coffee Cupping Platform</p>
     </footer>
   `,
   styles: [`
@@ -435,6 +435,7 @@ export class App {
   t = this.ts.t();
   showUserMenu = signal(false);
   parallaxTransform = signal('translate3d(0,0,0) scale(1.1)');
+  currentYear = new Date().getFullYear();
 
   async ngOnInit() {
     this.seo.updateMeta(); // Default SEO initialization
