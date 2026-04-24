@@ -10,6 +10,7 @@ import { UserProfile } from '../../models/user-profile.model';
 import { SensoryAvatarComponent } from '../sensory-avatar/sensory-avatar.component';
 import { SeoService } from '../../services/seo.service';
 import { SocialShareComponent } from '../social-share/social-share.component';
+import { OgService } from '../../services/og.service';
 import { Chart, RadarController, RadialLinearScale, PointElement, LineElement, Filler, Tooltip, Legend } from 'chart.js';
 
 Chart.register(RadarController, RadialLinearScale, PointElement, LineElement, Filler, Tooltip, Legend);
@@ -20,7 +21,7 @@ Chart.register(RadarController, RadialLinearScale, PointElement, LineElement, Fi
   imports: [CommonModule, RouterLink, SensoryAvatarComponent, SocialShareComponent],
   template: `
     <div class="profile-container animate-fade" *ngIf="profile$ | async as profile; else loading">
-      <header class="profile-header immersive glass-card">
+      <header id="profile-header" class="profile-header immersive glass-card">
         <div class="header-visual">
           <img src="/assets/hero-profile.png" alt="Profile Hero" class="header-image">
           <div class="header-overlay"></div>
@@ -180,7 +181,10 @@ export class PublicProfileComponent implements OnInit {
   private route = inject(ActivatedRoute);
   private ts = inject(TranslationService);
   private seo = inject(SeoService);
+  private ogService = inject(OgService);
   protected t = this.ts.t();
+  
+  private generatingOg = false;
 
   profile$!: Observable<UserProfile | null>;
   cuppings$!: Observable<CuppingSession[]>;
@@ -199,7 +203,10 @@ export class PublicProfileComponent implements OnInit {
         return this.cuppingService.getUserProfile(id);
       }),
       tap(profile => {
-        if (profile) this.updateSeo(profile.displayName);
+        if (profile) {
+          this.updateSeo(profile);
+          setTimeout(() => this.checkAndGenerateOg(profile), 5000);
+        }
       })
     );
 
@@ -214,10 +221,10 @@ export class PublicProfileComponent implements OnInit {
         if (sessions.length === 0) return { total: 0, avg: 0, averages: {} };
         const avg = sessions.reduce((acc, s) => acc + s.finalScore, 0) / sessions.length;
         
-        const keys = ['fragranceAroma', 'flavor', 'aftertaste', 'acidity', 'body', 'balance', 'overall'];
+        const keys = ['fragranceAroma', 'flavor', 'aftertaste', 'acidity', 'sweetness', 'mouthfeel', 'balance', 'overall'];
         const averages: any = {};
         keys.forEach(k => {
-          averages[k] = sessions.reduce((acc, s) => acc + s.scores[k as keyof typeof s.scores], 0) / sessions.length;
+          averages[k] = sessions.reduce((acc, s) => acc + (s.scores[k as keyof typeof s.scores] || 0), 0) / sessions.length;
         });
 
         return { total: sessions.length, avg, averages };
@@ -239,11 +246,11 @@ export class PublicProfileComponent implements OnInit {
     this.chart = new Chart(canvas, {
       type: 'radar',
       data: {
-        labels: ['Aroma', 'Flavor', 'After', 'Acid', 'Body', 'Bal', 'Over'],
+        labels: ['Aroma', 'Flavor', 'After', 'Acid', 'Sweet', 'Mouth', 'Bal', 'Over'],
         datasets: [{
           data: [
             averages.fragranceAroma, averages.flavor, averages.aftertaste,
-            averages.acidity, averages.body, averages.balance, averages.overall
+            averages.acidity, averages.sweetness, averages.mouthfeel, averages.balance, averages.overall
           ],
           fill: true,
           backgroundColor: 'rgba(189, 142, 98, 0.15)',
@@ -260,8 +267,8 @@ export class PublicProfileComponent implements OnInit {
           r: {
             angleLines: { color: 'rgba(255, 255, 255, 0.05)' },
             grid: { color: 'rgba(255, 255, 255, 0.05)' },
-            suggestedMin: 6,
-            suggestedMax: 10,
+            suggestedMin: 1,
+            suggestedMax: 9,
             pointLabels: { color: 'rgba(255,255,255,0.4)', font: { size: 9, weight: 'bold', family: "'Poppins', sans-serif" } },
             ticks: { display: false }
           }
@@ -271,10 +278,32 @@ export class PublicProfileComponent implements OnInit {
     });
   }
 
-  private updateSeo(name: string) {
+  private async checkAndGenerateOg(profile: UserProfile) {
+    if (profile.shareImageUrl || this.generatingOg) return;
+    
+    this.generatingOg = true;
+    try {
+      const url = await this.ogService.generateAndUpload('profile-header', `profile-${profile.uid}`, 'profiles');
+      if (url) {
+        await this.cuppingService.updateProfile(profile.uid, { shareImageUrl: url });
+        profile.shareImageUrl = url;
+        this.updateSeo(profile);
+      }
+    } catch (e) {
+      console.error(e);
+    } finally {
+      this.generatingOg = false;
+    }
+  }
+
+  private updateSeo(profile: UserProfile) {
+    const baseUrl = 'https://coffeangu.vercel.app'; // Should come from environment
+    const imageUrl = profile.shareImageUrl || `${baseUrl}/assets/hero-profile.png`;
+
     this.seo.updateMeta({
-      title: `${name}'s Profile`,
-      description: `Check out coffee evaluations and flavor notes from ${name} on CuppingNotes.`,
+      title: `${profile.displayName}'s Sensory Profile`,
+      description: `Check out coffee evaluations and flavor notes from ${profile.displayName} on CuppingNotes.`,
+      image: imageUrl,
       type: 'profile'
     });
   }

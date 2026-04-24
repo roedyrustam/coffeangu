@@ -650,6 +650,7 @@ export class CuppingResultComponent implements OnInit, AfterViewInit, OnDestroy 
   private router = inject(Router);
   membership$ = this.membershipService.getCurrentMembership();
   selectedTheme = signal<'obsidian' | 'radiant'>('obsidian');
+  private ogService = inject(OgService);
   private sensoryChart: Chart | null = null;
 
   isLiked() {
@@ -875,25 +876,9 @@ export class CuppingResultComponent implements OnInit, AfterViewInit, OnDestroy 
 
     this.generatingScreenshot = true;
     try {
-      const element = document.getElementById('result-card');
-      if (!element) return;
-
-      const canvas = await html2canvas(element, {
-        backgroundColor: this.selectedTheme() === 'radiant' ? '#fdfdfd' : '#0c0c0e',
-        scale: 2,
-        useCORS: true,
-        logging: false,
-        onclone: (doc) => {
-          // Hide actions in the screenshot
-          const actions = doc.querySelector('.actions');
-          if (actions) (actions as HTMLElement).style.display = 'none';
-        }
-      });
-
-      const blob = await new Promise<Blob | null>(resolve => canvas.toBlob(resolve, 'image/png'));
-      if (blob && this.session.id) {
-        const url = await this.cuppingService.uploadShareImage(this.session.id, blob);
-        await this.cuppingService.updateCupping(this.session.id, { shareImageUrl: url });
+      const url = await this.ogService.generateAndUpload('result-card', this.session.id!);
+      if (url) {
+        await this.cuppingService.updateCupping(this.session.id!, { shareImageUrl: url });
         this.session.shareImageUrl = url;
         this.updateMetaTags();
       }

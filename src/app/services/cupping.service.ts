@@ -110,6 +110,11 @@ export class CuppingService {
     return snap.data() as UserProfile;
   }
 
+  async updateProfile(uid: string, data: Partial<UserProfile>) {
+    const docRef = doc(this.firestore, 'profiles', uid);
+    return updateDoc(docRef, data);
+  }
+
   getLatestCuppings(userId?: string): Observable<CuppingSession[]> {
     let q;
     if (userId) {
@@ -373,8 +378,8 @@ export class CuppingService {
     return deleteDoc(docRef);
   }
 
-  async uploadShareImage(sessionId: string, blob: Blob): Promise<string> {
-    const filePath = `shares/${sessionId}.png`;
+  async uploadShareImage(sessionId: string, blob: Blob, folder: string = 'shares'): Promise<string> {
+    const filePath = `${folder}/${sessionId}.png`;
     const storageRef = ref(this.storage, filePath);
     
     // Auto-compress share images for better performance on social platforms

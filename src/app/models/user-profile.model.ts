@@ -22,6 +22,7 @@ export interface UserProfile {
   subscriptionExpiry?: any;
   teamId?: string;
   updatedAt: any;
+  shareImageUrl?: string;
 }
 
 export type AvatarStage = 'seedling' | 'sprout' | 'flowering' | 'cherry' | 'harvest';
