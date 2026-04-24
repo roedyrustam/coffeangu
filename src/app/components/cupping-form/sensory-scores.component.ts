@@ -43,8 +43,8 @@ import { CuppingSession } from '../../models/cupping.model';
           </div>
           <div class="slider-row">
             <button type="button" class="btn-step" (click)="stepScore(key, -0.25)">-</button>
-            <input type="range" min="6" max="10" step="0.25" [(ngModel)]="session.scores[key]" [name]="key" (input)="onScoreInput()"
-                   [style.background]="'linear-gradient(to right, var(--accent-color) ' + ((session.scores[key]-6)/4*100) + '%, rgba(255,255,255,0.05) ' + ((session.scores[key]-6)/4*100) + '%)'">
+            <input type="range" min="1" max="9" step="0.25" [(ngModel)]="session.scores[key]" [name]="key" (input)="onScoreInput()"
+                   [style.background]="'linear-gradient(to right, var(--accent-color) ' + ((session.scores[key]-1)/8*100) + '%, rgba(255,255,255,0.05) ' + ((session.scores[key]-1)/8*100) + '%)'">
             <button type="button" class="btn-step" (click)="stepScore(key, 0.25)">+</button>
           </div>
         </div>
@@ -218,8 +218,7 @@ export class SensoryScoresComponent implements OnInit {
   ];
 
   scoreKeys: (keyof CuppingSession['scores'])[] = [
-    'fragranceAroma', 'flavor', 'aftertaste', 'acidity', 'body', 'balance', 
-    'uniformity', 'cleanCup', 'sweetness', 'overall'
+    'fragranceAroma', 'flavor', 'aftertaste', 'acidity', 'sweetness', 'mouthfeel', 'balance', 'overall'
   ];
 
   defectCups: number[] = [0, 0, 0, 0, 0];
@@ -251,7 +250,7 @@ export class SensoryScoresComponent implements OnInit {
   }
 
   stepScore(key: keyof CuppingSession['scores'], step: number) {
-    const newVal = Math.min(10, Math.max(6, (this.session.scores[key] || 0) + step));
+    const newVal = Math.min(9, Math.max(1, (this.session.scores[key] || 0) + step));
     this.session.scores[key] = newVal;
     this.onScoreInput();
   }
@@ -262,11 +261,9 @@ export class SensoryScoresComponent implements OnInit {
       flavor: '#f1c40f',         // Gold
       aftertaste: '#ff6b6b',     // Salmon
       acidity: '#e67e22',        // Orange
-      body: '#8e5a35',           // Brown
-      balance: '#3498db',        // Blue
-      uniformity: '#2ecc71',     // Green
-      cleanCup: '#1abc9c',       // Teal
       sweetness: '#ff85a2',      // Pink
+      mouthfeel: '#8e5a35',      // Brown
+      balance: '#3498db',        // Blue
       overall: '#bd8e62',         // Bronze
       // Intensities
       acidityInt: '#e67e22',

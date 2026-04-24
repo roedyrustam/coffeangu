@@ -127,9 +127,9 @@ import { SeoService } from '../../services/seo.service';
 
           <div class="session-performance">
             <div class="mini-sensory">
-               <div class="mini-bar" [style.height.%]="(session.scores.flavor - 6) * 25" [style.background]="getBarColor(session.scores.flavor)" title="Flavor"></div>
-               <div class="mini-bar" [style.height.%]="(session.scores.acidity - 6) * 25" [style.background]="getBarColor(session.scores.acidity)" title="Acidity"></div>
-               <div class="mini-bar" [style.height.%]="(session.scores.body - 6) * 25" [style.background]="getBarColor(session.scores.body)" title="Body"></div>
+               <div class="mini-bar" [style.height.%]="(session.scores.flavor - 1) / 8 * 100" [style.background]="getBarColor(session.scores.flavor)" title="Flavor"></div>
+               <div class="mini-bar" [style.height.%]="(session.scores.acidity - 1) / 8 * 100" [style.background]="getBarColor(session.scores.acidity)" title="Acidity"></div>
+               <div class="mini-bar" [style.height.%]="(session.scores.mouthfeel - 1) / 8 * 100" [style.background]="getBarColor(session.scores.mouthfeel)" title="Mouthfeel"></div>
             </div>
           </div>
 
@@ -138,9 +138,9 @@ import { SeoService } from '../../services/seo.service';
               <span class="icon">🍋</span>
               <span>{{ session.intensities?.acidity || '-' }}</span>
             </div>
-            <div class="sensory-badge" title="Body">
+            <div class="sensory-badge" title="Mouthfeel">
               <span class="icon">🥃</span>
-              <span>{{ session.intensities?.body || '-' }}</span>
+              <span>{{ session.intensities?.mouthfeel || session.intensities?.body || '-' }}</span>
             </div>
             <div class="sensory-badge" title="Sweetness">
               <span class="icon">🍯</span>

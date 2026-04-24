@@ -74,9 +74,9 @@ import { CuppingSession } from '../../models/cupping.model';
               
               <div class="session-performance">
                 <div class="mini-sensory">
-                   <div class="mini-bar" [style.height.%]="(session.scores.flavor - 6) * 25" [style.background]="getBarColor(session.scores.flavor)" title="Flavor"></div>
-                   <div class="mini-bar" [style.height.%]="(session.scores.acidity - 6) * 25" [style.background]="getBarColor(session.scores.acidity)" title="Acidity"></div>
-                   <div class="mini-bar" [style.height.%]="(session.scores.body - 6) * 25" [style.background]="getBarColor(session.scores.body)" title="Body"></div>
+                   <div class="mini-bar" [style.height.%]="(session.scores.flavor - 1) / 8 * 100" [style.background]="getBarColor(session.scores.flavor)" title="Flavor"></div>
+                   <div class="mini-bar" [style.height.%]="(session.scores.acidity - 1) / 8 * 100" [style.background]="getBarColor(session.scores.acidity)" title="Acidity"></div>
+                   <div class="mini-bar" [style.height.%]="(session.scores.mouthfeel - 1) / 8 * 100" [style.background]="getBarColor(session.scores.mouthfeel)" title="Mouthfeel"></div>
                 </div>
                 <div class="session-score" [class.high-score]="session.finalScore >= 80" [class.specialty-pulse]="session.finalScore >= 85">
                   {{ session.finalScore | number:'1.1-1' }}

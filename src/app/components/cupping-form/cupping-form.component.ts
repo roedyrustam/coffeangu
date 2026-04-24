@@ -421,8 +421,7 @@ export class CuppingFormComponent implements OnInit {
   }
 
   scoreKeys: (keyof SensoryScores)[] = [
-    'fragranceAroma', 'flavor', 'aftertaste', 'acidity', 
-    'body', 'balance', 'uniformity', 'cleanCup', 'sweetness', 'overall'
+    'fragranceAroma', 'flavor', 'aftertaste', 'acidity', 'sweetness', 'mouthfeel', 'balance', 'overall'
   ];
 
   session: CuppingSession = {
@@ -440,16 +439,14 @@ export class CuppingFormComponent implements OnInit {
     },
     flavorNotes: [],
     scores: {
-      fragranceAroma: 8,
-      flavor: 8,
-      aftertaste: 8,
-      acidity: 8,
-      body: 8,
-      balance: 8,
-      uniformity: 10,
-      cleanCup: 10,
-      sweetness: 10,
-      overall: 8
+      fragranceAroma: 7,
+      flavor: 7,
+      aftertaste: 7,
+      acidity: 7,
+      sweetness: 7,
+      mouthfeel: 7,
+      balance: 7,
+      overall: 7
     },
     defects: 0,
     defectCupStates: [0, 0, 0, 0, 0],
@@ -478,7 +475,8 @@ export class CuppingFormComponent implements OnInit {
 
   updateTotal() {
     const sum = Object.values(this.session.scores).reduce((a, b: any) => a + b, 0);
-    this.session.finalScore = sum - this.session.defects;
+    // CVA 2025 Normalization: (Sum / 72) * 100
+    this.session.finalScore = ((sum - this.session.defects) / 72) * 100;
   }
 
   formatLabel(key: string) {

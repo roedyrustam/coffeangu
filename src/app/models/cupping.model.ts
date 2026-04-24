@@ -3,11 +3,9 @@ export interface SensoryScores {
   flavor: number;
   aftertaste: number;
   acidity: number;
-  body: number;
-  balance: number;
-  uniformity: number;
-  cleanCup: number;
   sweetness: number;
+  mouthfeel: number;
+  balance: number;
   overall: number;
 }
 

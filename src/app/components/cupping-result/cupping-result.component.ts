@@ -110,8 +110,8 @@ Chart.register(RadarController, RadialLinearScale, PointElement, LineElement, Fi
                      <div class="int-track"><div class="int-fill" [style.background]="getScoreColor('acidity')" [style.width.%]="(session.intensities?.acidity || 0) * 10"></div></div>
                   </div>
                   <div class="int-bar-item">
-                     <label>{{ t('BODY') }}</label>
-                     <div class="int-track"><div class="int-fill" [style.background]="getScoreColor('body')" [style.width.%]="(session.intensities?.body || 0) * 10"></div></div>
+                     <label>{{ t('MOUTHFEEL') }}</label>
+                     <div class="int-track"><div class="int-fill" [style.background]="getScoreColor('mouthfeel')" [style.width.%]="((session.intensities as any)?.mouthfeel || session.intensities?.body || 0) * 10"></div></div>
                   </div>
                   <div class="int-bar-item">
                      <label>{{ t('SWEETNESS') }}</label>
@@ -130,7 +130,7 @@ Chart.register(RadarController, RadialLinearScale, PointElement, LineElement, Fi
                     <span>{{ item.value }}</span>
                  </div>
                  <div class="bar-bg">
-                    <div class="bar-fill" [style.background]="getScoreColor(item.key)" [style.width.%]="(item.value - 6) * 25"></div>
+                    <div class="bar-fill" [style.background]="getScoreColor(item.key)" [style.width.%]="(item.value - 1) / 8 * 100"></div>
                  </div>
               </div>
            </div>
@@ -791,11 +791,11 @@ export class CuppingResultComponent implements OnInit, AfterViewInit, OnDestroy 
     const scores = this.session.scores;
     const labels = [
       'Aroma', 'Flavor', 'Aftertaste', 'Acidity', 
-      'Body', 'Balance', 'Overall'
+      'Sweetness', 'Mouthfeel', 'Balance', 'Overall'
     ];
     const data = [
       scores.fragranceAroma, scores.flavor, scores.aftertaste, scores.acidity,
-      scores.body, scores.balance, scores.overall
+      scores.sweetness, scores.mouthfeel, scores.balance, scores.overall
     ];
 
     if (this.sensoryChart) {
@@ -817,7 +817,8 @@ export class CuppingResultComponent implements OnInit, AfterViewInit, OnDestroy 
             this.getScoreColor('flavor'),
             this.getScoreColor('aftertaste'),
             this.getScoreColor('acidity'),
-            this.getScoreColor('body'),
+            this.getScoreColor('sweetness'),
+            this.getScoreColor('mouthfeel'),
             this.getScoreColor('balance'),
             this.getScoreColor('overall')
           ],
@@ -828,7 +829,8 @@ export class CuppingResultComponent implements OnInit, AfterViewInit, OnDestroy 
             this.getScoreColor('flavor'),
             this.getScoreColor('aftertaste'),
             this.getScoreColor('acidity'),
-            this.getScoreColor('body'),
+            this.getScoreColor('sweetness'),
+            this.getScoreColor('mouthfeel'),
             this.getScoreColor('balance'),
             this.getScoreColor('overall')
           ],
@@ -843,8 +845,8 @@ export class CuppingResultComponent implements OnInit, AfterViewInit, OnDestroy 
           r: {
             angleLines: { color: 'rgba(255, 255, 255, 0.05)' },
             grid: { color: 'rgba(255, 255, 255, 0.05)' },
-            suggestedMin: 6,
-            suggestedMax: 10,
+            suggestedMin: 1,
+            suggestedMax: 9,
             pointLabels: {
               color: '#8e8e93',
               font: {
@@ -997,11 +999,9 @@ export class CuppingResultComponent implements OnInit, AfterViewInit, OnDestroy 
       flavor: '#f1c40f',         // Gold
       aftertaste: '#ff6b6b',     // Salmon
       acidity: '#e67e22',        // Orange
-      body: '#8e5a35',           // Brown
-      balance: '#3498db',        // Blue
-      uniformity: '#2ecc71',     // Green
-      cleanCup: '#1abc9c',       // Teal
       sweetness: '#ff85a2',      // Pink
+      mouthfeel: '#8e5a35',      // Brown
+      balance: '#3498db',        // Blue
       overall: '#bd8e62'          // Bronze
     };
     return colors[key] || '#bd8e62';
@@ -1015,8 +1015,10 @@ export class CuppingResultComponent implements OnInit, AfterViewInit, OnDestroy 
       { label: 'Flavor', value: scores.flavor, key: 'flavor' },
       { label: 'Aftertaste', value: scores.aftertaste, key: 'aftertaste' },
       { label: 'Acidity', value: scores.acidity, key: 'acidity' },
-      { label: 'Body', value: scores.body, key: 'body' },
-      { label: 'Balance', value: scores.balance, key: 'balance' }
+      { label: 'Sweetness', value: scores.sweetness, key: 'sweetness' },
+      { label: 'Mouthfeel', value: scores.mouthfeel, key: 'mouthfeel' },
+      { label: 'Balance', value: scores.balance, key: 'balance' },
+      { label: 'Overall', value: scores.overall, key: 'overall' }
     ];
   }
 

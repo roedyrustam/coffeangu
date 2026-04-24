@@ -480,7 +480,7 @@ export class CuppingService {
   exportToCSV(sessions: CuppingSession[]) {
     if (sessions.length === 0) return;
     
-    const headers = ['Date', 'Bean Name', 'Roastery', 'Type', 'Process', 'Final Score', 'Acidity', 'Body', 'Sweetness', 'Flavor Notes'];
+    const headers = ['Date', 'Bean Name', 'Roastery', 'Type', 'Process', 'Final Score', 'Acidity', 'Mouthfeel', 'Sweetness', 'Flavor Notes'];
     const rows = sessions.map(s => [
       s.timestamp ? (s.timestamp.toDate ? s.timestamp.toDate().toLocaleDateString() : new Date(s.timestamp).toLocaleDateString()) : s.productionDate,
       `"${s.beanName}"`,
@@ -489,7 +489,7 @@ export class CuppingService {
       s.postHarvest,
       s.finalScore,
       s.intensities?.acidity || 0,
-      s.intensities?.body || 0,
+      (s.intensities as any)?.mouthfeel || s.intensities?.body || 0,
       s.intensities?.sweetness || 0,
       `"${s.flavorNotes.join(', ')}"`
     ]);
