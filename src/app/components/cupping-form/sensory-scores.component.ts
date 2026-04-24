@@ -257,20 +257,20 @@ export class SensoryScoresComponent implements OnInit {
 
   getScoreColor(key: string): string {
     const colors: Record<string, string> = {
-      fragranceAroma: '#9b59b6', // Purple
-      flavor: '#f1c40f',         // Gold
-      aftertaste: '#ff6b6b',     // Salmon
-      acidity: '#e67e22',        // Orange
-      sweetness: '#ff85a2',      // Pink
-      mouthfeel: '#8e5a35',      // Brown
-      balance: '#3498db',        // Blue
-      overall: '#bd8e62',         // Bronze
+      fragranceAroma: '#FF5252',
+      flavor: '#FFA000',
+      aftertaste: '#E040FB',
+      acidity: '#40C4FF',
+      sweetness: '#FF4081',
+      mouthfeel: '#69F0AE',
+      balance: '#00E5FF',
+      overall: '#FFD740',
       // Intensities
-      acidityInt: '#e67e22',
-      mouthfeelInt: '#8e5a35',
-      sweetnessInt: '#ff85a2'
+      acidityInt: '#40C4FF',
+      mouthfeelInt: '#69F0AE',
+      sweetnessInt: '#FF4081'
     };
-    return colors[key] || '#8e5a35';
+    return colors[key] || '#FFD740';
   }
 
   onScoreInput() {

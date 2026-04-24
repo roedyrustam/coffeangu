@@ -811,8 +811,8 @@ export class CuppingResultComponent implements OnInit, AfterViewInit, OnDestroy 
           label: 'Quality Score',
           data: data,
           fill: true,
-          backgroundColor: 'rgba(189, 142, 98, 0.15)',
-          borderColor: '#BD8E62',
+          backgroundColor: 'rgba(255, 255, 255, 0.08)',
+          borderColor: 'rgba(255, 255, 255, 0.3)',
           pointBackgroundColor: [
             this.getScoreColor('fragranceAroma'),
             this.getScoreColor('flavor'),
@@ -835,8 +835,11 @@ export class CuppingResultComponent implements OnInit, AfterViewInit, OnDestroy 
             this.getScoreColor('balance'),
             this.getScoreColor('overall')
           ],
-          borderWidth: 4,
-          tension: 0.2
+          borderWidth: 3,
+          pointRadius: 6,
+          pointHoverRadius: 8,
+          pointBorderWidth: 2,
+          tension: 0.3
         }]
       },
       options: {
@@ -980,16 +983,16 @@ export class CuppingResultComponent implements OnInit, AfterViewInit, OnDestroy 
 
   getScoreColor(key: string): string {
     const colors: Record<string, string> = {
-      fragranceAroma: '#9b59b6', // Purple
-      flavor: '#f1c40f',         // Gold
-      aftertaste: '#ff6b6b',     // Salmon
-      acidity: '#e67e22',        // Orange
-      sweetness: '#ff85a2',      // Pink
-      mouthfeel: '#8e5a35',      // Brown
-      balance: '#3498db',        // Blue
-      overall: '#bd8e62'          // Bronze
+      fragranceAroma: '#FF5252', // Red (from image)
+      flavor: '#FFA000',         // Amber/Orange (from image)
+      aftertaste: '#E040FB',     // Purple (from image)
+      acidity: '#40C4FF',        // Light Blue (from image)
+      sweetness: '#FF4081',      // Pink
+      mouthfeel: '#69F0AE',      // Vibrant Green (from image)
+      balance: '#00E5FF',        // Cyan
+      overall: '#FFD740'          // Gold/Bronze
     };
-    return colors[key] || '#bd8e62';
+    return colors[key] || '#FFD740';
   }
 
   prepareSensoryItems() {
