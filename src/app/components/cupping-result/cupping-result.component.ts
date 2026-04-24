@@ -14,6 +14,7 @@ import { Team } from '../../models/team.model';
 import { SeoService } from '../../services/seo.service';
 import { SocialShareComponent } from '../social-share/social-share.component';
 import { environment } from '../../../environments/environment';
+import { OgService } from '../../services/og.service';
 
 Chart.register(RadarController, RadialLinearScale, PointElement, LineElement, Filler, Tooltip, Legend);
 
