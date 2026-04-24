@@ -74,9 +74,9 @@ import { CuppingSession } from '../../models/cupping.model';
               
               <div class="session-performance">
                 <div class="mini-sensory">
-                   <div class="mini-bar" [style.height.%]="(session.scores.flavor - 1) / 8 * 100" [style.background]="getBarColor(session.scores.flavor)" title="Flavor"></div>
-                   <div class="mini-bar" [style.height.%]="(session.scores.acidity - 1) / 8 * 100" [style.background]="getBarColor(session.scores.acidity)" title="Acidity"></div>
-                   <div class="mini-bar" [style.height.%]="(session.scores.mouthfeel - 1) / 8 * 100" [style.background]="getBarColor(session.scores.mouthfeel)" title="Mouthfeel"></div>
+                   <div class="mini-bar" [style.height.%]="(session.scores.flavor - 1) / 8 * 100" [style.background]="getBarColor('flavor')" title="Flavor"></div>
+                   <div class="mini-bar" [style.height.%]="(session.scores.acidity - 1) / 8 * 100" [style.background]="getBarColor('acidity')" title="Acidity"></div>
+                   <div class="mini-bar" [style.height.%]="(session.scores.mouthfeel - 1) / 8 * 100" [style.background]="getBarColor('mouthfeel')" title="Mouthfeel"></div>
                 </div>
                 <div class="session-score" [class.high-score]="session.finalScore >= 80" [class.specialty-pulse]="session.finalScore >= 85">
                   {{ session.finalScore | number:'1.1-1' }}
@@ -430,9 +430,8 @@ export class DashboardComponent {
     return Math.round((count / list.length) * 100) + '%';
   }
 
-  getBarColor(val: number) {
-    if (val >= 8) return 'var(--accent-neon)';
-    if (val >= 7) return 'var(--primary-color)';
-    return 'var(--text-dim)';
+  getBarColor(attr: string) {
+    const colors: any = { flavor: '#FFA000', acidity: '#40C4FF', mouthfeel: '#69F0AE' };
+    return colors[attr] || 'var(--primary-color)';
   }
 }

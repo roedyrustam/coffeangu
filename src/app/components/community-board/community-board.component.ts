@@ -127,9 +127,9 @@ import { SeoService } from '../../services/seo.service';
 
           <div class="session-performance">
             <div class="mini-sensory">
-               <div class="mini-bar" [style.height.%]="(session.scores.flavor - 1) / 8 * 100" [style.background]="getBarColor(session.scores.flavor)" title="Flavor"></div>
-               <div class="mini-bar" [style.height.%]="(session.scores.acidity - 1) / 8 * 100" [style.background]="getBarColor(session.scores.acidity)" title="Acidity"></div>
-               <div class="mini-bar" [style.height.%]="(session.scores.mouthfeel - 1) / 8 * 100" [style.background]="getBarColor(session.scores.mouthfeel)" title="Mouthfeel"></div>
+               <div class="mini-bar" [style.height.%]="(session.scores.flavor - 1) / 8 * 100" [style.background]="getBarColor('flavor')" title="Flavor"></div>
+               <div class="mini-bar" [style.height.%]="(session.scores.acidity - 1) / 8 * 100" [style.background]="getBarColor('acidity')" title="Acidity"></div>
+               <div class="mini-bar" [style.height.%]="(session.scores.mouthfeel - 1) / 8 * 100" [style.background]="getBarColor('mouthfeel')" title="Mouthfeel"></div>
             </div>
           </div>
 
@@ -720,11 +720,9 @@ export class CommunityBoardComponent implements OnInit {
     return !!session.savedBy?.includes(userId);
   }
 
-  getBarColor(val: number) {
-    if (!val) return 'var(--text-dim)';
-    if (val >= 8) return 'var(--accent-neon)';
-    if (val >= 7) return 'var(--primary-color)';
-    return 'var(--text-dim)';
+  getBarColor(attr: string) {
+    const colors: any = { flavor: '#FFA000', acidity: '#40C4FF', mouthfeel: '#69F0AE' };
+    return colors[attr] || 'var(--primary-color)';
   }
 
   private updateSeo() {
