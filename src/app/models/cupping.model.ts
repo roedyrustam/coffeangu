@@ -24,7 +24,8 @@ export interface CuppingSession {
   productImageUrl?: string;
   intensities?: {
     acidity: number; // 1-10 intensity
-    body: number; // 1-10 intensity
+    mouthfeel: number; // 1-10 intensity
+    body?: number; // legacy fallback
     sweetness: number; // 1-10 intensity
   };
   flavorNotes: string[]; // SCA Flavor Wheel categories

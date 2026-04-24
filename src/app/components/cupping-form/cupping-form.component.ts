@@ -434,7 +434,7 @@ export class CuppingFormComponent implements OnInit {
     cupperName: '',
     intensities: {
       acidity: 5,
-      body: 5,
+      mouthfeel: 5,
       sweetness: 5
     },
     flavorNotes: [],

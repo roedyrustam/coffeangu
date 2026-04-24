@@ -211,9 +211,9 @@ export class SensoryScoresComponent implements OnInit {
   @Input() session!: CuppingSession;
   @Output() scoresChanged = new EventEmitter<void>();
 
-  intensityKeys: {label: string, key: 'acidity' | 'body' | 'sweetness'}[] = [
+  intensityKeys: {label: string, key: 'acidity' | 'mouthfeel' | 'sweetness'}[] = [
     { label: 'Acidity', key: 'acidity' },
-    { label: 'Body', key: 'body' },
+    { label: 'Mouthfeel', key: 'mouthfeel' },
     { label: 'Sweetness', key: 'sweetness' }
   ];
 
@@ -239,7 +239,7 @@ export class SensoryScoresComponent implements OnInit {
     this.onScoreInput();
   }
 
-  stepIntensity(key: 'acidity' | 'body' | 'sweetness', step: number) {
+  stepIntensity(key: 'acidity' | 'mouthfeel' | 'sweetness', step: number) {
     const newVal = Math.min(10, Math.max(1, (this.session.intensities![key] || 0) + step));
     this.session.intensities![key] = newVal;
     this.onScoreInput();
@@ -267,7 +267,7 @@ export class SensoryScoresComponent implements OnInit {
       overall: '#bd8e62',         // Bronze
       // Intensities
       acidityInt: '#e67e22',
-      bodyInt: '#8e5a35',
+      mouthfeelInt: '#8e5a35',
       sweetnessInt: '#ff85a2'
     };
     return colors[key] || '#8e5a35';

@@ -489,7 +489,7 @@ export class CuppingService {
       s.postHarvest,
       s.finalScore,
       s.intensities?.acidity || 0,
-      (s.intensities as any)?.mouthfeel || s.intensities?.body || 0,
+      (s.intensities?.mouthfeel || s.intensities?.body || 0),
       s.intensities?.sweetness || 0,
       `"${s.flavorNotes.join(', ')}"`
     ]);

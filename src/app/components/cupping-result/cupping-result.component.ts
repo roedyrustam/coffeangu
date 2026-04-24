@@ -111,7 +111,7 @@ Chart.register(RadarController, RadialLinearScale, PointElement, LineElement, Fi
                   </div>
                   <div class="int-bar-item">
                      <label>{{ t('MOUTHFEEL') }}</label>
-                     <div class="int-track"><div class="int-fill" [style.background]="getScoreColor('mouthfeel')" [style.width.%]="((session.intensities as any)?.mouthfeel || session.intensities?.body || 0) * 10"></div></div>
+                     <div class="int-track"><div class="int-fill" [style.background]="getScoreColor('mouthfeel')" [style.width.%]="(session.intensities?.mouthfeel || session.intensities?.body || 0) * 10"></div></div>
                   </div>
                   <div class="int-bar-item">
                      <label>{{ t('SWEETNESS') }}</label>
