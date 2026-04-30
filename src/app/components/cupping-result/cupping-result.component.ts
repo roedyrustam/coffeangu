@@ -962,7 +962,7 @@ export class CuppingResultComponent implements OnInit, AfterViewInit, OnDestroy 
               color: 'rgba(255, 255, 255, 0.6)',
               font: {
                 size: 11,
-                weight: '800',
+                weight: 'bold',
                 family: "'Outfit', sans-serif"
               },
               padding: 20
@@ -1086,8 +1086,7 @@ export class CuppingResultComponent implements OnInit, AfterViewInit, OnDestroy 
       'Panama': { lat: 8.538, lng: -80.7823 },
       'Sumatra': { lat: -0.5897, lng: 101.3431 },
       'Gayo': { lat: 4.6888, lng: 96.8521 },
-      'Toraja': { lat: -2.9691, lng: 119.8978 },
-      'Gayo': { lat: 4.6888, lng: 96.8521 }
+      'Toraja': { lat: -2.9691, lng: 119.8978 }
     };
 
     const coords = originCoords[this.session.origin || ''] || undefined;

@@ -11,6 +11,7 @@ import { map, switchMap, debounceTime, startWith, catchError } from 'rxjs/operat
 
 import { AuthService } from '../../services/auth.service';
 import { SeoService } from '../../services/seo.service';
+import { SensoryAiService } from '../../services/sensory-ai.service';
 
 @Component({
   selector: 'app-community-board',
@@ -240,7 +241,7 @@ import { SeoService } from '../../services/seo.service';
           <p>{{ t('LOADING_COMMUNITY') }}</p>
         </div>
       </ng-template>
-    </div>
+    </main>
   `,
   styles: [`
     .community-container {
@@ -725,7 +726,7 @@ export class CommunityBoardComponent implements OnInit {
   });
 
   availableOrigins = computed(() => {
-    const origins = this.allCuppings().map(c => c.origin).filter(o => !!o);
+    const origins = this.allCuppings().map(c => c.origin).filter(o => !!o) as string[];
     return [...new Set(origins)].sort();
   });
 
@@ -831,5 +832,9 @@ export class CommunityBoardComponent implements OnInit {
     if (session.isVerifiedRoastery || session.finalScore >= 82) return 'size-wide';
     if (index % 5 === 0) return 'size-tall';
     return 'size-normal';
+  }
+
+  refresh() {
+    window.location.reload();
   }
 }

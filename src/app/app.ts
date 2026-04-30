@@ -42,7 +42,8 @@ import { ToastService } from './services/toast.service';
                     <span>{{ auth.currentUser()?.displayName?.charAt(0) || 'U' }}</span>
                   } @else {
                     <img [src]="auth.currentUser()?.photoURL" alt="Profile">
-                  </div>
+                  }
+                </div>
                 </button>
                 
                 @if (showUserMenu()) {
@@ -84,32 +85,44 @@ import { ToastService } from './services/toast.service';
     </main>
 
     <nav class="mobile-bottom-nav" aria-label="Mobile Navigation">
-      <div class="nav-blur-bg" aria-hidden="true"></div>
       
       <a routerLink="/" class="bottom-nav-link" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}">
-        <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+        <div class="icon-wrapper">
+          <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+        </div>
         <span>{{ t('NAV_HOME') }}</span>
+        <div class="active-dot"></div>
       </a>
       
       <a routerLink="/community" class="bottom-nav-link" routerLinkActive="active">
-        <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
+        <div class="icon-wrapper">
+          <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
+        </div>
         <span>{{ t('NAV_DISCOVER') }}</span>
+        <div class="active-dot"></div>
       </a>
       
       <div class="nav-center-action">
         <button class="center-fab" routerLink="/cupping" aria-label="New Cupping Session">
+          <div class="fab-glow"></div>
           <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12h14"/></svg>
         </button>
       </div>
 
       <a routerLink="/analytics" class="bottom-nav-link" routerLinkActive="active" *ngIf="auth.currentUser()">
-        <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"/><path d="m19 9-5 5-4-4-3 3"/></svg>
+        <div class="icon-wrapper">
+          <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"/><path d="m19 9-5 5-4-4-3 3"/></svg>
+        </div>
         <span>{{ t('NAV_INSIGHTS') }}</span>
+        <div class="active-dot"></div>
       </a>
 
       <a [routerLink]="auth.currentUser() ? '/profile' : '/login'" class="bottom-nav-link" routerLinkActive="active">
-        <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+        <div class="icon-wrapper">
+          <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+        </div>
         <span>{{ auth.currentUser() ? (t('NAV_ME') || 'Me') : t('BTN_LOGIN') }}</span>
+        <div class="active-dot"></div>
       </a>
     </nav>
 
@@ -209,21 +222,21 @@ import { ToastService } from './services/toast.service';
     .mobile-bottom-nav {
       display: none;
       position: fixed;
-      bottom: calc(20px + env(safe-area-inset-bottom, 0px));
-      left: 20px;
-      right: 20px;
-      height: 74px;
+      bottom: calc(15px + env(safe-area-inset-bottom, 0px));
+      left: 15px;
+      right: 15px;
+      height: 72px;
       z-index: var(--z-nav);
       justify-content: space-around;
       align-items: center;
-      background: rgba(12, 12, 14, 0.75);
-      backdrop-filter: blur(var(--glass-blur)) saturate(180%);
-      -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(180%);
-      border: 1px solid var(--glass-border);
-      border-radius: 28px;
-      padding: 0 10px;
+      background: rgba(12, 12, 14, 0.85);
+      backdrop-filter: blur(40px) saturate(200%);
+      -webkit-backdrop-filter: blur(40px) saturate(200%);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      border-radius: 30px;
+      padding: 0 8px;
       box-shadow: 
-        0 25px 50px -12px rgba(0, 0, 0, 0.7),
+        0 25px 60px -15px rgba(0, 0, 0, 0.8),
         0 0 0 1px rgba(255, 255, 255, 0.05) inset;
     }
     .bottom-nav-link {
@@ -233,31 +246,45 @@ import { ToastService } from './services/toast.service';
       justify-content: center;
       color: var(--text-dim);
       text-decoration: none;
-      font-size: 0.65rem;
+      font-size: 0.6rem;
       font-weight: 800;
-      gap: 5px;
-      transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+      gap: 4px;
+      transition: all 0.4s cubic-bezier(0.2, 1, 0.3, 1);
       flex: 1;
       height: 100%;
       position: relative;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+    .icon-wrapper {
+      position: relative;
+      width: 40px;
+      height: 40px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 14px;
+      transition: all 0.4s;
+    }
+    .bottom-nav-link.active {
+      color: var(--primary-color);
+    }
+    .bottom-nav-link.active .icon-wrapper {
+      background: rgba(189, 142, 98, 0.15);
+      color: var(--primary-color);
+      box-shadow: 0 0 20px var(--primary-glow);
     }
     .bottom-nav-link svg {
       width: 22px;
       height: 22px;
       stroke-width: 2.2px;
-      transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-    }
-    .bottom-nav-link.active {
-      color: var(--primary-color);
+      transition: all 0.4s;
     }
     .bottom-nav-link.active svg {
-      transform: translateY(-4px) scale(1.15);
-      filter: drop-shadow(0 0 10px var(--primary-glow));
+      transform: translateY(-2px);
+      filter: drop-shadow(0 0 8px var(--primary-glow));
     }
-    .bottom-nav-link.active::after {
-      content: '';
-      position: absolute;
-      bottom: 12px;
+    .active-dot {
       width: 4px;
       height: 4px;
       background: var(--primary-color);

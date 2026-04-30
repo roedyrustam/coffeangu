@@ -47,11 +47,14 @@ export class SensoryAiService {
   /**
    * Generates a poetic "Archetype" name based on the flavor profile.
    */
-  predictArchetype(scores: any): { name: string, description: string } {
-    const acidity = scores.acidity || 0;
-    const body = scores.mouthfeel || 0;
-    const flavor = scores.flavor || 0;
-    const sweetness = scores.sweetness || 0;
+  predictArchetype(input: any): { name: string, description: string } {
+    // Extract scores regardless of whether we get a full session or just the scores object
+    const s = input.scores ? input.scores : input;
+    
+    const acidity = s.acidity || 0;
+    const body = s.mouthfeel || s.body || 0;
+    const flavor = s.flavor || 0;
+    const sweetness = s.sweetness || 0;
 
     if (acidity >= 8.5 && flavor >= 8.5) {
       return { 
@@ -59,19 +62,19 @@ export class SensoryAiService {
         description: 'A brilliant explosion of high-altitude acidity and complex aromatics.' 
       };
     }
-    if (profile.body >= 8.5 && profile.sweetness >= 8.5) {
+    if (body >= 8.5 && sweetness >= 8.5) {
       return { 
         name: 'The Velvet Forge', 
         description: 'Deep, syrupy body with intense caramelized sweetness and a lingering finish.' 
       };
     }
-    if (profile.acidity >= 8.0 && profile.sweetness >= 8.5) {
+    if (acidity >= 8.0 && sweetness >= 8.5) {
       return { 
         name: 'The Nectarine Stream', 
         description: 'Perfectly balanced fruit-forward profile with honey-like sweetness.' 
       };
     }
-    if (profile.acidity < 7.5 && profile.body >= 8.0) {
+    if (acidity < 7.5 && body >= 8.0) {
       return { 
         name: 'The Obsidian Core', 
         description: 'Solid, grounded profile with heavy mouthfeel and chocolatey foundations.' 

@@ -216,7 +216,6 @@ import { environment } from '../../../environments/environment';
                <button routerLink="/community" class="btn-primary">Go to Community</button>
             </div>
           </div>
-        </div>        </div>
         </div>
 
         <!-- TEAM MANAGEMENT VIEW -->
@@ -393,7 +392,7 @@ import { environment } from '../../../environments/environment';
             {{ t('BTN_LOGOUT') }}
          </button>
       </div>
-    </div>
+    </main>
   `,
   styles: [`
     .profile-container {
