@@ -627,68 +627,85 @@ import { SensoryAiService } from '../../services/sensory-ai.service';
     .empty-state h3 { font-size: 2rem; margin-bottom: 10px; }
     .empty-state p { color: var(--text-dim); margin-bottom: 30px; }
 
-    @media (max-width: 1200px) {
-      .feed-grid { grid-template-columns: 1fr 1fr; }
-      .size-wide, .size-large { grid-column: span 1; }
-      .size-tall, .size-large { grid-row: span 1; }
-      .card-image { height: 180px !important; }
-      .bean-main h3 { font-size: 1.5rem !important; }
-    }
     @media (max-width: 900px) {
       .discovery-hero { flex-direction: column; padding: 60px; text-align: center; }
       .hero-content { margin-bottom: 40px; }
-      .filters-row { flex-direction: column; gap: 25px; align-items: flex-start; }
     }
     @media (max-width: 768px) {
-      .community-container { padding: 0 12px; }
+      .community-container { padding: 0 16px; margin: 20px auto; }
+      .discovery-hero { 
+        padding: 40px 24px; 
+        border-radius: 24px; 
+        margin-bottom: 30px;
+        text-align: center;
+        background: linear-gradient(135deg, rgba(189, 142, 98, 0.15), rgba(12, 12, 14, 0.9));
+      }
+      .brand-font { font-size: 2.2rem; }
+      .subtitle { font-size: 1rem; margin-bottom: 25px; }
+      .community-stats { justify-content: center; gap: 12px; }
+      .stat-pill { padding: 12px 20px; border-radius: 16px; }
+      .stat-pill .val { font-size: 1.5rem; }
+      
+      .discovery-controls {
+        position: sticky;
+        top: 0;
+        z-index: 100;
+        background: var(--bg-color);
+        margin: 0 -16px 30px -16px;
+        padding: 16px;
+        gap: 16px;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+      }
+      .search-box { height: 60px; padding: 0 20px; }
+      .search-box input { font-size: 1rem; }
+      
       .feed-grid { 
         grid-template-columns: repeat(2, 1fr); 
         gap: 12px; 
-        grid-auto-flow: dense;
       }
-      .discovery-hero { padding: 30px; }
-      .brand-font { font-size: 2rem; }
       
       .cupping-card { 
-        min-height: auto; 
-        padding: 15px; 
-        gap: 8px;
-        border-radius: var(--radius-md);
+        padding: 12px; 
+        border-radius: 18px;
+        min-height: auto;
       }
-
-      /* MOBILE SPANS */
       .size-wide, .size-large { grid-column: span 2; }
       .size-normal, .size-tall { grid-column: span 1; }
       .size-tall { grid-row: span 2; }
 
       .card-image { 
-        width: calc(100% + 30px); 
-        margin: -15px -15px 8px -15px; 
-        height: 100px !important; 
+        width: calc(100% + 24px); 
+        margin: -12px -12px 8px -12px; 
+        height: 120px !important; 
       }
-      .size-wide .card-image, .size-large .card-image { height: 160px !important; }
-      .size-tall .card-image { height: 200px !important; }
+      .size-wide .card-image, .size-large .card-image { height: 180px !important; }
+      .size-tall .card-image { height: 240px !important; }
 
       .bean-main h3 { 
-        font-size: 0.95rem !important; 
-        height: auto; 
-        margin-bottom: 2px;
+        font-size: 0.9rem !important; 
+        height: 2.4rem; 
+        line-height: 1.3;
+        margin-bottom: 4px;
       }
-      .size-wide .bean-main h3, .size-large .bean-main h3 { 
-        font-size: 1.4rem !important; 
-      }
-
-      .roastery { font-size: 0.65rem; }
-      .score-display { width: 35px; height: 35px; }
-      .score-display .num { font-size: 0.8rem; }
+      .size-wide .bean-main h3, .size-large .bean-main h3 { font-size: 1.5rem !important; height: auto; }
       
-      .sensory-strip { display: flex; transform: scale(0.85); transform-origin: left; margin: -5px 0; }
-      .flavor-cloud { display: flex; flex-wrap: wrap; gap: 4px; }
-      .flavor-tag { font-size: 0.6rem; padding: 2px 6px; }
+      .archetype-badge { font-size: 0.55rem; padding: 3px 8px; }
+      .roastery { font-size: 0.65rem; letter-spacing: 1px; }
+      .score-display { width: 38px; height: 38px; border-radius: 10px; }
+      .score-display .num { font-size: 0.85rem; }
       
-      .card-footer { padding-top: 10px; }
-      .social-stats { gap: 10px; font-size: 0.75rem; }
-      .visit-btn { padding: 6px 12px; font-size: 0.75rem; }
+      .sensory-strip { display: none; } /* Hide on mobile for density */
+      .session-performance { padding: 8px; margin: 4px 0; }
+      .mini-bar { width: 6px; gap: 4px; }
+      
+      .flavor-cloud { gap: 4px; }
+      .flavor-tag { font-size: 0.6rem; padding: 3px 8px; }
+      .more-count { font-size: 0.6rem; }
+      
+      .card-footer { padding-top: 12px; flex-direction: column; gap: 12px; align-items: flex-start; }
+      .cupper-info { padding: 0; }
+      .btn-shop { width: 100%; justify-content: center; }
+      .social-stats { padding-top: 12px; gap: 8px; }
     }
   `]
 })

@@ -369,14 +369,45 @@ import { CuppingSession } from '../../models/cupping.model';
     @media (max-width: 1100px) {
       .hero h1 { font-size: 4rem; }
       .sessions-list { grid-template-columns: 1fr; }
-      .stats-carousel { grid-template-columns: 1fr; }
     }
     @media (max-width: 768px) {
-      .hero { padding: 40px; min-height: 450px; border-radius: 30px; margin-bottom: 40px; }
-      .hero h1 { font-size: 3rem; }
-      .dashboard-container { padding: 20px; }
-      .heatmap-grid { grid-template-columns: 1fr; }
+      .hero { 
+        padding: 30px 24px; 
+        min-height: 400px; 
+        border-radius: 28px; 
+        margin-bottom: 30px; 
+      }
+      .hero-content { padding: 30px 20px; border-radius: 24px; }
+      .hero h1 { font-size: 2.8rem; letter-spacing: -2px; }
+      .hero-sub { font-size: 1rem; margin: 15px 0; }
+      
+      .dashboard-container { padding: 16px; }
+      
+      .stats-carousel { 
+        display: flex; 
+        overflow-x: auto; 
+        gap: 16px; 
+        margin: 0 -16px 60px -16px; 
+        padding: 0 16px 15px 16px;
+        scroll-snap-type: x mandatory;
+        -webkit-overflow-scrolling: touch;
+      }
+      .stats-carousel::-webkit-scrollbar { display: none; }
+      .stat-card { 
+        flex: 0 0 85%; 
+        scroll-snap-align: center; 
+        padding: 30px 20px; 
+        min-height: 180px;
+        justify-content: center;
+      }
       .stat-value { font-size: 3.5rem; }
+
+      .heatmap-grid { grid-template-columns: 1fr; padding: 24px; gap: 20px; }
+      .section-title { font-size: 2.2rem; }
+      .ai-insight-card { padding: 24px; margin-bottom: 60px; }
+      .session-main { padding: 20px; }
+      .session-info h3 { font-size: 1.4rem; }
+      .score-badge-floating { padding: 8px 16px; font-size: 0.95rem; }
     }
   `]
 })

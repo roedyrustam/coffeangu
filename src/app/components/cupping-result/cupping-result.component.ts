@@ -704,25 +704,56 @@ Chart.register(RadarController, RadialLinearScale, PointElement, LineElement, Fi
     }
 
     @media (max-width: 768px) {
-      .result-container { padding: 0 15px; margin: 30px auto; }
-      .result-card { padding: 40px 20px; }
-      .brand-font { font-size: 2.2rem; }
-      .score-circle { width: 180px; height: 180px; }
-      .score-circle .value { font-size: 3.5rem; }
-      .metadata-grid { grid-template-columns: 1fr 1fr; gap: 20px; padding: 20px; }
-      .chart-section { padding: 20px; }
-      .chart-wrapper { height: 300px; }
-      .btn-commerce-luxury { padding: 20px; border-radius: 18px; }
+      .result-container { padding: 0 16px; margin: 20px auto; }
+      .result-card { padding: 32px 16px; border-radius: 24px; }
+      .brand-font { font-size: 2rem; letter-spacing: -1px; }
+      .roastery { font-size: 0.95rem; }
+      
+      .product-visual { margin: 24px auto; max-width: 100%; border-radius: 16px; }
+      
+      .score-display { margin: 40px 0; }
+      .score-circle { width: 160px; height: 160px; box-shadow: 0 15px 40px var(--primary-glow); }
+      .score-circle .label { font-size: 0.7rem; }
+      .score-circle .value { font-size: 3.2rem; }
+      .rating-label { font-size: 1.1rem; margin-top: 15px; }
+      
+      .metadata-grid { 
+        grid-template-columns: repeat(2, 1fr); 
+        gap: 16px; 
+        padding: 20px; 
+        margin: 40px 0;
+        border-radius: 16px;
+      }
+      .meta-value { font-size: 0.95rem; }
+      
+      .chart-section { margin: 40px auto; padding: 0; }
+      .chart-wrapper { 
+        height: 300px; 
+        width: 100%; 
+        padding: 20px;
+        background: radial-gradient(circle at center, rgba(12, 12, 14, 0.9) 0%, rgba(12, 12, 14, 1) 100%);
+      }
+      
+      .cva-result-section { gap: 35px; margin: 40px 0; }
+      .intensity-bars-row { grid-template-columns: 1fr; gap: 15px; }
+      .int-bar-item label { margin-bottom: 8px; font-size: 0.75rem; }
+      
+      .sensory-summary { padding: 24px 16px; border-radius: 18px; margin: 40px 0; }
+      .bar-header { font-size: 0.8rem; }
+      
+      .btn-commerce-luxury { padding: 20px 24px; border-radius: 20px; }
       .c-action { font-size: 1.1rem; }
+      .c-label { font-size: 0.65rem; }
+      
+      .social-actions { flex-direction: column; gap: 10px; }
+      .social-btn { width: 100%; justify-content: center; }
     }
 
     @media (max-width: 480px) {
       .brand-font { font-size: 1.8rem; }
-      .roastery { font-size: 1rem; }
       .metadata-grid { grid-template-columns: 1fr; }
-      .sensory-summary { padding: 25px 15px; }
-      .score-circle { width: 150px; height: 150px; }
-      .score-circle .value { font-size: 3rem; }
+      .score-circle { width: 140px; height: 140px; }
+      .score-circle .value { font-size: 2.8rem; }
     }
   `]
 })

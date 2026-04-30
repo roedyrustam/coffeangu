@@ -803,71 +803,49 @@ import { environment } from '../../../environments/environment';
       font-weight: 600;
     }
 
-    @media (max-width: 900px) {
-      .profile-container { padding: 0 15px; margin: 20px auto; }
-      .profile-header { min-height: auto; padding-bottom: 20px; }
-      .header-content { flex-direction: column; padding: 30px 20px; gap: 30px; }
-      .user-info { flex-direction: column; gap: 25px; text-align: center; width: 100%; }
-      .user-details h1 { font-size: 2.5rem; }
-      .name-row { justify-content: center; }
-      .profile-share-public { margin: 20px auto 0; }
-      
-      .stats-grid { width: 100%; flex-direction: column; gap: 30px; }
-      .signature-section { width: 100%; min-width: 0; }
-      .numeric-stats { width: 100%; flex-direction: row; justify-content: center; flex-wrap: wrap; }
-      .stat-card { flex: 1; min-width: 120px; padding: 15px; }
-      
-      .membership-status { align-items: center; width: 100%; }
-      .team-grid { grid-template-columns: 1fr; }
-    }
-
-    @media (max-width: 640px) {
-      .user-details h1 { font-size: 2rem; }
-      .avatar-large { width: 100px; height: 100px; border-radius: 30px; }
-      .section-title { font-size: 1.5rem; }
-      .history-card { padding: 20px; flex-direction: column; align-items: flex-start; gap: 20px; }
-      .card-right { width: 100%; justify-content: space-between; }
-      .actions { flex-direction: row; gap: 10px; width: auto; }
-      .score-badge { width: 60px; height: 60px; font-size: 1.4rem; }
-      .bean-name { font-size: 1.2rem; }
-      
-      .tab-control { overflow-x: auto; padding-bottom: 5px; margin-bottom: 20px; -webkit-overflow-scrolling: touch; }
-      .tab-control button { white-space: nowrap; padding: 8px 18px; font-size: 0.75rem; }
-      
-      .numeric-stats { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-      .stat-card { min-width: 0; }
-    }
-    @media (max-width: 900px) {
-      .profile-header { min-height: auto; padding-top: 60px; }
-      .header-content { flex-direction: column; padding: 30px 20px; text-align: center; gap: 40px; }
+    @media (max-width: 1024px) {
+      .profile-header { padding: 0; }
+      .header-content { flex-direction: column; padding: 40px 20px; gap: 30px; text-align: center; }
       .user-info { flex-direction: column; gap: 20px; }
-      .avatar-large { width: 100px; height: 100px; border-radius: 30px; }
-      .user-details h1 { font-size: 2.2rem; }
       .stats-grid { flex-direction: column; width: 100%; gap: 30px; }
-      .numeric-stats { flex-direction: row; justify-content: center; width: 100%; }
-      .stat-card { min-width: 120px; padding: 15px; }
-      .membership-status { align-items: center; order: -1; }
-      .profile-share-public { margin: 20px auto 0; }
+      .numeric-stats { flex-direction: row; width: 100%; justify-content: center; }
+      .stat-card { flex: 1; }
+      .membership-status { align-items: center; }
     }
 
     @media (max-width: 768px) {
-      .profile-container { padding: 0 15px; margin-top: 20px; }
-      .tab-control { overflow-x: auto; padding-bottom: 10px; margin-bottom: 20px; width: calc(100% + 30px); margin-left: -15px; padding-left: 15px; }
-      .tab-control button { white-space: nowrap; padding: 8px 16px; font-size: 0.7rem; }
-      .section-title { font-size: 1.5rem; }
-      .history-card { padding: 20px; }
+      .profile-container { padding: 0 16px; margin: 20px auto; }
+      .tab-control { 
+        overflow-x: auto; 
+        margin: 0 -16px 20px -16px; 
+        padding: 0 16px 10px 16px;
+        scrollbar-width: none;
+      }
+      .tab-control::-webkit-scrollbar { display: none; }
+      .tab-control button { flex-shrink: 0; padding: 8px 16px; font-size: 0.7rem; }
+      
+      .profile-header { min-height: auto; border-radius: 24px; margin-bottom: 30px; }
+      .avatar-large { width: 90px; height: 90px; border-radius: 28px; }
+      .user-details h1 { font-size: 2rem; }
+      .chart-container { height: 160px; }
+      .stat-card .val { font-size: 1.8rem; }
+      
+      .history-card { padding: 20px; border-radius: 18px; }
       .bean-name { font-size: 1.1rem; }
-      .score-badge { width: 55px; height: 55px; font-size: 1.2rem; border-radius: 14px; }
+      .score-badge { width: 55px; height: 55px; border-radius: 14px; font-size: 1.3rem; }
       .card-right { gap: 15px; }
-      .team-grid { grid-template-columns: 1fr; }
-    }
 
-    @media (max-width: 480px) {
-      .numeric-stats { gap: 10px; }
-      .stat-card { min-width: 0; flex: 1; padding: 12px; }
-      .stat-card .val { font-size: 1.6rem; }
-      .modal-premium { max-height: 95vh; }
+      .modal-premium { 
+        max-height: 90vh; 
+        border-radius: 24px 24px 0 0; 
+        position: fixed; 
+        bottom: 0; 
+        left: 0; 
+        right: 0; 
+        margin: 0;
+      }
       .modal-header, .modal-body, .modal-actions-fixed { padding: 20px; }
+      .team-grid { grid-template-columns: 1fr; }
     }
   `]
 })

@@ -380,15 +380,36 @@ import { SensoryAiService } from '../../services/sensory-ai.service';
       cursor: pointer;
     }
     @media (max-width: 768px) { 
-      .guide-card { padding: 40px 24px; }
-      .guide-grid { grid-template-columns: 1fr; }
-      .form-section { padding: 32px 20px; } 
+      .guide-container { padding: 16px; margin: 20px auto; }
+      .guide-card { padding: 40px 20px; border-radius: 24px; }
+      .guide-desc { margin-bottom: 40px; font-size: 1rem; }
+      .guide-grid { grid-template-columns: 1fr; gap: 16px; margin-bottom: 40px; }
+      .guide-step { padding: 20px; border-radius: 18px; }
+      .step-icon { width: 50px; height: 50px; font-size: 1.5rem; margin-bottom: 15px; }
+      
+      .form-container { padding: 0 0 160px 0; }
+      .form-header { border-radius: 0; min-height: 240px; padding: 40px 20px; margin-bottom: 0; }
       .header-content h2 { font-size: 2.2rem; } 
-      .header-header { padding: 30px 20px; min-height: 200px; }
-      .form-sticky-actions { bottom: 100px; left: 15px; right: 15px; padding: 12px 16px; border-radius: 20px; width: auto; max-width: none; } 
-      .btn-submit { flex: 1; }
-      .footer-actions { width: 100%; justify-content: space-between; }
-      .section-title { font-size: 1.3rem; margin-bottom: 25px; }
+      
+      .form-section { padding: 30px 20px; border-radius: 0; border-left: none; border-right: none; margin-bottom: 10px; } 
+      .section-title { font-size: 1.4rem; margin-bottom: 30px; }
+      
+      .flavor-display { padding: 25px 20px; min-height: 100px; }
+      .chip { padding: 10px 18px; font-size: 0.8rem; }
+      
+      .form-sticky-actions { 
+        bottom: 85px; 
+        left: 0; 
+        right: 0; 
+        padding: 16px 20px; 
+        border-radius: 24px 24px 0 0; 
+        width: 100%; 
+        max-width: none;
+        box-shadow: 0 -10px 30px rgba(0,0,0,0.5);
+      } 
+      .footer-toggle { font-size: 0.8rem; }
+      .btn-submit { flex: 2; height: 55px; }
+      .footer-actions { width: 100%; gap: 15px; }
     }
     .ai-sparkle { color: var(--accent-neon); text-shadow: 0 0 10px var(--accent-neon); margin-right: 5px; }
     .ai-chip { border-color: rgba(212, 225, 87, 0.3) !important; color: var(--accent-neon) !important; background: rgba(212, 225, 87, 0.05) !important; }
