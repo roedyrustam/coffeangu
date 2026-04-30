@@ -12,6 +12,8 @@ export interface SeoOptions {
   author?: string;
   origin?: string;
   isVerified?: boolean;
+  latitude?: number;
+  longitude?: number;
 }
 
 @Injectable({
@@ -37,6 +39,7 @@ export class SeoService {
 
     // Standard Meta
     this.meta.updateTag({ name: 'description', content: baseDesc });
+    this.meta.updateTag({ name: 'DC.title', content: fullTitle });
 
     // Open Graph
     this.meta.updateTag({ property: 'og:site_name', content: siteName });
@@ -45,45 +48,43 @@ export class SeoService {
     this.meta.updateTag({ property: 'og:type', content: options.type || 'website' });
     this.meta.updateTag({ property: 'og:locale', content: this.ts.currentLocale() === 'id' ? 'id_ID' : 'en_US' });
     
-    if (options.url) {
-      this.meta.updateTag({ property: 'og:url', content: options.url });
-    } else if (isPlatformBrowser(this.platformId)) {
-      this.meta.updateTag({ property: 'og:url', content: window.location.href });
+    const currentUrl = options.url || (isPlatformBrowser(this.platformId) ? window.location.href : '');
+    if (currentUrl) {
+      this.meta.updateTag({ property: 'og:url', content: currentUrl });
+      // App Indexing / Deep Links
+      this.meta.updateTag({ property: 'al:ios:url', content: currentUrl });
+      this.meta.updateTag({ property: 'al:android:url', content: currentUrl });
     }
 
     if (options.image) {
       this.meta.updateTag({ property: 'og:image', content: options.image });
       this.meta.updateTag({ property: 'og:image:secure_url', content: options.image });
-      this.meta.updateTag({ property: 'og:image:type', content: 'image/png' });
       this.meta.updateTag({ property: 'og:image:alt', content: fullTitle });
-      this.meta.updateTag({ property: 'og:image:width', content: '1200' });
-      this.meta.updateTag({ property: 'og:image:height', content: '630' });
-
-      // Twitter / X
       this.meta.updateTag({ name: 'twitter:image', content: options.image });
-      this.meta.updateTag({ name: 'twitter:image:alt', content: fullTitle });
     }
 
-    // Twitter
+    // Twitter / X
     this.meta.updateTag({ name: 'twitter:card', content: 'summary_large_image' });
     this.meta.updateTag({ name: 'twitter:title', content: fullTitle });
     this.meta.updateTag({ name: 'twitter:description', content: baseDesc });
     this.meta.updateTag({ name: 'twitter:site', content: '@cuppingnotes' });
-    this.meta.updateTag({ name: 'twitter:creator', content: '@cuppingnotes' });
 
-    // GEO Tags
+    // GEO Tags (Potent SEO)
     if (options.origin) {
       this.meta.updateTag({ name: 'geo.placename', content: options.origin });
     }
+    if (options.latitude && options.longitude) {
+      this.meta.updateTag({ name: 'geo.position', content: `${options.latitude};${options.longitude}` });
+      this.meta.updateTag({ name: 'ICBM', content: `${options.latitude}, ${options.longitude}` });
+    }
 
-    // Facebook / Threads article-specific tags
+    // Article Specifics
     if (options.type === 'article') {
       if (options.author) {
         this.meta.updateTag({ property: 'article:author', content: options.author });
       }
-      this.meta.updateTag({ property: 'article:published_time', content: new Date().toISOString() });
-      this.meta.updateTag({ property: 'article:section', content: 'Coffee' });
-      this.meta.updateTag({ property: 'article:tag', content: 'Specialty Coffee' });
+      this.meta.updateTag({ property: 'article:section', content: 'Specialty Coffee' });
+      this.meta.updateTag({ property: 'article:tag', content: 'Coffee Sensory Evaluation' });
     }
 
     this.setCanonicalUrl(options.url);

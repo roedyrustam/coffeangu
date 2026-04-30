@@ -47,8 +47,13 @@ export class SensoryAiService {
   /**
    * Generates a poetic "Archetype" name based on the flavor profile.
    */
-  predictArchetype(profile: SensoryProfile): { name: string, description: string } {
-    if (profile.acidity >= 8.5 && profile.flavor >= 8.5) {
+  predictArchetype(scores: any): { name: string, description: string } {
+    const acidity = scores.acidity || 0;
+    const body = scores.mouthfeel || 0;
+    const flavor = scores.flavor || 0;
+    const sweetness = scores.sweetness || 0;
+
+    if (acidity >= 8.5 && flavor >= 8.5) {
       return { 
         name: 'The Radiant Flare', 
         description: 'A brilliant explosion of high-altitude acidity and complex aromatics.' 

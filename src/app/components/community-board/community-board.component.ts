@@ -1,4 +1,5 @@
 import { Component, inject, OnInit, signal, computed } from '@angular/core';
+import { toSignal } from '@angular/core/rxjs-interop';
 import { CommonModule } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { FormsModule } from '@angular/forms';
@@ -77,18 +78,32 @@ import { SeoService } from '../../services/seo.service';
           <input id="discoverySearch" type="text" [placeholder]="t('SEARCH_PLACEHOLDER')" [ngModel]="searchQuery()" (ngModelChange)="onSearchChange($event)">
         </div>
 
-        <div class="filters-row">
+        <div class="filters-row scrollable-filters">
           <div class="filter-group" role="group" aria-label="Process Filters">
-            <button class="filter-chip" [class.active]="activeProcess() === 'all'" (click)="setProcess('all')" [aria-pressed]="activeProcess() === 'all'">
+            <button class="filter-chip" [class.active]="activeProcess() === 'all'" (click)="setProcess('all')">
               {{ t('FILTER_ALL') }}
             </button>
-            <button class="filter-chip" *ngFor="let p of processes" [class.active]="activeProcess() === p" (click)="setProcess(p)" [aria-pressed]="activeProcess() === p">
+            <button class="filter-chip" *ngFor="let p of processes" [class.active]="activeProcess() === p" (click)="setProcess(p)">
               {{ p }}
             </button>
           </div>
 
-          <div class="sort-selector">
-            <label for="sortBy" class="visually-hidden">Sort by</label>
+          <div class="filter-group" role="group" aria-label="Type Filters">
+            <button class="filter-chip" *ngFor="let t of types" [class.active]="activeType() === t" (click)="activeType.set(t)">
+              {{ t }}
+            </button>
+          </div>
+
+          <div class="filter-group" role="group" aria-label="Origin Filters">
+            <button class="filter-chip" [class.active]="activeOrigin() === 'all'" (click)="activeOrigin.set('all')">
+              All Origins
+            </button>
+            <button class="filter-chip" *ngFor="let o of availableOrigins()" [class.active]="activeOrigin() === o" (click)="activeOrigin.set(o)">
+              {{ o }}
+            </button>
+          </div>
+
+          <div class="sort-selector glass-card">
             <select id="sortBy" [ngModel]="sortBy()" (ngModelChange)="onSortChange($event)">
               <option value="timestamp">{{ t('SORT_NEWEST') }}</option>
               <option value="finalScore">{{ t('SORT_TOP_RATED') }}</option>
@@ -117,7 +132,10 @@ import { SeoService } from '../../services/seo.service';
             <div class="bean-main">
               <h3 [id]="'bean-title-' + i">{{ session.beanName }}</h3>
               <div class="roastery-row">
-                <span class="roastery" aria-label="Roastery">{{ session.roastery }}</span>
+                <div class="archetype-badge" *ngIf="session.isAiAssisted">
+                   <span>✨ {{ getArchetype(session).name }}</span>
+                </div>
+                <div class="roastery" [routerLink]="['/u', session.userId]">{{ session.roastery }}</div>
                 <span class="verified-icon" *ngIf="session.isVerifiedRoastery" title="Verified Roastery">
                   <svg viewBox="0 0 24 24" width="14" height="14" fill="var(--primary-color)" aria-hidden="true">
                     <path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10 10-4.5 10-10S17.5 2 12 2zm-1.9 14.7L6.4 13l1.5-1.5 2.2 2.2 4.8-4.8 1.5 1.5-6.3 6.3z"/>
@@ -306,8 +324,35 @@ import { SeoService } from '../../services/seo.service';
     }
     .search-box input:focus { box-shadow: none; }
 
-    .filters-row { display: flex; justify-content: space-between; align-items: center; }
-    .filter-group { display: flex; gap: 12px; flex-wrap: wrap; }
+      .scrollable-filters {
+        overflow-x: auto;
+        display: flex;
+        gap: 20px;
+        padding-bottom: 10px;
+        -webkit-overflow-scrolling: touch;
+        scrollbar-width: none;
+      }
+      .scrollable-filters::-webkit-scrollbar { display: none; }
+      
+      .filter-group {
+        display: flex;
+        gap: 10px;
+        flex-shrink: 0;
+      }
+      .sort-selector {
+        margin-left: auto;
+        flex-shrink: 0;
+      }
+      .sort-selector select {
+        background: transparent;
+        border: none;
+        color: var(--text-main);
+        font-weight: 800;
+        font-size: 0.85rem;
+        cursor: pointer;
+        padding: 5px 10px;
+      }
+
     .filter-chip {
       background: var(--surface-hover);
       border: 1px solid var(--glass-border);
@@ -405,6 +450,25 @@ import { SeoService } from '../../services/seo.service';
       line-height: 1.2;
       height: 3.6rem; /* Ensures consistent vertical space for 2 lines */
     }
+        .archetype-badge {
+        display: inline-flex;
+        align-items: center;
+        background: rgba(189, 142, 98, 0.15);
+        color: var(--primary-color);
+        padding: 4px 10px;
+        border-radius: 6px;
+        font-size: 0.6rem;
+        font-weight: 900;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        margin-bottom: 5px;
+        border: 1px solid rgba(189, 142, 98, 0.3);
+        animation: float 3s infinite ease-in-out;
+      }
+      @keyframes float {
+        0%, 100% { transform: translateY(0); }
+        50% { transform: translateY(-3px); }
+      }
     .roastery { 
       font-size: 0.75rem; 
       color: var(--text-dim); 
@@ -631,6 +695,7 @@ export class CommunityBoardComponent implements OnInit {
   private cuppingService = inject(CuppingService);
   private ts = inject(TranslationService);
   private seo = inject(SeoService);
+  private ai = inject(SensoryAiService);
   protected auth = inject(AuthService);
   t = this.ts.t();
   errorMessage = '';
@@ -638,8 +703,11 @@ export class CommunityBoardComponent implements OnInit {
   // Filter State (Signals)
   searchQuery = signal('');
   activeProcess = signal<string>('all');
+  activeOrigin = signal<string>('all');
+  activeType = signal<string>('Arabica');
   sortBy = signal<'timestamp' | 'finalScore' | 'likesCount'>('timestamp');
   processes = ['Wash', 'Natural', 'Honey', 'Anaerobic'];
+  types = ['Arabica', 'Robusta', 'Liberica', 'Excelsa'];
 
   // Base Data (Signals)
   private allCuppings = toSignal(this.cuppingService.getPublicCuppings({ limit: 100 }), { initialValue: [] });
@@ -656,6 +724,11 @@ export class CommunityBoardComponent implements OnInit {
     };
   });
 
+  availableOrigins = computed(() => {
+    const origins = this.allCuppings().map(c => c.origin).filter(o => !!o);
+    return [...new Set(origins)].sort();
+  });
+
   filteredCuppings = computed(() => {
     let result = [...this.allCuppings()];
     const query = this.searchQuery().toLowerCase();
@@ -664,6 +737,14 @@ export class CommunityBoardComponent implements OnInit {
 
     if (process !== 'all') {
       result = result.filter(c => c.postHarvest === process);
+    }
+
+    if (this.activeOrigin() !== 'all') {
+      result = result.filter(c => c.origin === this.activeOrigin());
+    }
+
+    if (this.activeType() !== 'all') {
+      result = result.filter(c => c.type === this.activeType());
     }
 
     if (query) {
@@ -726,6 +807,10 @@ export class CommunityBoardComponent implements OnInit {
   getBarColor(attr: string) {
     const colors: any = { flavor: '#FFA000', acidity: '#40C4FF', mouthfeel: '#69F0AE' };
     return colors[attr] || 'var(--primary-color)';
+  }
+
+  getArchetype(session: CuppingSession) {
+    return this.ai.predictArchetype(session.scores);
   }
 
   private updateSeo() {

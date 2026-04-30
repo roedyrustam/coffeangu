@@ -1075,6 +1075,23 @@ export class CuppingResultComponent implements OnInit, AfterViewInit, OnDestroy 
     }
     const pageUrl = `${baseUrl}/result/${this.session.id}`;
 
+    // GEO Coordinates Mapping (Heuristic)
+    const originCoords: Record<string, { lat: number, lng: number }> = {
+      'Ethiopia': { lat: 9.145, lng: 40.4896 },
+      'Colombia': { lat: 4.5709, lng: -74.2973 },
+      'Brazil': { lat: -14.235, lng: -51.9253 },
+      'Indonesia': { lat: -0.7893, lng: 113.9213 },
+      'Kenya': { lat: -1.2921, lng: 36.8219 },
+      'Vietnam': { lat: 14.0583, lng: 108.2772 },
+      'Panama': { lat: 8.538, lng: -80.7823 },
+      'Sumatra': { lat: -0.5897, lng: 101.3431 },
+      'Gayo': { lat: 4.6888, lng: 96.8521 },
+      'Toraja': { lat: -2.9691, lng: 119.8978 },
+      'Gayo': { lat: 4.6888, lng: 96.8521 }
+    };
+
+    const coords = originCoords[this.session.origin || ''] || undefined;
+
     this.seo.updateMeta({
       title: `${this.session.beanName} Evaluation`,
       description: description,
@@ -1082,7 +1099,9 @@ export class CuppingResultComponent implements OnInit, AfterViewInit, OnDestroy 
       url: pageUrl,
       type: 'article',
       author: this.session.cupperName,
-      origin: this.session.origin
+      origin: this.session.origin,
+      latitude: coords?.lat,
+      longitude: coords?.lng
     });
   }
 
