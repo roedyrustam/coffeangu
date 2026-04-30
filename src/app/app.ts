@@ -85,44 +85,43 @@ import { ToastService } from './services/toast.service';
     </main>
 
     <nav class="mobile-bottom-nav" aria-label="Mobile Navigation">
+      <div class="nav-indicator" [style.transform]="getIndicatorTransform()"></div>
       
-      <a routerLink="/" class="bottom-nav-link" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}">
+      <a routerLink="/" class="bottom-nav-link" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}" (click)="triggerHaptic()">
         <div class="icon-wrapper">
-          <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+          <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
         </div>
-        <span>{{ t('NAV_HOME') }}</span>
-        <div class="active-dot"></div>
+        <span class="nav-label">{{ t('NAV_HOME') }}</span>
       </a>
       
-      <a routerLink="/community" class="bottom-nav-link" routerLinkActive="active">
+      <a routerLink="/community" class="bottom-nav-link" routerLinkActive="active" (click)="triggerHaptic()">
         <div class="icon-wrapper">
-          <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
+          <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
         </div>
-        <span>{{ t('NAV_DISCOVER') }}</span>
-        <div class="active-dot"></div>
+        <span class="nav-label">{{ t('NAV_DISCOVER') }}</span>
       </a>
       
       <div class="nav-center-action">
-        <button class="center-fab" routerLink="/cupping" aria-label="New Cupping Session">
+        <button class="center-fab" routerLink="/cupping" aria-label="New Cupping Session" (click)="triggerHaptic()">
+          <div class="fab-inner">
+            <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12h14"/></svg>
+          </div>
           <div class="fab-glow"></div>
-          <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12h14"/></svg>
         </button>
       </div>
 
-      <a routerLink="/analytics" class="bottom-nav-link" routerLinkActive="active" *ngIf="auth.currentUser()">
+      <a routerLink="/analytics" class="bottom-nav-link" routerLinkActive="active" *ngIf="auth.currentUser()" (click)="triggerHaptic()">
         <div class="icon-wrapper">
-          <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"/><path d="m19 9-5 5-4-4-3 3"/></svg>
+          <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"/><path d="m19 9-5 5-4-4-3 3"/></svg>
         </div>
-        <span>{{ t('NAV_INSIGHTS') }}</span>
-        <div class="active-dot"></div>
+        <span class="nav-label">{{ t('NAV_INSIGHTS') }}</span>
       </a>
 
-      <a [routerLink]="auth.currentUser() ? '/profile' : '/login'" class="bottom-nav-link" routerLinkActive="active">
+      <a [routerLink]="auth.currentUser() ? '/profile' : '/login'" class="bottom-nav-link" routerLinkActive="active" (click)="triggerHaptic()">
         <div class="icon-wrapper">
-          <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+          <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
         </div>
-        <span>{{ auth.currentUser() ? (t('NAV_ME') || 'Me') : t('BTN_LOGIN') }}</span>
-        <div class="active-dot"></div>
+        <span class="nav-label">{{ auth.currentUser() ? (t('NAV_ME') || 'Me') : t('BTN_LOGIN') }}</span>
       </a>
     </nav>
 
@@ -222,22 +221,35 @@ import { ToastService } from './services/toast.service';
     .mobile-bottom-nav {
       display: none;
       position: fixed;
-      bottom: calc(15px + env(safe-area-inset-bottom, 0px));
-      left: 15px;
-      right: 15px;
-      height: 72px;
+      bottom: calc(20px + env(safe-area-inset-bottom, 0px));
+      left: 20px;
+      right: 20px;
+      height: 80px;
       z-index: var(--z-nav);
       justify-content: space-around;
       align-items: center;
-      background: rgba(12, 12, 14, 0.85);
-      backdrop-filter: blur(40px) saturate(200%);
-      -webkit-backdrop-filter: blur(40px) saturate(200%);
-      border: 1px solid rgba(255, 255, 255, 0.12);
-      border-radius: 30px;
-      padding: 0 8px;
+      background: rgba(12, 12, 14, 0.8);
+      backdrop-filter: blur(30px) saturate(180%);
+      -webkit-backdrop-filter: blur(30px) saturate(180%);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 28px;
+      padding: 0 10px;
       box-shadow: 
-        0 25px 60px -15px rgba(0, 0, 0, 0.8),
-        0 0 0 1px rgba(255, 255, 255, 0.05) inset;
+        0 30px 60px -15px rgba(0, 0, 0, 0.9),
+        0 0 20px rgba(0, 0, 0, 0.4),
+        0 1px 1px rgba(255, 255, 255, 0.1) inset;
+    }
+    .nav-indicator {
+      position: absolute;
+      top: 10px;
+      left: 0;
+      width: calc((100% - 100px) / 4); /* Approximate width for 4 items */
+      height: 60px;
+      background: rgba(189, 142, 98, 0.1);
+      border-radius: 20px;
+      transition: all 0.5s cubic-bezier(0.19, 1, 0.22, 1);
+      pointer-events: none;
+      z-index: 0;
     }
     .bottom-nav-link {
       display: flex;
@@ -246,55 +258,46 @@ import { ToastService } from './services/toast.service';
       justify-content: center;
       color: var(--text-dim);
       text-decoration: none;
-      font-size: 0.6rem;
-      font-weight: 800;
-      gap: 4px;
       transition: all 0.4s cubic-bezier(0.2, 1, 0.3, 1);
       flex: 1;
       height: 100%;
       position: relative;
+      z-index: 1;
+    }
+    .nav-label {
+      font-size: 0.6rem;
+      font-weight: 800;
       text-transform: uppercase;
-      letter-spacing: 0.5px;
+      letter-spacing: 0.8px;
+      margin-top: 4px;
+      opacity: 0.7;
+      transition: all 0.4s;
     }
     .icon-wrapper {
       position: relative;
       width: 40px;
-      height: 40px;
+      height: 32px;
       display: flex;
       align-items: center;
       justify-content: center;
-      border-radius: 14px;
       transition: all 0.4s;
     }
     .bottom-nav-link.active {
       color: var(--primary-color);
     }
-    .bottom-nav-link.active .icon-wrapper {
-      background: rgba(189, 142, 98, 0.15);
-      color: var(--primary-color);
-      box-shadow: 0 0 20px var(--primary-glow);
+    .bottom-nav-link.active .nav-label {
+      opacity: 1;
+      transform: translateY(-2px);
     }
     .bottom-nav-link svg {
       width: 22px;
       height: 22px;
       stroke-width: 2.2px;
-      transition: all 0.4s;
+      transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
     }
     .bottom-nav-link.active svg {
-      transform: translateY(-2px);
+      transform: scale(1.15) translateY(-2px);
       filter: drop-shadow(0 0 8px var(--primary-glow));
-    }
-    .active-dot {
-      width: 4px;
-      height: 4px;
-      background: var(--primary-color);
-      border-radius: 50%;
-      box-shadow: 0 0 10px var(--primary-color);
-      animation: navPulse 2s infinite;
-    }
-    @keyframes navPulse {
-      0%, 100% { opacity: 0.5; transform: scale(1); }
-      50% { opacity: 1; transform: scale(1.5); }
     }
     .nav-center-action {
       position: relative;
@@ -303,32 +306,58 @@ import { ToastService } from './services/toast.service';
       display: flex;
       justify-content: center;
       align-items: center;
+      z-index: 2;
     }
     .center-fab {
+      width: 60px;
+      height: 60px;
+      background: transparent;
+      border: none;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      position: absolute;
+      top: -30px;
+    }
+    .fab-inner {
       width: 64px;
       height: 64px;
       background: var(--primary-gradient);
-      border-radius: 22px;
+      border-radius: 24px;
       display: flex;
       align-items: center;
       justify-content: center;
       color: #0c0c0e;
       border: 1px solid rgba(255, 255, 255, 0.2);
-      box-shadow: 
-        0 15px 35px var(--primary-glow),
-        0 0 20px rgba(189, 142, 98, 0.2);
-      cursor: pointer;
+      box-shadow: 0 15px 30px var(--primary-glow);
       transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-      position: absolute;
-      top: -32px;
+      z-index: 2;
     }
-    .center-fab:hover {
-      transform: translateY(-6px) scale(1.08);
-      box-shadow: 0 20px 45px var(--primary-glow);
+    .fab-glow {
+      position: absolute;
+      inset: -5px;
+      background: var(--primary-color);
+      border-radius: 28px;
+      filter: blur(15px);
+      opacity: 0.3;
+      z-index: 1;
+      animation: fabPulse 3s infinite;
+    }
+    @keyframes fabPulse {
+      0%, 100% { opacity: 0.2; transform: scale(1); }
+      50% { opacity: 0.5; transform: scale(1.1); }
+    }
+    .center-fab:hover .fab-inner {
+      transform: translateY(-8px) scale(1.1) rotate(5deg);
+      box-shadow: 0 25px 45px var(--primary-glow);
+    }
+    .center-fab:active .fab-inner {
+      transform: translateY(-4px) scale(0.9);
     }
     .center-fab svg {
-      width: 30px;
-      height: 30px;
+      width: 28px;
+      height: 28px;
       stroke-width: 3.5px;
     }
     .main-footer {
@@ -389,7 +418,7 @@ import { ToastService } from './services/toast.service';
     @media (max-width: 768px) {
       .main-nav { display: none; }
       .mobile-bottom-nav { display: flex; }
-      main { padding-bottom: 100px; }
+      main { padding-bottom: 120px; }
     }
     /* Loader */
     .auth-init-overlay {
@@ -424,6 +453,33 @@ export class App {
   showUserMenu = signal(false);
   parallaxTransform = signal('translate3d(0,0,0) scale(1.1)');
   currentYear = new Date().getFullYear();
+
+  getIndicatorTransform() {
+    const url = this.router.url;
+    const itemsCount = this.auth.currentUser() ? 4 : 3; // Home, Community, (Analytics), Profile/Login
+    const navWidth = window.innerWidth - 40 - 20; // Nav width minus padding and gaps
+    const itemWidth = (navWidth - 80) / itemsCount; // 80 is center action width
+
+    // Simplified logic for indicator positioning
+    if (url === '/') return `translateX(10px)`;
+    if (url.includes('/community')) return `translateX(calc(${itemWidth}px + 10px))`;
+    
+    // Position 3 and 4 depend on if user is logged in
+    if (this.auth.currentUser()) {
+      if (url.includes('/analytics')) return `translateX(calc(${itemWidth * 2}px + 90px))`;
+      if (url.includes('/profile')) return `translateX(calc(${itemWidth * 3}px + 90px))`;
+    } else {
+      if (url.includes('/login')) return `translateX(calc(${itemWidth * 2}px + 90px))`;
+    }
+    
+    return 'scale(0)'; // Hide if no match
+  }
+
+  triggerHaptic() {
+    if ('vibrate' in navigator) {
+      navigator.vibrate(12);
+    }
+  }
 
   private mouseMoveHandler = (e: MouseEvent) => {
     const x = (e.clientX / window.innerWidth - 0.5) * 25;
