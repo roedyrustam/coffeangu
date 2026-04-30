@@ -269,7 +269,7 @@ export class PublicProfileComponent implements OnInit {
             grid: { color: 'rgba(255, 255, 255, 0.05)' },
             suggestedMin: 1,
             suggestedMax: 9,
-            pointLabels: { color: 'rgba(255,255,255,0.4)', font: { size: 9, weight: 'bold', family: "'Poppins', sans-serif" } },
+            pointLabels: { color: 'rgba(255,255,255,0.4)', font: { size: 9, weight: 'bold', family: "'Outfit', sans-serif" } },
             ticks: { display: false }
           }
         },

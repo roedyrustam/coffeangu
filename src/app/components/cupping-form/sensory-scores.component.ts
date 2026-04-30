@@ -9,71 +9,74 @@ import { CuppingSession } from '../../models/cupping.model';
   imports: [CommonModule, FormsModule],
   viewProviders: [{ provide: ControlContainer, useExisting: NgForm }],
   template: `
-    <section class="form-section">
-      <h3 class="section-title">Descriptive Intensity</h3>
+    <fieldset class="form-section">
+      <legend class="section-title">Descriptive Intensity</legend>
       <div class="intensity-grid">
         <div class="intensity-item" *ngFor="let item of intensityKeys" [style.--accent-color]="getScoreColor(item.key + 'Int')">
           <div class="intensity-header">
-            <label>{{ item.label }}</label>
-            <span class="intensity-value" [style.color]="getScoreColor(item.key + 'Int')">{{ session.intensities![item.key] }}</span>
+            <label [for]="'int-' + item.key">{{ item.label }}</label>
+            <span class="intensity-value" [style.color]="getScoreColor(item.key + 'Int')" aria-live="polite">{{ session.intensities![item.key] }}</span>
           </div>
           <div class="slider-row">
-            <button type="button" class="btn-step" (click)="stepIntensity(item.key, -1)">-</button>
+            <button type="button" class="btn-step" (click)="stepIntensity(item.key, -1)" [aria-label]="'Decrease ' + item.label">-</button>
             <div class="slider-container">
-              <input type="range" min="1" max="10" step="1" [(ngModel)]="session.intensities![item.key]" [name]="'int-' + item.key"
-                     [style.background]="'linear-gradient(to right, var(--accent-color) ' + ((session.intensities![item.key]-1)/9*100) + '%, rgba(255,255,255,0.05) ' + ((session.intensities![item.key]-1)/9*100) + '%)'">
-              <div class="slider-labels">
+              <input type="range" min="1" max="10" step="1" [(ngModel)]="session.intensities![item.key]" [name]="'int-' + item.key" [id]="'int-' + item.key"
+                     [style.background]="'linear-gradient(to right, var(--accent-color) ' + ((session.intensities![item.key]-1)/9*100) + '%, rgba(255,255,255,0.05) ' + ((session.intensities![item.key]-1)/9*100) + '%)'"
+                     [aria-label]="item.label + ' Intensity'">
+              <div class="slider-labels" aria-hidden="true">
                 <span>Low</span>
                 <span>High</span>
               </div>
             </div>
-            <button type="button" class="btn-step" (click)="stepIntensity(item.key, 1)">+</button>
+            <button type="button" class="btn-step" (click)="stepIntensity(item.key, 1)" [aria-label]="'Increase ' + item.label">+</button>
           </div>
         </div>
       </div>
-    </section>
+    </fieldset>
 
-    <section class="form-section">
-      <h3 class="section-title">Affective Quality Scores</h3>
+    <fieldset class="form-section">
+      <legend class="section-title">Affective Quality Scores</legend>
       <div class="intensity-grid">
         <div class="score-card" *ngFor="let key of scoreKeys" [style.--accent-color]="getScoreColor(key)">
           <div class="score-header">
-            <label>{{ formatLabel(key) }}</label>
-            <span class="value" [style.color]="getScoreColor(key)">{{ session.scores[key] | number:'1.2-2' }}</span>
+            <label [for]="'score-' + key">{{ formatLabel(key) }}</label>
+            <span class="value" [style.color]="getScoreColor(key)" aria-live="polite">{{ session.scores[key] | number:'1.2-2' }}</span>
           </div>
           <div class="slider-row">
-            <button type="button" class="btn-step" (click)="stepScore(key, -0.25)">-</button>
-            <input type="range" min="1" max="9" step="0.25" [(ngModel)]="session.scores[key]" [name]="key" (input)="onScoreInput()"
-                   [style.background]="'linear-gradient(to right, var(--accent-color) ' + ((session.scores[key]-1)/8*100) + '%, rgba(255,255,255,0.05) ' + ((session.scores[key]-1)/8*100) + '%)'">
-            <button type="button" class="btn-step" (click)="stepScore(key, 0.25)">+</button>
+            <button type="button" class="btn-step" (click)="stepScore(key, -0.25)" [aria-label]="'Decrease ' + formatLabel(key)">-</button>
+            <input type="range" min="1" max="9" step="0.25" [(ngModel)]="session.scores[key]" [name]="key" [id]="'score-' + key" (input)="onScoreInput()"
+                   [style.background]="'linear-gradient(to right, var(--accent-color) ' + ((session.scores[key]-1)/8*100) + '%, rgba(255,255,255,0.05) ' + ((session.scores[key]-1)/8*100) + '%)'"
+                   [aria-label]="formatLabel(key) + ' Quality'">
+            <button type="button" class="btn-step" (click)="stepScore(key, 0.25)" [aria-label]="'Increase ' + formatLabel(key)">+</button>
           </div>
         </div>
       </div>
 
       <!-- SCA Defects Calculator -->
       <div class="defects-calculator">
-        <label class="section-hint">SCA Defects (Deducted from Total)</label>
-        <div class="cup-grid">
-          <div *ngFor="let cup of [1,2,3,4,5]; let i = index" class="cup-item" 
-               [class.active]="defectCups[i] > 0" (click)="toggleCup(i)">
-            <span class="cup-icon">☕</span>
+        <h4 class="section-hint">SCA Defects (Deducted from Total)</h4>
+        <div class="cup-grid" role="group" aria-label="Defect Cup States">
+          <button type="button" *ngFor="let cup of [1,2,3,4,5]; let i = index" class="cup-item" 
+               [class.active]="defectCups[i] > 0" (click)="toggleCup(i)"
+               [aria-label]="'Cup ' + cup + (defectCups[i] === 2 ? ': Taint' : (defectCups[i] === 4 ? ': Fault' : ': Clean'))">
+            <span class="cup-icon" aria-hidden="true">☕</span>
             <small>Cup {{ cup }}</small>
-            <div class="cup-intensity" *ngIf="defectCups[i] > 0">
+            <div class="cup-intensity" *ngIf="defectCups[i] > 0" aria-hidden="true">
                {{ defectCups[i] === 2 ? 'Taint' : 'Fault' }}
             </div>
-          </div>
+          </button>
         </div>
-        <div class="defect-total">Total Deduction: -{{ session.defects }}</div>
+        <div class="defect-total" aria-live="polite">Total Deduction: -{{ session.defects }}</div>
       </div>
 
-      <div class="final-score-bar" [class.specialty]="session.finalScore >= 80">
+      <div class="final-score-bar" [class.specialty]="session.finalScore >= 80" role="status" aria-atomic="true">
         <div class="score-label">
           <span>Final Assessment</span>
           <small *ngIf="session.finalScore >= 80">SPECIALTY GRADE</small>
         </div>
         <span class="final-value">{{ session.finalScore | number:'1.2-2' }}</span>
       </div>
-    </section>
+    </fieldset>n>
   `,
   styles: [`
     .intensity-grid {

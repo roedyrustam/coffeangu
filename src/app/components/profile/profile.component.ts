@@ -27,61 +27,63 @@ import { environment } from '../../../environments/environment';
   standalone: true,
   imports: [CommonModule, RouterLink, FormsModule, SensoryAvatarComponent, SocialShareComponent],
   template: `
-    <div class="profile-container animate-fade" *ngIf="membership$ | async as tier">
+    <main class="profile-container animate-fade" *ngIf="membership$ | async as tier" role="main">
       <!-- Tab Control -->
-      <div class="tab-control">
-        <button [class.active]="activeTab() === 'history'" (click)="activeTab.set('history')">
+      <nav class="tab-control" aria-label="Profile navigation">
+        <button [class.active]="activeTab() === 'history'" (click)="activeTab.set('history')" [attr.aria-selected]="activeTab() === 'history'" role="tab">
           {{ t('PERSONAL_HISTORY') }}
         </button>
-        <button [class.active]="activeTab() === 'saved'" (click)="activeTab.set('saved')">
+        <button [class.active]="activeTab() === 'saved'" (click)="activeTab.set('saved')" [attr.aria-selected]="activeTab() === 'saved'" role="tab">
           {{ t('SAVED_SESSIONS') }}
         </button>
         <button [class.active]="activeTab() === 'team'" 
                 (click)="activeTab.set('team')" 
-                *ngIf="tier.id === 'roastery'">
+                *ngIf="tier.id === 'roastery'"
+                [attr.aria-selected]="activeTab() === 'team'"
+                role="tab">
           🏢 {{ t('TEAM_MANAGEMENT') || 'Roastery Team' }}
         </button>
-        <button class="settings-trigger" (click)="showSettings.set(true)">
+        <button class="settings-trigger" (click)="showSettings.set(true)" aria-label="Open Account Settings">
           ⚙️ {{ t('BTN_SETTINGS') }}
         </button>
-      </div>
+      </nav>
 
       <header class="profile-header immersive glass-card">
-        <div class="header-visual">
+        <div class="header-visual" aria-hidden="true">
           <img src="/assets/hero-profile.png" alt="Profile Hero" class="header-image">
           <div class="header-overlay"></div>
         </div>
         <div class="header-content">
           <div class="user-info">
-            <div class="avatar-large" (click)="avatarInput.click()" style="cursor: pointer; position: relative;">
-              <img *ngIf="auth.currentUser()?.photoURL" [src]="auth.currentUser()?.photoURL" alt="Profile">
-              <span *ngIf="!auth.currentUser()?.photoURL">{{ auth.currentUser()?.displayName?.charAt(0) || 'U' }}</span>
-              <div class="avatar-overlay">
+            <button class="avatar-large" (click)="avatarInput.click()" aria-label="Change profile photo" title="Change profile photo">
+              <img *ngIf="auth.currentUser()?.photoURL" [src]="auth.currentUser()?.photoURL" alt="Current profile picture">
+              <span *ngIf="!auth.currentUser()?.photoURL" aria-hidden="true">{{ auth.currentUser()?.displayName?.charAt(0) || 'U' }}</span>
+              <div class="avatar-overlay" aria-hidden="true">
                  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
               </div>
               <input type="file" #avatarInput style="display: none" (change)="onAvatarSelected($event)" accept="image/*">
-            </div>
+            </button>
             <div class="user-details">
               <div class="name-row">
                 <h1 class="brand-font">{{ auth.currentUser()?.displayName }}</h1>
                 <span class="verified-badge-large" *ngIf="tier.id === 'roastery' && (team()?.isVerified)" title="Verified Roastery">
-                  <svg viewBox="0 0 24 24" width="24" height="24" fill="var(--primary-color)">
+                  <svg viewBox="0 0 24 24" width="24" height="24" fill="var(--primary-color)" aria-hidden="true">
                     <path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10 10-4.5 10-10S17.5 2 12 2zm-1.9 14.7L6.4 13l1.5-1.5 2.2 2.2 4.8-4.8 1.5 1.5-6.3 6.3z"/>
                   </svg>
                 </span>
-                <span class="pro-label" *ngIf="tier.id === 'pro'">PRO</span>
+                <span class="pro-label" *ngIf="tier.id === 'pro'" aria-label="Pro Member">PRO</span>
               </div>
-              <p class="email">{{ auth.currentUser()?.email }}</p>
+              <p class="email" aria-label="Account email">{{ auth.currentUser()?.email }}</p>
 
               <!-- DIRECT COMMERCE FOR ROASTERIES -->
               <div class="header-actions" *ngIf="tier.id === 'roastery' && team()?.shopUrl">
-                <a [href]="team()?.shopUrl" target="_blank" class="btn-commerce-primary">
-                  <span class="icon">🛒</span>
+                <a [href]="team()?.shopUrl" target="_blank" class="btn-commerce-primary" aria-label="Visit Roastery Shop">
+                  <span class="icon" aria-hidden="true">🛒</span>
                   <span>Visit Roastery Shop</span>
                 </a>
               </div>
               
-              <app-sensory-avatar *ngIf="profile$ | async as profile" [profile]="profile"></app-sensory-avatar>
+              <app-sensory-avatar *ngIf="profile$ | async as profile" [profile]="profile" aria-label="Visual sensory representation"></app-sensory-avatar>
 
               <div class="profile-share-public" *ngIf="profile$ | async as profile">
                 <span class="share-label">Your Public Profile:</span>
@@ -94,97 +96,99 @@ import { environment } from '../../../environments/environment';
           </div>
 
           <div class="membership-status">
-            <div class="tier-pill" [style.border-color]="tier.color" [style.color]="tier.color">
-               <span class="dot" [style.background]="tier.color"></span>
+            <div class="tier-pill" [style.border-color]="tier.color" [style.color]="tier.color" [attr.aria-label]="'Current plan: ' + tier.name">
+               <span class="dot" [style.background]="tier.color" aria-hidden="true"></span>
                {{ tier.name }}
             </div>
-            <button class="upgrade-link" routerLink="/pricing" *ngIf="tier.id === 'classic'">
+            <button class="upgrade-link" routerLink="/pricing" *ngIf="tier.id === 'classic'" aria-label="Upgrade your account">
                Upgrade to Pro
             </button>
           </div>
 
           <div class="stats-grid" *ngIf="stats$ | async as stats">
             <!-- Badges Section -->
-            <div class="badges-section" *ngIf="profile$ | async as profile">
-              <span class="section-label">Unlocked Achievements</span>
-              <div class="badge-row">
-                <div class="badge-item" *ngFor="let badge of profile.badges" [title]="badge.description">
-                  <span class="badge-icon">{{ badge.icon }}</span>
+            <section class="badges-section" *ngIf="profile$ | async as profile" aria-labelledby="achievements-title">
+              <span id="achievements-title" class="section-label">Unlocked Achievements</span>
+              <div class="badge-row" role="list">
+                <div class="badge-item" *ngFor="let badge of profile.badges" [title]="badge.description" role="listitem">
+                  <span class="badge-icon" aria-hidden="true">{{ badge.icon }}</span>
                   <span class="badge-name">{{ badge.name }}</span>
                 </div>
                 <div class="badge-placeholder" *ngIf="profile.badges.length === 0">
                   Cup more coffee to unlock badges!
                 </div>
               </div>
-            </div>
-            <div class="signature-section">
-               <span class="section-label">Sensory Fingerprint</span>
+            </section>
+            <section class="signature-section" aria-labelledby="fingerprint-title">
+               <span id="fingerprint-title" class="section-label">Sensory Fingerprint</span>
                <div class="chart-container">
-                  <canvas id="signatureChart"></canvas>
+                  <canvas id="signatureChart" aria-label="A radar chart displaying your cumulative coffee sensory evaluations"></canvas>
                </div>
-            </div>
-            <div class="numeric-stats">
-              <div class="stat-card glass-card">
+            </section>
+            <section class="numeric-stats" aria-label="Engagement Statistics">
+              <div class="stat-card glass-card" [attr.aria-label]="stats.total + ' total sessions'">
                 <span class="val">{{ stats.total }}</span>
                 <span class="lab">{{ t('TOTAL_SESSIONS') }}</span>
               </div>
-              <div class="stat-card glass-card">
+              <div class="stat-card glass-card" [attr.aria-label]="'Average score of ' + stats.avg.toFixed(1)">
                 <span class="val">{{ stats.avg.toFixed(1) }}</span>
                 <span class="lab">{{ t('AVG_SCORE') }}</span>
               </div>
-            </div>
+            </section>
           </div>
         </div>
       </header>
 
-      <section class="feed-section">
+      <section class="feed-section" aria-live="polite">
         <!-- HISTORY VIEW -->
-        <div class="history-view" *ngIf="activeTab() === 'history'">
+        <div class="history-view" *ngIf="activeTab() === 'history'" role="tabpanel" aria-labelledby="tab-history">
           <div class="section-title-row">
-            <h2 class="section-title">{{ t('PERSONAL_HISTORY') }}</h2>
-            <div class="row-actions">
+            <h2 id="tab-history" class="section-title">{{ t('PERSONAL_HISTORY') }}</h2>
+            <div class="row-actions" role="group" aria-label="History actions">
               <button class="btn-action-sm btn-secondary" 
-                      (click)="goToAnalytics(tier.id)">
-                 <span *ngIf="tier.id === 'classic'">🔒 </span>
+                      (click)="goToAnalytics(tier.id)"
+                      [attr.aria-label]="tier.id === 'classic' ? 'Analytics (Requires Pro)' : 'View detailed analytics'">
+                 <span *ngIf="tier.id === 'classic'" aria-hidden="true">🔒 </span>
                  📊 {{ t('VIEW_ANALYTICS') }}
               </button>
               <button [class.btn-action-sm]="true"
                       [class.btn-secondary]="tier.id !== 'classic'" 
                       [class.btn-locked]="tier.id === 'classic'"
                       (click)="tier.id === 'classic' ? showUpgradeNotice() : downloadHistory()" 
-                      *ngIf="(cuppings$ | async)?.length">
-                 <span *ngIf="tier.id === 'classic'">🔒 </span>
+                      *ngIf="(cuppings$ | async)?.length"
+                      [attr.aria-label]="tier.id === 'classic' ? 'Export (Requires Pro)' : 'Download evaluation history'">
+                 <span *ngIf="tier.id === 'classic'" aria-hidden="true">🔒 </span>
                  📥 {{ t('BTN_EXPORT') }}
               </button>
             </div>
           </div>
           <div class="history-feed" *ngIf="cuppings$ | async as cuppings; else loading">
-            <div class="history-card glass-card" *ngFor="let session of cuppings">
+            <article class="history-card glass-card" *ngFor="let session of cuppings" aria-labelledby="history-bean-{{session.id}}">
               <div class="card-left" [routerLink]="['/result', session.id]">
-                <div class="bean-name">{{ session.beanName }}</div>
-                <div class="roastery">{{ session.roastery }}</div>
+                <h3 [id]="'history-bean-' + session.id" class="bean-name">{{ session.beanName }}</h3>
+                <div class="roastery" aria-label="Roastery">{{ session.roastery }}</div>
                 <div class="card-meta">
                   <span class="process">{{ session.postHarvest }}</span>
                   <span>•</span>
-                  <span class="date">{{ session.timestamp?.toDate() | date:'mediumDate' }}</span>
+                  <time class="date" [attr.datetime]="session.timestamp?.toDate() | date:'yyyy-MM-dd'">{{ session.timestamp?.toDate() | date:'mediumDate' }}</time>
                 </div>
               </div>
               <div class="card-right">
-                <div class="score-badge" [class.specialty]="session.finalScore >= 80">
+                <div class="score-badge" [class.specialty]="session.finalScore >= 80" [attr.aria-label]="'Score: ' + (session.finalScore | number:'1.1-1')">
                   {{ session.finalScore | number:'1.1-1' }}
                 </div>
-                <div class="actions">
-                  <button class="btn-icon edit" [routerLink]="['/cupping']" [queryParams]="{edit: session.id}" [title]="t('BTN_EDIT')">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+                <div class="actions" role="group" aria-label="Session management">
+                  <button class="btn-icon edit" [routerLink]="['/cupping']" [queryParams]="{edit: session.id}" [attr.aria-label]="'Edit ' + session.beanName">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
                   </button>
-                  <button class="btn-icon delete" (click)="confirmDelete(session)" [title]="t('BTN_DELETE')">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/><line x1="10" y1="11" x2="10" y2="17"/><line x1="14" y1="11" x2="14" y2="17"/></svg>
+                  <button class="btn-icon delete" (click)="confirmDelete(session)" [attr.aria-label]="'Delete ' + session.beanName">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/><line x1="10" y1="11" x2="10" y2="17"/><line x1="14" y1="11" x2="14" y2="17"/></svg>
                   </button>
                 </div>
               </div>
-            </div>
-            <div class="empty-state glass-card" *ngIf="cuppings.length === 0">
-               <div class="empty-icon">☕</div>
+            </article>
+            <div class="empty-state glass-card" *ngIf="cuppings.length === 0" role="status">
+               <div class="empty-icon" aria-hidden="true">☕</div>
                <p>{{ t('EMPTY_HISTORY_DESC') }}</p>
                <button routerLink="/cupping" class="btn-primary">Start First Session</button>
             </div>
@@ -192,26 +196,27 @@ import { environment } from '../../../environments/environment';
         </div>
 
         <!-- SAVED VIEW -->
-        <div class="saved-view" *ngIf="activeTab() === 'saved'">
-          <h2 class="section-title">{{ t('SAVED_SESSIONS') }}</h2>
+        <div class="saved-view" *ngIf="activeTab() === 'saved'" role="tabpanel" aria-labelledby="tab-saved">
+          <h2 id="tab-saved" class="section-title">{{ t('SAVED_SESSIONS') }}</h2>
           <div class="history-feed" *ngIf="savedCuppings$ | async as saved; else loading">
-            <div class="history-card glass-card" *ngFor="let session of saved">
+            <article class="history-card glass-card" *ngFor="let session of saved" aria-labelledby="saved-bean-{{session.id}}">
               <div class="card-left" [routerLink]="['/result', session.id]">
-                <div class="bean-name">{{ session.beanName }}</div>
-                <div class="roastery">{{ session.roastery }}</div>
+                <h3 [id]="'saved-bean-' + session.id" class="bean-name">{{ session.beanName }}</h3>
+                <div class="roastery" aria-label="Roastery">{{ session.roastery }}</div>
                 <div class="card-meta">
-                  <span class="tag specialty">{{ session.finalScore | number:'1.1-1' }}</span>
+                  <span class="tag specialty" aria-label="Score: {{ session.finalScore | number:'1.1-1' }}">{{ session.finalScore | number:'1.1-1' }}</span>
                   <span class="process">{{ session.postHarvest }}</span>
                   <span>by {{ session.cupperName || 'Anonymous' }}</span>
                 </div>
               </div>
-            </div>
-            <div class="empty-state glass-card" *ngIf="saved.length === 0">
-               <div class="empty-icon">🔖</div>
+            </article>
+            <div class="empty-state glass-card" *ngIf="saved.length === 0" role="status">
+               <div class="empty-icon" aria-hidden="true">🔖</div>
                <p>No saved sessions yet. Discover some in the Community!</p>
                <button routerLink="/community" class="btn-primary">Go to Community</button>
             </div>
           </div>
+        </div>        </div>
         </div>
 
         <!-- TEAM MANAGEMENT VIEW -->
@@ -833,6 +838,38 @@ import { environment } from '../../../environments/environment';
       .numeric-stats { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
       .stat-card { min-width: 0; }
     }
+    @media (max-width: 900px) {
+      .profile-header { min-height: auto; padding-top: 60px; }
+      .header-content { flex-direction: column; padding: 30px 20px; text-align: center; gap: 40px; }
+      .user-info { flex-direction: column; gap: 20px; }
+      .avatar-large { width: 100px; height: 100px; border-radius: 30px; }
+      .user-details h1 { font-size: 2.2rem; }
+      .stats-grid { flex-direction: column; width: 100%; gap: 30px; }
+      .numeric-stats { flex-direction: row; justify-content: center; width: 100%; }
+      .stat-card { min-width: 120px; padding: 15px; }
+      .membership-status { align-items: center; order: -1; }
+      .profile-share-public { margin: 20px auto 0; }
+    }
+
+    @media (max-width: 768px) {
+      .profile-container { padding: 0 15px; margin-top: 20px; }
+      .tab-control { overflow-x: auto; padding-bottom: 10px; margin-bottom: 20px; width: calc(100% + 30px); margin-left: -15px; padding-left: 15px; }
+      .tab-control button { white-space: nowrap; padding: 8px 16px; font-size: 0.7rem; }
+      .section-title { font-size: 1.5rem; }
+      .history-card { padding: 20px; }
+      .bean-name { font-size: 1.1rem; }
+      .score-badge { width: 55px; height: 55px; font-size: 1.2rem; border-radius: 14px; }
+      .card-right { gap: 15px; }
+      .team-grid { grid-template-columns: 1fr; }
+    }
+
+    @media (max-width: 480px) {
+      .numeric-stats { gap: 10px; }
+      .stat-card { min-width: 0; flex: 1; padding: 12px; }
+      .stat-card .val { font-size: 1.6rem; }
+      .modal-premium { max-height: 95vh; }
+      .modal-header, .modal-body, .modal-actions-fixed { padding: 20px; }
+    }
   `]
 })
 export class ProfileComponent implements OnInit {
@@ -988,8 +1025,8 @@ export class ProfileComponent implements OnInit {
             suggestedMin: 6,
             suggestedMax: 10,
             pointLabels: {
-              color: 'var(--text-dim)',
-              font: { size: 10, weight: 600 }
+              color: 'rgba(255, 255, 255, 0.4)',
+              font: { size: 10, weight: 800, family: "'Outfit', sans-serif" }
             },
             ticks: { display: false }
           }

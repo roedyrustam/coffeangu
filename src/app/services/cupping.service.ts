@@ -366,13 +366,26 @@ export class CuppingService {
 
   async deleteCupping(id: string) {
     const docRef = doc(this.firestore, 'cuppings', id);
+    const userId = this.auth.getUserId();
     
-    // Attempt to delete associated share image if it exists
+    // Cleanup storage first (non-critical if it fails)
     try {
       const storageRef = ref(this.storage, `shares/${id}.png`);
       await deleteObject(storageRef);
-    } catch (e) {
-      // Ignore if image doesn't exist
+    } catch (e) { /* ignore */ }
+
+    // Atomic delete and stat decrement
+    if (userId) {
+      const profileRef = doc(this.firestore, 'profiles', userId);
+      return runTransaction(this.firestore, async (transaction) => {
+        const cuppingSnap = await transaction.get(docRef);
+        if (cuppingSnap.exists()) {
+          transaction.delete(docRef);
+          transaction.update(profileRef, {
+            totalSessions: increment(-1)
+          });
+        }
+      });
     }
 
     return deleteDoc(docRef);

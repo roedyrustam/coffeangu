@@ -23,43 +23,43 @@ Chart.register(RadarController, RadialLinearScale, PointElement, LineElement, Fi
   standalone: true,
   imports: [CommonModule, RouterLink, SocialShareComponent],
   template: `
-    <div class="result-container animate-fade" *ngIf="session">
-      <div class="glass-card result-card" id="result-card" [class.radiant-theme]="selectedTheme() === 'radiant'">
+    <main class="result-container animate-fade" *ngIf="session" role="main">
+      <article class="glass-card result-card" id="result-card" [class.radiant-theme]="selectedTheme() === 'radiant'">
         <header class="result-header">
-          <div class="badge">{{ session.type }}</div>
+          <div class="badge" aria-label="Coffee Type">{{ session.type }}</div>
           <h1 class="brand-font">{{ session.beanName }}</h1>
           <div class="roastery-row">
-            <span class="roastery">{{ session.roastery }}</span>
+            <span class="roastery" aria-label="Roastery">{{ session.roastery }}</span>
             <span class="verified-icon-result" *ngIf="session.isVerifiedRoastery || team?.isVerified" title="Verified Roastery">
-              <svg viewBox="0 0 24 24" width="20" height="20" fill="var(--primary-color)">
+              <svg viewBox="0 0 24 24" width="20" height="20" fill="var(--primary-color)" aria-hidden="true">
                 <path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10 10-4.5 10-10S17.5 2 12 2zm-1.9 14.7L6.4 13l1.5-1.5 2.2 2.2 4.8-4.8 1.5 1.5-6.3 6.3z"/>
               </svg>
             </span>
           </div>
         </header>
 
-        <section class="product-visual">
-           <img [src]="session.productImageUrl || '/assets/default-coffee.png'" alt="Product Photo" class="product-photo">
+        <section class="product-visual" aria-label="Product Appearance">
+           <img [src]="session.productImageUrl || '/assets/default-coffee.png'" alt="Visual representation of {{ session.beanName }}" class="product-photo">
         </section>
 
-        <section class="score-display">
+        <section class="score-display" aria-label="Final Assessment Score">
           <div class="score-circle">
             <span class="label">{{ t('FINAL_SCORE') }}</span>
-            <span class="value">{{ session.finalScore | number:'1.2-2' }}</span>
+            <span class="value" aria-live="polite">{{ session.finalScore | number:'1.2-2' }}</span>
           </div>
-          <div class="rating-label" [class.specialty]="session.finalScore >= 80" [class.specialty-pulse]="session.finalScore >= 85">
+          <div class="rating-label" [class.specialty]="session.finalScore >= 80" [class.specialty-pulse]="session.finalScore >= 85" role="status">
             {{ getRating(session.finalScore) }}
           </div>
 
-          <div class="social-actions" *ngIf="session.id">
-            <button class="social-btn like-btn" [class.active]="isLiked()" (click)="toggleLike()">
-              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" [attr.fill]="isLiked() ? '#ff4757' : 'none'" [attr.stroke]="isLiked() ? '#ff4757' : 'currentColor'" stroke-width="2" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round">
+          <div class="social-actions" *ngIf="session.id" role="group" aria-label="Social Interactions">
+            <button class="social-btn like-btn" [class.active]="isLiked()" (click)="toggleLike()" [aria-label]="isLiked() ? 'Unlike' : 'Like'">
+              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" [attr.fill]="isLiked() ? '#ff4757' : 'none'" [attr.stroke]="isLiked() ? '#ff4757' : 'currentColor'" stroke-width="2" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
                 <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l8.84-8.84 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
               </svg>
               <span class="count">{{ session.likesCount || 0 }}</span>
             </button>
-            <button class="social-btn save-btn" [class.active]="isSaved()" (click)="toggleSave()">
-              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" [attr.fill]="isSaved() ? 'var(--primary-color)' : 'none'" [attr.stroke]="isSaved() ? 'var(--primary-color)' : 'currentColor'" stroke-width="2" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round">
+            <button class="social-btn save-btn" [class.active]="isSaved()" (click)="toggleSave()" [aria-label]="isSaved() ? 'Unsave' : 'Save to List'">
+              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" [attr.fill]="isSaved() ? 'var(--primary-color)' : 'none'" [attr.stroke]="isSaved() ? 'var(--primary-color)' : 'currentColor'" stroke-width="2" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
                 <path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"></path>
               </svg>
               <span>{{ isSaved() ? 'Saved' : t('BTN_SAVE_LIST') }}</span>
@@ -67,7 +67,7 @@ Chart.register(RadarController, RadialLinearScale, PointElement, LineElement, Fi
           </div>
         </section>
 
-        <section class="metadata-grid">
+        <section class="metadata-grid" aria-label="Session Metadata">
           <div class="meta-item">
             <span class="meta-label">{{ t('POST_HARVEST') }}</span>
             <span class="meta-value">{{ session.postHarvest }}</span>
@@ -79,8 +79,8 @@ Chart.register(RadarController, RadialLinearScale, PointElement, LineElement, Fi
           <div class="meta-item">
             <span class="meta-label">{{ t('CUPPER_NAME') }}</span>
             <div class="cupper-link-row">
-              <span class="meta-value author-link" [routerLink]="['/u', session.userId]">{{ session.cupperName || 'Anonymous' }}</span>
-              <span class="pro-tag-result" *ngIf="session.isPro">PRO</span>
+              <span class="meta-value author-link" [routerLink]="['/u', session.userId]" aria-label="View Cupper Profile">{{ session.cupperName || 'Anonymous' }}</span>
+              <span class="pro-tag-result" *ngIf="session.isPro" aria-hidden="true">PRO</span>
             </div>
           </div>
           <div class="meta-item">
@@ -89,13 +89,13 @@ Chart.register(RadarController, RadialLinearScale, PointElement, LineElement, Fi
           </div>
         </section>
 
-        <section class="chart-section">
+        <section class="chart-section" aria-label="Sensory Radar Chart">
            <div class="chart-wrapper">
               <canvas id="sensoryChart"></canvas>
            </div>
         </section>
 
-        <section class="cva-result-section">
+        <section class="cva-result-section" aria-label="Detailed Attributes">
            <div class="flavor-profile" *ngIf="session.flavorNotes && session.flavorNotes.length > 0">
               <span class="section-label">{{ t('FLAVOR_PROFILE') }}</span>
               <div class="result-chips">
@@ -108,29 +108,29 @@ Chart.register(RadarController, RadialLinearScale, PointElement, LineElement, Fi
               <div class="intensity-bars-row">
                   <div class="int-bar-item">
                      <label>{{ t('ACIDITY') }}</label>
-                     <div class="int-track"><div class="int-fill" [style.background]="getScoreColor('acidity')" [style.width.%]="(session.intensities?.acidity || 0) * 10"></div></div>
+                     <div class="int-track" role="progressbar" [attr.aria-valuenow]="session.intensities?.acidity" aria-valuemin="1" aria-valuemax="10"><div class="int-fill" [style.background]="getScoreColor('acidity')" [style.width.%]="(session.intensities?.acidity || 0) * 10"></div></div>
                   </div>
                   <div class="int-bar-item">
                      <label>{{ t('MOUTHFEEL') }}</label>
-                     <div class="int-track"><div class="int-fill" [style.background]="getScoreColor('mouthfeel')" [style.width.%]="(session.intensities?.mouthfeel || session.intensities?.body || 0) * 10"></div></div>
+                     <div class="int-track" role="progressbar" [attr.aria-valuenow]="session.intensities?.mouthfeel" aria-valuemin="1" aria-valuemax="10"><div class="int-fill" [style.background]="getScoreColor('mouthfeel')" [style.width.%]="(session.intensities?.mouthfeel || session.intensities?.body || 0) * 10"></div></div>
                   </div>
                   <div class="int-bar-item">
                      <label>{{ t('SWEETNESS') }}</label>
-                     <div class="int-track"><div class="int-fill" [style.background]="getScoreColor('sweetness')" [style.width.%]="(session.intensities?.sweetness || 0) * 10"></div></div>
+                     <div class="int-track" role="progressbar" [attr.aria-valuenow]="session.intensities?.sweetness" aria-valuemin="1" aria-valuemax="10"><div class="int-fill" [style.background]="getScoreColor('sweetness')" [style.width.%]="(session.intensities?.sweetness || 0) * 10"></div></div>
                   </div>
               </div>
            </div>
         </section>
 
-        <section class="sensory-summary">
+        <section class="sensory-summary" aria-label="Quality Breakdown">
            <span class="section-label">{{ t('QUALITY_TITLE') }}</span>
            <div class="sensory-bars">
               <div class="bar-item" *ngFor="let item of sensoryItems">
                  <div class="bar-header">
                     <span [style.color]="getScoreColor(item.key)">{{ item.label }}</span>
-                    <span>{{ item.value }}</span>
+                    <span aria-live="polite">{{ item.value }}</span>
                  </div>
-                 <div class="bar-bg">
+                 <div class="bar-bg" role="progressbar" [attr.aria-valuenow]="item.value" aria-valuemin="1" aria-valuemax="9">
                     <div class="bar-fill" [style.background]="getScoreColor(item.key)" [style.width.%]="(item.value - 1) / 8 * 100"></div>
                  </div>
               </div>
@@ -138,47 +138,51 @@ Chart.register(RadarController, RadialLinearScale, PointElement, LineElement, Fi
         </section>
 
         <footer class="actions">
+          <div class="next-steps-luxury">
+            <button routerLink="/cupping" class="btn-primary start-new-btn">
+              <span>Start New Session</span>
+            </button>
+            <div class="secondary-actions">
+              <a routerLink="/" class="back-link">{{ t('NAV_HOME') }}</a>
+              <button class="btn-outline" (click)="downloadImage()" [disabled]="generatingScreenshot">
+                {{ generatingScreenshot ? 'Preparing...' : 'Download Image' }}
+              </button>
+            </div>
+          </div>
+
           <div class="template-selector" *ngIf="membership$ | async as tier">
-             <span>Template:</span>
-             <button (click)="setTheme('obsidian')" [class.active]="selectedTheme() === 'obsidian'">Obsidian</button>
+             <span>Theme:</span>
+             <button (click)="setTheme('obsidian')" [class.active]="selectedTheme() === 'obsidian'" aria-label="Select Obsidian Theme">Obsidian</button>
              <button (click)="setTheme('radiant')" 
                      [class.active]="selectedTheme() === 'radiant'"
-                     [class.locked-theme]="tier.id === 'classic'">
-               <span *ngIf="tier.id === 'classic'">🔒 </span>Radiant
-             </button>
-          </div>
-          <div class="media-share-section" *ngIf="session.isPublic">
-             <span class="section-label">Quick Share</span>
-             <app-social-share [text]="'Check out my coffee cupping notes for ' + session.beanName + ' (' + session.finalScore.toFixed(2) + ' pts)!'"></app-social-share>
-             
-             <button (click)="downloadImage()" class="btn-download-image animate-fade-in" [disabled]="generatingScreenshot">
-               <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.5">
-                 <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3"/>
-               </svg>
-               <span>{{ generatingScreenshot ? 'Preparing Image...' : 'Download Result Image' }}</span>
+                     [class.locked-theme]="tier.id === 'classic'"
+                     aria-label="Select Radiant Theme">
+               <span *ngIf="tier.id === 'classic'" aria-hidden="true">🔒 </span>Radiant
              </button>
           </div>
           
-          <!-- Buy Link Section (Monetized) -->
+          <div class="media-share-section" *ngIf="session.isPublic">
+             <span class="section-label">Quick Share</span>
+             <app-social-share [text]="'Check out my coffee cupping notes for ' + session.beanName + ' (' + session.finalScore.toFixed(2) + ' pts)!'"></app-social-share>
+          </div>
+          
           <div class="commerce-bridge-luxury animate-slide-up" *ngIf="getBuyUrl()">
-             <a [href]="getBuyUrl()" target="_blank" class="btn-commerce-luxury">
+             <a [href]="getBuyUrl()" target="_blank" class="btn-commerce-luxury" aria-label="Official Commerce Link">
                 <div class="c-content">
                   <span class="c-label">Official Commerce</span>
                   <span class="c-action">Acquire This Coffee Bean 🛍️</span>
                 </div>
                 <div class="c-arrow">
-                  <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="3"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+                  <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="3" aria-hidden="true"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
                 </div>
              </a>
              <p class="c-hint-luxury" *ngIf="session.isVerifiedRoastery || team?.isVerified">Directly from the Verified Roastery</p>
           </div>
-
-          <a routerLink="/" class="back-link">{{ t('NAV_HOME') }}</a>
         </footer>
-      </div>
-    </div>
+      </article>
+    </main>
 
-    <div class="loading-state" *ngIf="!session && !error">
+    <div class="loading-state" *ngIf="!session && !error" role="status">
        <div class="spinner"></div>
        <p>Loading Cupping Result...</p>
     </div>
@@ -411,15 +415,54 @@ Chart.register(RadarController, RadialLinearScale, PointElement, LineElement, Fi
     .actions {
       display: flex;
       flex-direction: column;
-      gap: 25px;
+      gap: 30px;
       margin-top: 60px;
     }
-    .share-btn {
+    .next-steps-luxury {
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+      width: 100%;
+    }
+    .start-new-btn {
       height: 70px;
       font-size: 1.2rem;
       letter-spacing: 2px;
       text-transform: uppercase;
+      width: 100%;
+      box-shadow: 0 15px 40px var(--primary-glow);
     }
+    .secondary-actions {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 25px;
+    }
+    .btn-outline {
+      background: transparent;
+      border: 1px solid var(--glass-border);
+      color: var(--text-dim);
+      padding: 10px 20px;
+      border-radius: 12px;
+      font-weight: 800;
+      font-size: 0.8rem;
+      text-transform: uppercase;
+      cursor: pointer;
+      transition: all 0.3s;
+    }
+    .btn-outline:hover {
+      border-color: var(--primary-color);
+      color: var(--primary-color);
+    }
+    .back-link {
+      color: var(--text-dim);
+      text-decoration: none;
+      font-weight: 800;
+      font-size: 0.8rem;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+    .back-link:hover { color: var(--primary-color); }
     .social-actions {
        margin-top: 30px;
        display: flex;
@@ -857,7 +900,7 @@ export class CuppingResultComponent implements OnInit, AfterViewInit, OnDestroy 
               font: {
                 size: 12,
                 weight: 'bold',
-                family: "'Poppins', sans-serif"
+                family: "'Outfit', sans-serif"
               }
             },
             ticks: {

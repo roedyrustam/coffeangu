@@ -92,9 +92,18 @@ Chart.register(RadarController, RadialLinearScale, PointElement, LineElement, Fi
     .empty-icon { font-size: 4rem; opacity: 0.2; }
 
     @media (max-width: 900px) {
-      .analytics-grid { grid-template-columns: 1fr; }
+      .analytics-grid { grid-template-columns: 1fr; gap: 20px; }
       .span-2 { grid-column: span 1; }
-      .analytics-header { flex-direction: column; gap: 20px; text-align: center; }
+      .analytics-header { flex-direction: column; gap: 20px; text-align: center; padding: 30px 20px; }
+      .analytics-container { padding: 0 15px; margin-top: 20px; }
+      .chart-card { padding: 20px; }
+      .chart-wrapper { height: 280px; }
+      .chart-wrapper.pie { height: 240px; }
+    }
+    
+    @media (max-width: 480px) {
+      .header-content h2 { font-size: 1.6rem !important; }
+      .header-sub { font-size: 0.75rem; }
     }
   `]
 })
@@ -172,7 +181,7 @@ export class AnalyticsComponent implements OnInit {
           r: {
             angleLines: { color: 'rgba(255,255,255,0.05)' },
             grid: { color: 'rgba(255,255,255,0.05)' },
-            pointLabels: { color: '#8e8e93', font: { size: 11, weight: 'bold' } },
+            pointLabels: { color: 'rgba(255,255,255,0.4)', font: { size: 11, weight: 'bold', family: "'Outfit', sans-serif" } },
             suggestedMin: 6,
             suggestedMax: 10
           }

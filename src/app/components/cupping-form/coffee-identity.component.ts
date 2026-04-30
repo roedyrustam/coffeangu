@@ -9,20 +9,20 @@ import { CuppingSession } from '../../models/cupping.model';
   imports: [CommonModule, FormsModule],
   viewProviders: [{ provide: ControlContainer, useExisting: NgForm }],
   template: `
-    <section class="form-section">
-      <h3 class="section-title">Coffee Identity</h3>
+    <fieldset class="form-section">
+      <legend class="section-title">Coffee Identity</legend>
 
       <div class="identity-grid-layout">
         <!-- Main Form Fields -->
         <div class="fields-column">
           <div class="input-row">
             <div class="input-group">
-              <label>Bean Name <span class="required">*</span></label>
-              <input [(ngModel)]="session.beanName" name="beanName" placeholder="e.g. Ethiopia Yirgacheffe" required>
+              <label for="beanName">Bean Name <span class="required" aria-hidden="true">*</span></label>
+              <input id="beanName" [(ngModel)]="session.beanName" name="beanName" placeholder="e.g. Ethiopia Yirgacheffe" required aria-required="true">
             </div>
             <div class="input-group">
-              <label>Type</label>
-              <select [(ngModel)]="session.type" name="type">
+              <label for="coffeeType">Type</label>
+              <select id="coffeeType" [(ngModel)]="session.type" name="type">
                 <option value="Arabica">Arabica</option>
                 <option value="Robusta">Robusta</option>
                 <option value="Liberica">Liberica</option>
@@ -33,12 +33,12 @@ import { CuppingSession } from '../../models/cupping.model';
 
           <div class="input-row">
             <div class="input-group">
-              <label>Roastery <span class="required">*</span></label>
-              <input [(ngModel)]="session.roastery" name="roastery" placeholder="e.g. Blue Bottle" required>
+              <label for="roastery">Roastery <span class="required" aria-hidden="true">*</span></label>
+              <input id="roastery" [(ngModel)]="session.roastery" name="roastery" placeholder="e.g. Blue Bottle" required aria-required="true">
             </div>
             <div class="input-group">
-              <label>Pasca Panen</label>
-              <select [(ngModel)]="session.postHarvest" name="postHarvest" (change)="processChanged.emit(session.postHarvest)">
+              <label for="postHarvest">Pasca Panen</label>
+              <select id="postHarvest" [(ngModel)]="session.postHarvest" name="postHarvest" (change)="processChanged.emit(session.postHarvest)">
                 <option value="Wash">Wash</option>
                 <option value="Natural">Natural</option>
                 <option value="Honey">Honey</option>
@@ -52,27 +52,27 @@ import { CuppingSession } from '../../models/cupping.model';
         <!-- Media/AI Section -->
         <div class="media-column">
           <div class="photo-upload-container">
-            <label class="photo-label">Product Visual</label>
-            <input type="file" #photoInput accept="image/*" style="display: none" (change)="onImageSelected($event)">
-            <div class="photo-box" (click)="photoInput.click()" [class.has-image]="imagePreview">
-              <img *ngIf="imagePreview" [src]="imagePreview" class="photo-preview" alt="Preview">
+            <span class="photo-label">Product Visual</span>
+            <input type="file" #photoInput id="photoUpload" accept="image/*" style="display: none" (change)="onImageSelected($event)">
+            <button type="button" class="photo-box" (click)="photoInput.click()" [class.has-image]="imagePreview" aria-label="Upload Product Photo">
+              <img *ngIf="imagePreview" [src]="imagePreview" class="photo-preview" alt="Coffee product preview">
               <div class="photo-placeholder" *ngIf="!imagePreview">
-                <span class="icon">☕</span>
+                <span class="icon" aria-hidden="true">☕</span>
                 <span>Upload Photo</span>
               </div>
               <div class="photo-overlay" *ngIf="imagePreview">Change</div>
-            </div>
+            </button>
           </div>
 
           <div class="ai-assist-box">
-             <input type="file" #fileInput accept="image/*" capture="environment" style="display: none" (change)="onOCRSelected($event)">
-             <button type="button" class="ocr-btn-premium" (click)="fileInput.click()" [disabled]="isScanning">
+             <input type="file" #fileInput id="ocrInput" accept="image/*" capture="environment" style="display: none" (change)="onOCRSelected($event)">
+             <button type="button" class="ocr-btn-premium" (click)="fileInput.click()" [disabled]="isScanning" aria-live="polite">
                 <div class="btn-content" *ngIf="!isScanning">
-                  <span class="ai-icon">✨</span>
-                  <div class="btn-text">
-                    <strong>AI Smart Scan</strong>
-                    <small>Autofill from bag</small>
-                  </div>
+                   <span class="ai-icon" aria-hidden="true">✨</span>
+                   <div class="btn-text">
+                     <strong>AI Smart Scan</strong>
+                     <small>Autofill from bag</small>
+                   </div>
                 </div>
                 <div class="scanning-loader" *ngIf="isScanning">
                    <div class="scan-line"></div>
@@ -82,7 +82,7 @@ import { CuppingSession } from '../../models/cupping.model';
           </div>
         </div>
       </div>
-    </section>
+    </fieldset>
   `,
   styles: [`
     .identity-grid-layout {

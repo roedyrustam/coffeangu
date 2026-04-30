@@ -16,14 +16,14 @@ import { SeoService } from '../../services/seo.service';
   standalone: true,
   imports: [CommonModule, RouterLink, FormsModule],
   template: `
-    <div class="community-container animate-fade">
+    <main class="community-container animate-fade" role="main">
       <!-- HERO DASHBOARD SECTION -->
-      <section class="discovery-hero glass-card">
+      <section class="discovery-hero glass-card" aria-labelledby="discovery-title">
         <div class="hero-content">
-          <h1 class="brand-font">{{ t('DISCOVERY_TITLE') }}</h1>
+          <h1 id="discovery-title" class="brand-font">{{ t('DISCOVERY_TITLE') }}</h1>
           <p class="subtitle">{{ t('DISCOVERY_SUBTITLE') }}</p>
           
-          <div class="community-stats" *ngIf="stats$ | async as stats">
+          <div class="community-stats" *ngIf="stats$ | async as stats" role="group" aria-label="Community Statistics">
             <div class="stat-pill">
               <span class="val">{{ stats.total }}</span>
               <span class="lab">Sessions</span>
@@ -38,23 +38,25 @@ import { SeoService } from '../../services/seo.service';
             </div>
           </div>
         </div>
-        <div class="hero-visual"></div>
+        <div class="hero-visual" aria-hidden="true"></div>
       </section>
 
       <!-- FEATURED CUPPERS -->
-      <section class="featured-cuppers" *ngIf="topCuppers$ | async as cuppers">
-        <div class="section-header">
-           <h2 class="section-title">Global Experts</h2>
-           <span class="count-tag">{{ cuppers.length }} Active Professionals</span>
-        </div>
-        <div class="cuppers-scroll">
+      <section class="featured-cuppers" *ngIf="topCuppers$ | async as cuppers" aria-labelledby="experts-title">
+        <header class="section-header">
+           <h2 id="experts-title" class="section-title">Global Experts</h2>
+           <span class="count-tag" aria-label="{{ cuppers.length }} Active Professionals">{{ cuppers.length }} Active Professionals</span>
+        </header>
+        <div class="cuppers-scroll" role="list">
           <div class="cupper-profile-card glass-card animate-fade" 
+               role="listitem"
                *ngFor="let cupper of cuppers; let i = index"
                [style.animation-delay]="i * 0.1 + 's'"
-               [routerLink]="['/u', cupper.username || cupper.uid]">
+               [routerLink]="['/u', cupper.username || cupper.uid]"
+               [attr.aria-label]="'View profile of ' + cupper.displayName">
              <div class="cupper-avatar">
                <img *ngIf="cupper.photoURL" [src]="cupper.photoURL" [alt]="cupper.displayName">
-               <span *ngIf="!cupper.photoURL">{{ cupper.displayName.charAt(0) }}</span>
+               <span *ngIf="!cupper.photoURL" aria-hidden="true">{{ cupper.displayName.charAt(0) }}</span>
              </div>
              <div class="cupper-meta">
                <span class="cupper-name">{{ cupper.displayName }}</span>
@@ -68,64 +70,67 @@ import { SeoService } from '../../services/seo.service';
       </section>
 
       <!-- SEARCH & FILTER BAR -->
-      <div class="discovery-controls">
+      <section class="discovery-controls" aria-label="Search and Filters">
         <div class="search-box glass-card">
-          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
-          <input type="text" [placeholder]="t('SEARCH_PLACEHOLDER')" [(ngModel)]="searchQuery" (ngModelChange)="onSearchChange($event)">
+          <label for="discoverySearch" class="visually-hidden">Search coffee evaluations</label>
+          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
+          <input id="discoverySearch" type="text" [placeholder]="t('SEARCH_PLACEHOLDER')" [(ngModel)]="searchQuery" (ngModelChange)="onSearchChange($event)">
         </div>
 
         <div class="filters-row">
-          <div class="filter-group">
-            <button class="filter-chip" [class.active]="activeProcess() === 'all'" (click)="setProcess('all')">
+          <div class="filter-group" role="group" aria-label="Process Filters">
+            <button class="filter-chip" [class.active]="activeProcess() === 'all'" (click)="setProcess('all')" [aria-pressed]="activeProcess() === 'all'">
               {{ t('FILTER_ALL') }}
             </button>
-            <button class="filter-chip" *ngFor="let p of processes" [class.active]="activeProcess() === p" (click)="setProcess(p)">
+            <button class="filter-chip" *ngFor="let p of processes" [class.active]="activeProcess() === p" (click)="setProcess(p)" [aria-pressed]="activeProcess() === p">
               {{ p }}
             </button>
           </div>
 
           <div class="sort-selector">
-            <select [(ngModel)]="sortBy" (change)="onSortChange()">
+            <label for="sortBy" class="visually-hidden">Sort by</label>
+            <select id="sortBy" [(ngModel)]="sortBy" (change)="onSortChange()">
               <option value="timestamp">{{ t('SORT_NEWEST') }}</option>
               <option value="finalScore">{{ t('SORT_TOP_RATED') }}</option>
               <option value="likesCount">Most Liked</option>
             </select>
           </div>
         </div>
-      </div>
+      </section>
 
       <!-- DISCOVERY FEED -->
-      <div class="feed-grid" *ngIf="filteredCuppings$ | async as cuppings; else loading">
-        <div class="cupping-card glass-card animate-fade" 
+      <section class="feed-grid" *ngIf="filteredCuppings$ | async as cuppings; else loading" aria-live="polite">
+        <article class="cupping-card glass-card animate-fade" 
              *ngFor="let session of cuppings; let i = index" 
              [class]="getCardSize(session, i)"
              [style.animation-delay]="i * 0.05 + 's'"
-             [routerLink]="['/result', session.id]">
+             [routerLink]="['/result', session.id]"
+             aria-labelledby="bean-title-{{i}}">
           
-          <div class="card-glow"></div>
+          <div class="card-glow" aria-hidden="true"></div>
 
           <div class="card-image">
-            <img [src]="session.productImageUrl || '/assets/default-coffee.png'" alt="Product Photo">
+            <img [src]="session.productImageUrl || '/assets/default-coffee.png'" [alt]="'Visual profile of ' + session.beanName">
           </div>
           
           <div class="card-header">
             <div class="bean-main">
-              <h3>{{ session.beanName }}</h3>
+              <h3 [id]="'bean-title-' + i">{{ session.beanName }}</h3>
               <div class="roastery-row">
-                <span class="roastery">{{ session.roastery }}</span>
+                <span class="roastery" aria-label="Roastery">{{ session.roastery }}</span>
                 <span class="verified-icon" *ngIf="session.isVerifiedRoastery" title="Verified Roastery">
-                  <svg viewBox="0 0 24 24" width="14" height="14" fill="var(--primary-color)">
+                  <svg viewBox="0 0 24 24" width="14" height="14" fill="var(--primary-color)" aria-hidden="true">
                     <path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10 10-4.5 10-10S17.5 2 12 2zm-1.9 14.7L6.4 13l1.5-1.5 2.2 2.2 4.8-4.8 1.5 1.5-6.3 6.3z"/>
                   </svg>
                 </span>
               </div>
             </div>
-            <div class="score-display" [class.specialty]="session.finalScore >= 80" [class.specialty-pulse]="session.finalScore >= 85">
-              <span class="num">{{ session.finalScore | number:'1.1-1' }}</span>
+            <div class="score-display" [class.specialty]="session.finalScore >= 80" [class.specialty-pulse]="session.finalScore >= 85" [attr.aria-label]="'Score: ' + (session.finalScore | number:'1.1-1')">
+              <span class="num" aria-hidden="true">{{ session.finalScore | number:'1.1-1' }}</span>
             </div>
           </div>
 
-          <div class="session-performance">
+          <div class="session-performance" aria-label="Sensory Profile Chart">
             <div class="mini-sensory">
                <div class="mini-bar" [style.height.%]="(session.scores.flavor - 1) / 8 * 100" [style.background]="getBarColor('flavor')" title="Flavor"></div>
                <div class="mini-bar" [style.height.%]="(session.scores.acidity - 1) / 8 * 100" [style.background]="getBarColor('acidity')" title="Acidity"></div>
@@ -133,39 +138,39 @@ import { SeoService } from '../../services/seo.service';
             </div>
           </div>
 
-          <div class="sensory-strip">
+          <div class="sensory-strip" aria-label="Intensity attributes">
             <div class="sensory-badge" title="Acidity">
-              <span class="icon">🍋</span>
+              <span class="icon" aria-hidden="true">🍋</span>
               <span>{{ session.intensities?.acidity || '-' }}</span>
             </div>
             <div class="sensory-badge" title="Mouthfeel">
-              <span class="icon">🥃</span>
+              <span class="icon" aria-hidden="true">🥃</span>
               <span>{{ session.intensities?.mouthfeel || session.intensities?.body || '-' }}</span>
             </div>
             <div class="sensory-badge" title="Sweetness">
-              <span class="icon">🍯</span>
+              <span class="icon" aria-hidden="true">🍯</span>
               <span>{{ session.intensities?.sweetness || '-' }}</span>
             </div>
           </div>
 
-          <div class="flavor-cloud">
+          <div class="flavor-cloud" aria-label="Flavor Notes">
             <span class="flavor-tag" *ngFor="let note of session.flavorNotes | slice:0:3">#{{ note }}</span>
             <span class="more-count" *ngIf="session.flavorNotes.length > 3">+{{ session.flavorNotes.length - 3 }}</span>
           </div>
 
           <footer class="card-footer">
-            <div class="cupper-info" [routerLink]="['/u', session.userId]" (click)="$event.stopPropagation()">
+            <div class="cupper-info" [routerLink]="['/u', session.userId]" (click)="$event.stopPropagation()" [attr.aria-label]="'View profile of ' + (session.cupperName || 'Anonymous Cupper')">
               <div class="avatar-wrapper">
-                <div class="mini-avatar">{{ (session.cupperName || 'A').charAt(0) }}</div>
+                <div class="mini-avatar" aria-hidden="true">{{ (session.cupperName || 'A').charAt(0) }}</div>
                 <div class="pro-dot" *ngIf="session.isPro" title="Pro Member"></div>
               </div>
               <span class="name">{{ session.cupperName || 'Anonymous Cupper' }}</span>
-              <span class="pro-tag" *ngIf="session.isPro">PRO</span>
+              <span class="pro-tag" *ngIf="session.isPro" aria-hidden="true">PRO</span>
             </div>
 
             <!-- VISIT SHOP BUTTON (Premium Commerce) -->
-            <button class="btn-shop" *ngIf="session.buyLink" (click)="$event.stopPropagation(); openUrl(session.buyLink)">
-              <span class="icon">🛒</span>
+            <button class="btn-shop" *ngIf="session.buyLink" (click)="$event.stopPropagation(); openUrl(session.buyLink)" aria-label="Visit Official Shop">
+              <span class="icon" aria-hidden="true">🛒</span>
               <span>Visit Shop</span>
             </button>
 
@@ -173,40 +178,42 @@ import { SeoService } from '../../services/seo.service';
               <div class="social-proof" *ngIf="session.likesCount">
                 ❤️ {{ session.likesCount }} users liked this results
               </div>
-              <div class="actions-row">
-                <div class="stat-item save-btn" 
+              <div class="actions-row" role="group" aria-label="Post actions">
+                <button type="button" class="stat-item save-btn" 
                      [class.saved]="hasSaved(session)"
-                     (click)="$event.stopPropagation(); toggleSave(session)">
-                  <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" [attr.fill]="hasSaved(session) ? 'var(--primary-color)' : 'none'" [attr.stroke]="hasSaved(session) ? 'var(--primary-color)' : 'currentColor'" stroke-width="2" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round">
+                     (click)="$event.stopPropagation(); toggleSave(session)"
+                     [attr.aria-label]="hasSaved(session) ? 'Unsave session' : 'Save session'">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" [attr.fill]="hasSaved(session) ? 'var(--primary-color)' : 'none'" [attr.stroke]="hasSaved(session) ? 'var(--primary-color)' : 'currentColor'" stroke-width="2" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
                     <path d="m19 21-7-4-7 4V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v16z"></path>
                   </svg>
-                </div>
-                <div class="stat-item like-btn" 
+                </button>
+                <button type="button" class="stat-item like-btn" 
                      [class.liked]="hasLiked(session)" 
-                     (click)="$event.stopPropagation(); toggleLike(session)">
-                  <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" [attr.fill]="hasLiked(session) ? 'var(--danger)' : 'none'" [attr.stroke]="hasLiked(session) ? 'var(--danger)' : 'currentColor'" stroke-width="2" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round">
+                     (click)="$event.stopPropagation(); toggleLike(session)"
+                     [attr.aria-label]="hasLiked(session) ? 'Unlike session' : 'Like session'">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" [attr.fill]="hasLiked(session) ? 'var(--danger)' : 'none'" [attr.stroke]="hasLiked(session) ? 'var(--danger)' : 'currentColor'" stroke-width="2" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
                     <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l8.84-8.84 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
                   </svg>
-                </div>
+                </button>
               </div>
             </div>
           </footer>
-        </div>
+        </article>
 
-        <div class="empty-state glass-card" *ngIf="errorMessage" style="border-color: var(--danger); background: rgba(220,53,69,0.05);">
-          <span class="icon">⚠️</span>
+        <div class="empty-state glass-card" *ngIf="errorMessage" role="alert" style="border-color: var(--danger); background: rgba(220,53,69,0.05);">
+          <span class="icon" aria-hidden="true">⚠️</span>
           <h4>Terjadi Kesalahan</h4>
           <p>{{ errorMessage }}</p>
           <button class="btn-primary" style="margin-top:20px" (click)="errorMessage = ''; refresh()">Coba Lagi</button>
         </div>
 
-        <div class="empty-state glass-card" *ngIf="!errorMessage && cuppings.length === 0">
-           <div class="empty-icon">☕</div>
+        <div class="empty-state glass-card" *ngIf="!errorMessage && cuppings.length === 0" role="status">
+           <div class="empty-icon" aria-hidden="true">☕</div>
            <h3>No matching cuppings</h3>
            <p>Adjust your filters or be the first to share this profile!</p>
            <button routerLink="/cupping" class="btn-primary">Start New Session</button>
         </div>
-      </div>
+      </section>
 
       <ng-template #loading>
         <div class="loading-state">

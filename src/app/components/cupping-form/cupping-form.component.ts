@@ -91,59 +91,62 @@ import { ToastService } from '../../services/toast.service';
           ></app-sensory-scores>
 
           <!-- NEW FLAVOR PICKER SECTION -->
-          <section class="form-section">
+          <fieldset class="form-section">
+            <legend class="section-title">Sensory Fingerprint</legend>
             <div class="section-title-row" style="margin-bottom: 25px;">
-              <h3 class="section-title" style="margin-bottom:0">Sensory Fingerprint</h3>
-              <button type="button" class="btn-wheel-open" (click)="showFlavorPicker = true">
+              <p class="section-hint">Select flavor notes from the community or the Dynamic Wheel.</p>
+              <button type="button" class="btn-wheel-open" (click)="showFlavorPicker = true" aria-label="Open Dynamic Flavor Wheel">
                 <span>Dynamic Wheel</span>
               </button>
             </div>
             
             <!-- Smart Suggestions -->
-            <div class="smart-suggestions" *ngIf="suggestions().length > 0">
+            <div class="smart-suggestions" *ngIf="suggestions().length > 0" aria-live="polite">
               <span class="suggestion-label">Suggested by Community:</span>
               <div class="suggestion-chips">
-                <span *ngFor="let s of suggestions()" class="suggestion-chip" (click)="toggleFlavor(s)">
+                <button type="button" *ngFor="let s of suggestions()" class="suggestion-chip" (click)="toggleFlavor(s)" [aria-label]="'Add ' + s + ' note'">
                   + {{ s }}
-                </span>
+                </button>
               </div>
             </div>
 
             <div class="flavor-display">
               <div class="flavor-chips" *ngIf="session.flavorNotes.length > 0">
-                 <div *ngFor="let note of session.flavorNotes" class="chip active" (click)="toggleFlavor(note)">
+                 <button type="button" *ngFor="let note of session.flavorNotes" class="chip active" (click)="toggleFlavor(note)" [aria-label]="'Remove ' + note + ' note'">
                     {{ note }} ✕
-                 </div>
+                 </button>
               </div>
-              <div class="empty-flavor" *ngIf="session.flavorNotes.length === 0" (click)="showFlavorPicker = true">
+              <button type="button" class="empty-flavor" *ngIf="session.flavorNotes.length === 0" (click)="showFlavorPicker = true">
                 <p>Tap to interact with the Dynamic Flavor Wheel...</p>
-              </div>
+              </button>
             </div>
-          </section>
+          </fieldset>
 
           <!-- COMMERCE & PROMOTION SECTION (Premium) -->
-          <section class="form-section luxury-border" [class.locked]="!isPro()">
+          <fieldset class="form-section luxury-border" [class.locked]="!isPro()">
+            <legend class="section-title">Commerce & Promotion</legend>
             <div class="section-title-row">
-              <h3 class="section-title" style="margin-bottom:0">Commerce & Promotion</h3>
-              <span class="premium-badge" *ngIf="!isPro()">🔒 PRO</span>
+              <span class="premium-badge" *ngIf="!isPro()" aria-hidden="true">🔒 PRO</span>
             </div>
             
             <p class="section-hint" *ngIf="!isPro()">Direct commerce links are available for verified roasteries and pro members.</p>
             
             <div class="input-group" [class.disabled-group]="!isPro()" (click)="!isPro() && goToPricing()">
-              <label>Direct Purchase Link (URL)</label>
+              <label for="buyLink">Direct Purchase Link (URL)</label>
               <div class="premium-input-wrapper">
-                <input [(ngModel)]="session.buyLink" 
+                <input id="buyLink" 
+                       [(ngModel)]="session.buyLink" 
                        name="buyLink" 
                        placeholder="e.g. https://yourshop.com/product/..." 
                        [disabled]="!isPro()"
-                       [readonly]="!isPro()">
+                       [readonly]="!isPro()"
+                       [attr.aria-disabled]="!isPro()">
                 <div class="lock-overlay" *ngIf="!isPro()">
                   <span>Upgrade to Unlock Shop Links</span>
                 </div>
               </div>
             </div>
-          </section>
+          </fieldset>
 
         </div>
 
@@ -370,7 +373,11 @@ import { ToastService } from '../../services/toast.service';
       .guide-grid { grid-template-columns: 1fr; }
       .form-section { padding: 32px 20px; } 
       .header-content h2 { font-size: 2.2rem; } 
-      .form-sticky-actions { bottom: 100px; left: 20px; right: 20px; padding: 16px 20px; } 
+      .header-header { padding: 30px 20px; min-height: 200px; }
+      .form-sticky-actions { bottom: 100px; left: 15px; right: 15px; padding: 12px 16px; border-radius: 20px; width: auto; max-width: none; } 
+      .btn-submit { flex: 1; }
+      .footer-actions { width: 100%; justify-content: space-between; }
+      .section-title { font-size: 1.3rem; margin-bottom: 25px; }
     }
     .locked { opacity: 0.6; position: relative; }
     .premium-badge { background: var(--primary-gradient); color: #0c0c0e; padding: 4px 10px; border-radius: 6px; font-size: 0.65rem; font-weight: 900; letter-spacing: 1px; }

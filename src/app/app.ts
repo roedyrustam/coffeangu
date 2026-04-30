@@ -16,14 +16,14 @@ import { ToastService } from './services/toast.service';
     <app-toast></app-toast>
     <div class="mesh-bg" [style.transform]="parallaxTransform()"></div>
     
-    <nav class="main-nav">
+    <nav class="main-nav" aria-label="Main Navigation">
       <div class="nav-content">
-        <a routerLink="/" class="brand brand-font">{{ t('APP_TITLE') }}</a>
+        <a routerLink="/" class="brand brand-font" aria-label="CuppingNotes Home">{{ t('APP_TITLE') }}</a>
         <div class="nav-right">
-          <div class="lang-switcher">
-            <button (click)="ts.setLocale('en')" [class.active]="ts.currentLocale() === 'en'">EN</button>
-            <button (click)="ts.setLocale('id')" [class.active]="ts.currentLocale() === 'id'">ID</button>
-            <button (click)="ts.setLocale('es')" [class.active]="ts.currentLocale() === 'es'">ES</button>
+          <div class="lang-switcher" role="group" aria-label="Language Selector">
+            <button (click)="ts.setLocale('en')" [class.active]="ts.currentLocale() === 'en'" aria-label="English">EN</button>
+            <button (click)="ts.setLocale('id')" [class.active]="ts.currentLocale() === 'id'" aria-label="Bahasa Indonesia">ID</button>
+            <button (click)="ts.setLocale('es')" [class.active]="ts.currentLocale() === 'es'" aria-label="Español">ES</button>
           </div>
           <div class="nav-links">
             <a routerLink="/" class="nav-link" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}">{{ t('NAV_HOME') }}</a>
@@ -34,13 +34,14 @@ import { ToastService } from './services/toast.service';
               <a routerLink="/login" class="btn-primary login-btn">{{ t('BTN_LOGIN') }}</a>
             } @else {
               <div class="user-profile">
-                <div class="avatar" (click)="showUserMenu.set(!showUserMenu())">
+                <button class="avatar-btn" (click)="showUserMenu.set(!showUserMenu())" [aria-expanded]="showUserMenu()" aria-haspopup="true" aria-label="User Menu">
+                  <div class="avatar">
                   @if (!auth.currentUser()?.photoURL) {
                     <span>{{ auth.currentUser()?.displayName?.charAt(0) || 'U' }}</span>
                   } @else {
                     <img [src]="auth.currentUser()?.photoURL" alt="Profile">
-                  }
-                </div>
+                  </div>
+                </button>
                 
                 @if (showUserMenu()) {
                   <div class="user-menu glass-card">
@@ -80,7 +81,7 @@ import { ToastService } from './services/toast.service';
       <router-outlet></router-outlet>
     </main>
 
-    <nav class="mobile-bottom-nav">
+    <nav class="mobile-bottom-nav" aria-label="Mobile Navigation">
       <div class="nav-blur-bg"></div>
       
       <a routerLink="/" class="bottom-nav-link" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}">
@@ -94,7 +95,7 @@ import { ToastService } from './services/toast.service';
       </a>
       
       <div class="nav-center-action">
-        <button class="center-fab" routerLink="/cupping">
+        <button class="center-fab" routerLink="/cupping" aria-label="New Cupping Session">
           <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12h14"/></svg>
         </button>
       </div>
@@ -286,6 +287,18 @@ import { ToastService } from './services/toast.service';
       color: var(--text-main);
     }
     .user-profile { position: relative; }
+    .avatar-btn {
+      background: transparent;
+      border: none;
+      padding: 0;
+      cursor: pointer;
+      border-radius: 14px;
+      transition: all 0.3s;
+    }
+    .avatar-btn:focus-visible {
+      outline: 2px solid var(--primary-color);
+      outline-offset: 4px;
+    }
     .avatar {
       width: 42px;
       height: 42px;
