@@ -44,8 +44,8 @@ import { CuppingSession } from '../../models/cupping.model';
           </div>
           <div class="slider-row">
             <button type="button" class="btn-step" (click)="stepScore(key, -0.25)" [aria-label]="'Decrease ' + formatLabel(key)">-</button>
-            <input type="range" min="1" max="9" step="0.25" [(ngModel)]="session.scores[key]" [name]="key" [id]="'score-' + key" (input)="onScoreInput()"
-                   [style.background]="'linear-gradient(to right, var(--accent-color) ' + ((session.scores[key]-1)/8*100) + '%, rgba(255,255,255,0.05) ' + ((session.scores[key]-1)/8*100) + '%)'"
+            <input type="range" min="0" max="10" step="0.25" [(ngModel)]="session.scores[key]" [name]="key" [id]="'score-' + key" (input)="onScoreInput()"
+                   [style.background]="'linear-gradient(to right, var(--accent-color) ' + (session.scores[key]*10) + '%, rgba(255,255,255,0.05) ' + (session.scores[key]*10) + '%)'"
                    [aria-label]="formatLabel(key) + ' Quality'">
             <button type="button" class="btn-step" (click)="stepScore(key, 0.25)" [aria-label]="'Increase ' + formatLabel(key)">+</button>
           </div>
@@ -221,7 +221,7 @@ export class SensoryScoresComponent implements OnInit {
   ];
 
   scoreKeys: (keyof CuppingSession['scores'])[] = [
-    'fragranceAroma', 'flavor', 'aftertaste', 'acidity', 'sweetness', 'mouthfeel', 'balance', 'overall'
+    'fragranceAroma', 'flavor', 'aftertaste', 'acidity', 'mouthfeel', 'balance', 'overall', 'sweetness', 'cleanCup', 'uniformity'
   ];
 
   defectCups: number[] = [0, 0, 0, 0, 0];
@@ -253,7 +253,7 @@ export class SensoryScoresComponent implements OnInit {
   }
 
   stepScore(key: keyof CuppingSession['scores'], step: number) {
-    const newVal = Math.min(9, Math.max(1, (this.session.scores[key] || 0) + step));
+    const newVal = Math.min(10, Math.max(0, (this.session.scores[key] || 0) + step));
     this.session.scores[key] = newVal;
     this.onScoreInput();
   }
@@ -268,6 +268,8 @@ export class SensoryScoresComponent implements OnInit {
       mouthfeel: '#69F0AE',
       balance: '#00E5FF',
       overall: '#FFD740',
+      cleanCup: '#00E676',
+      uniformity: '#1DE9B6',
       // Intensities
       acidityInt: '#40C4FF',
       mouthfeelInt: '#69F0AE',

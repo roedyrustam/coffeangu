@@ -617,18 +617,20 @@ export class CuppingFormComponent implements OnInit {
     },
     flavorNotes: [],
     scores: {
-      fragranceAroma: 7,
-      flavor: 7,
-      aftertaste: 7,
-      acidity: 7,
-      sweetness: 7,
-      mouthfeel: 7,
-      balance: 7,
-      overall: 7
+      fragranceAroma: 7.5,
+      flavor: 7.5,
+      aftertaste: 7.5,
+      acidity: 7.5,
+      sweetness: 10,
+      mouthfeel: 7.5,
+      balance: 7.5,
+      overall: 7.5,
+      cleanCup: 10,
+      uniformity: 10
     },
     defects: 0,
     defectCupStates: [0, 0, 0, 0, 0],
-    finalScore: 80,
+    finalScore: 82.5,
     timestamp: null,
     isPublic: true,
     likesCount: 0
@@ -648,7 +650,7 @@ export class CuppingFormComponent implements OnInit {
 
   stepScore(key: keyof SensoryScores, delta: number) {
     const newVal = this.session.scores[key] + delta;
-    if (newVal >= 6 && newVal <= 10) {
+    if (newVal >= 0 && newVal <= 10) {
       this.session.scores[key] = newVal;
       this.updateTotal();
     }
@@ -656,8 +658,8 @@ export class CuppingFormComponent implements OnInit {
 
   updateTotal() {
     const sum = Object.values(this.session.scores).reduce((a, b: any) => a + b, 0);
-    // CVA 2025 Normalization: (Sum / 72) * 100
-    this.session.finalScore = ((sum - this.session.defects) / 72) * 100;
+    // Standard SCA Protocol: Total = Sum - Defects
+    this.session.finalScore = sum - this.session.defects;
   }
 
   formatLabel(key: string) {

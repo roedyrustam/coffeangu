@@ -1088,7 +1088,9 @@ export class CuppingResultComponent implements OnInit, AfterViewInit, OnDestroy 
       sweetness: '#FF4081',      // Pink
       mouthfeel: '#69F0AE',      // Vibrant Green (from image)
       balance: '#00E5FF',        // Cyan
-      overall: '#FFD740'          // Gold/Bronze
+      overall: '#FFD740',        // Gold/Bronze
+      cleanCup: '#00E676',       // Green
+      uniformity: '#1DE9B6'      // Teal
     };
     return colors[key] || '#FFD740';
   }
@@ -1102,8 +1104,10 @@ export class CuppingResultComponent implements OnInit, AfterViewInit, OnDestroy 
       { label: 'Aftertaste', value: scores.aftertaste, key: 'aftertaste' },
       { label: 'Acidity', value: scores.acidity, key: 'acidity' },
       { label: 'Sweetness', value: scores.sweetness, key: 'sweetness' },
-      { label: 'Mouthfeel', value: scores.mouthfeel, key: 'mouthfeel' },
+      { label: 'Body', value: scores.mouthfeel, key: 'mouthfeel' },
       { label: 'Balance', value: scores.balance, key: 'balance' },
+      { label: 'Uniformity', value: scores.uniformity, key: 'uniformity' },
+      { label: 'Clean Cup', value: scores.cleanCup, key: 'cleanCup' },
       { label: 'Overall', value: scores.overall, key: 'overall' }
     ];
   }

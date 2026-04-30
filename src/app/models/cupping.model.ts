@@ -7,6 +7,8 @@ export interface SensoryScores {
   mouthfeel: number;
   balance: number;
   overall: number;
+  cleanCup: number;
+  uniformity: number;
 }
 
 export interface CuppingSession {
