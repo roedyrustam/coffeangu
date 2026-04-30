@@ -31,6 +31,7 @@
   
   /* Premium Tokens */
   --shadow-premium: 0 20px 40px rgba(0, 0, 0, 0.4);
+  --shadow-luminescent: 0 0 30px var(--primary-glow);
   --radius-squircle: 24px;
   --radius-lg: 32px;
   --radius-md: 18px;
@@ -40,6 +41,11 @@
   --z-sticky: 500;
   --z-nav: 1000;
   --z-overlay: 2000;
+
+  /* Glassmorphism 2.0 */
+  --glass-blur: 40px;
+  --glass-opacity: 0.75;
+  --glass-gradient: linear-gradient(135deg, rgba(255, 255, 255, 0.05) 0%, rgba(255, 255, 255, 0) 100%);
 }
 
 /* Base Resets */
@@ -84,13 +90,45 @@ h1, h2, h3, .brand-font {
 /* Global Components */
 .glass-card {
   background: var(--glass-bg);
-  backdrop-filter: blur(40px);
-  -webkit-backdrop-filter: blur(40px);
+  backdrop-filter: blur(var(--glass-blur));
+  -webkit-backdrop-filter: blur(var(--glass-blur));
   border: 1px solid var(--glass-border);
   border-radius: var(--radius-squircle);
   padding: 32px;
   box-shadow: var(--shadow-premium);
-  transition: all 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+  transition: all 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+  position: relative;
+  overflow: hidden;
+}
+
+.glass-card::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: var(--glass-gradient);
+  pointer-events: none;
+  z-index: -1;
+}
+
+.luminescent-border {
+  position: relative;
+  border: 1px solid transparent !important;
+  background-clip: padding-box !important;
+}
+
+.luminescent-border::after {
+  content: '';
+  position: absolute;
+  inset: -1px;
+  z-index: -1;
+  background: linear-gradient(135deg, var(--primary-color), transparent, var(--accent-neon));
+  border-radius: inherit;
+  opacity: 0.3;
+  transition: opacity 0.4s ease;
+}
+
+.luminescent-border:hover::after {
+  opacity: 0.6;
 }
 
 @media (max-width: 768px) {
@@ -205,17 +243,25 @@ label {
   animation: pulse-specialty 3s infinite;
 }
 
-/* Mesh Background Utility */
+/* Mesh Background Utility - Animated */
 .mesh-bg {
   position: fixed;
   inset: -10%;
   background: 
-    radial-gradient(at 10% 20%, rgba(189, 142, 98, 0.12) 0px, transparent 50%),
-    radial-gradient(at 90% 10%, rgba(0, 122, 255, 0.08) 0px, transparent 50%),
-    radial-gradient(at 50% 100%, rgba(189, 142, 98, 0.08) 0px, transparent 50%);
-  filter: blur(100px);
+    radial-gradient(at 10% 20%, rgba(189, 142, 98, 0.15) 0px, transparent 50%),
+    radial-gradient(at 90% 10%, rgba(0, 122, 255, 0.1) 0px, transparent 50%),
+    radial-gradient(at 50% 100%, rgba(212, 225, 87, 0.08) 0px, transparent 50%),
+    radial-gradient(at 80% 80%, rgba(189, 142, 98, 0.1) 0px, transparent 50%);
+  filter: blur(80px);
   z-index: -1;
   pointer-events: none;
+  animation: meshFlow 20s ease infinite alternate;
+}
+
+@keyframes meshFlow {
+  0% { transform: scale(1) translate(0, 0); }
+  50% { transform: scale(1.1) translate(2%, 2%); }
+  100% { transform: scale(1) translate(-1%, 1%); }
 }
 
 /* Status Badges */

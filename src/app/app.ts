@@ -16,9 +16,11 @@ import { ToastService } from './services/toast.service';
     <app-toast></app-toast>
     <div class="mesh-bg" [style.transform]="parallaxTransform()"></div>
     
-    <nav class="main-nav" aria-label="Main Navigation">
+    <nav class="main-nav luminescent-border" aria-label="Main Navigation">
       <div class="nav-content">
-        <a routerLink="/" class="brand brand-font" aria-label="CuppingNotes Home">{{ t('APP_TITLE') }}</a>
+        <a routerLink="/" class="brand brand-font" aria-label="CuppingNotes Home">
+          <span class="radiant-text">Cupping</span>Notes
+        </a>
         <div class="nav-right">
           <div class="lang-switcher" role="group" aria-label="Language Selector">
             <button (click)="ts.setLocale('en')" [class.active]="ts.currentLocale() === 'en'" aria-label="English">EN</button>
@@ -122,15 +124,14 @@ import { ToastService } from './services/toast.service';
   `,
   styles: [`
     .main-nav {
-      backdrop-filter: blur(40px);
-      -webkit-backdrop-filter: blur(40px);
-      background: rgba(12, 12, 14, 0.8);
-      border-bottom: 1px solid var(--glass-border);
+      backdrop-filter: blur(var(--glass-blur));
+      -webkit-backdrop-filter: blur(var(--glass-blur));
+      background: rgba(12, 12, 14, 0.6);
       position: sticky;
       top: 0;
       z-index: var(--z-nav);
       height: 80px;
-      transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+      transition: all 0.6s cubic-bezier(0.16, 1, 0.3, 1);
     }
     .nav-content {
       max-width: 1400px;
@@ -400,9 +401,9 @@ export class App {
   currentYear = new Date().getFullYear();
 
   private mouseMoveHandler = (e: MouseEvent) => {
-    const x = (e.clientX / window.innerWidth - 0.5) * 15;
-    const y = (e.clientY / window.innerHeight - 0.5) * 15;
-    this.parallaxTransform.set(`translate3d(${x}px, ${y}px, 0) scale(1.05)`);
+    const x = (e.clientX / window.innerWidth - 0.5) * 25;
+    const y = (e.clientY / window.innerHeight - 0.5) * 25;
+    this.parallaxTransform.set(`translate3d(${x}px, ${y}px, 0) scale(1.1)`);
   };
 
   async ngOnInit() {

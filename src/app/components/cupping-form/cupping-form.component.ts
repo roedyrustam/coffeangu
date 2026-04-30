@@ -12,6 +12,7 @@ import { toSignal } from '@angular/core/rxjs-interop';
 import { CoffeeIdentityComponent } from './coffee-identity.component';
 import { SensoryScoresComponent } from './sensory-scores.component';
 import { ToastService } from '../../services/toast.service';
+import { SensoryAiService } from '../../services/sensory-ai.service';
 
 @Component({
   selector: 'app-cupping-form',
@@ -19,7 +20,7 @@ import { ToastService } from '../../services/toast.service';
   imports: [CommonModule, FormsModule, DynamicFlavorWheelComponent, CoffeeIdentityComponent, SensoryScoresComponent],
   template: `
     <div class="guide-container animate-fade" *ngIf="showGuide">
-      <div class="glass-card guide-card">
+      <div class="glass-card guide-card luminescent-border">
         <h2 class="brand-font" style="margin-bottom: 10px; color: var(--primary-color); font-size: 2.2rem;">SCA Cupping Protocol</h2>
         <p class="guide-desc">Pastikan panel dan instrumen telah disiapkan sesuai dengan standar resmi Specialty Coffee Association (SCA).</p>
         
@@ -100,6 +101,16 @@ import { ToastService } from '../../services/toast.service';
               </button>
             </div>
             
+            <!-- AI Sensory Predictions -->
+            <div class="smart-suggestions ai-predictions" *ngIf="aiDescriptors().length > 0">
+              <span class="suggestion-label"><span class="ai-sparkle">✨</span> AI Sensory Predictions:</span>
+              <div class="suggestion-chips">
+                <button type="button" *ngFor="let d of aiDescriptors()" class="suggestion-chip ai-chip" (click)="toggleFlavor(d, true)">
+                  + {{ d }}
+                </button>
+              </div>
+            </div>
+
             <!-- Smart Suggestions -->
             <div class="smart-suggestions" *ngIf="suggestions().length > 0" aria-live="polite">
               <span class="suggestion-label">Suggested by Community:</span>
@@ -379,9 +390,9 @@ import { ToastService } from '../../services/toast.service';
       .footer-actions { width: 100%; justify-content: space-between; }
       .section-title { font-size: 1.3rem; margin-bottom: 25px; }
     }
-    .locked { opacity: 0.6; position: relative; }
-    .premium-badge { background: var(--primary-gradient); color: #0c0c0e; padding: 4px 10px; border-radius: 6px; font-size: 0.65rem; font-weight: 900; letter-spacing: 1px; }
-    .lock-overlay { position: absolute; inset: 0; background: rgba(0,0,0,0.5); backdrop-filter: blur(4px); border-radius: inherit; display: flex; align-items: center; justify-content: center; z-index: 10; }
+    .ai-sparkle { color: var(--accent-neon); text-shadow: 0 0 10px var(--accent-neon); margin-right: 5px; }
+    .ai-chip { border-color: rgba(212, 225, 87, 0.3) !important; color: var(--accent-neon) !important; background: rgba(212, 225, 87, 0.05) !important; }
+    .ai-chip:hover { background: rgba(212, 225, 87, 0.1) !important; border-color: var(--accent-neon) !important; }
   `]
 })
 export class CuppingFormComponent implements OnInit {
@@ -392,6 +403,7 @@ export class CuppingFormComponent implements OnInit {
   private cuppingService = inject(CuppingService);
   private membershipService = inject(MembershipService);
   private toast = inject(ToastService);
+  private aiService = inject(SensoryAiService);
 
   isPro = toSignal(this.membershipService.isPro$(), { initialValue: false });
   t = this.translationService.t();
@@ -408,6 +420,7 @@ export class CuppingFormComponent implements OnInit {
   productImageFile: File | null = null;
   productImagePreview: string | null = null;
   suggestions = signal<string[]>([]);
+  aiDescriptors = signal<string[]>([]);
 
   ngOnInit() {
     this.checkSuggestions();
@@ -427,6 +440,19 @@ export class CuppingFormComponent implements OnInit {
   onScoreInput() {
     this.updateTotal();
     this.triggerHaptic();
+    this.updateAiPredictions();
+  }
+
+  updateAiPredictions() {
+    const profile = {
+      acidity: this.session.scores.acidity,
+      body: this.session.scores.mouthfeel,
+      flavor: this.session.scores.flavor,
+      sweetness: this.session.scores.sweetness,
+      aftertaste: this.session.scores.aftertaste
+    };
+    const predictions = this.aiService.predictDescriptors(profile);
+    this.aiDescriptors.set(predictions.filter(d => !this.session.flavorNotes.includes(d)));
   }
 
   triggerHaptic() {
@@ -590,13 +616,16 @@ export class CuppingFormComponent implements OnInit {
     likesCount: 0
   };
 
-  toggleFlavor(category: string) {
+  toggleFlavor(category: string, isAi = false) {
+    if (isAi) this.session.isAiAssisted = true;
     const index = this.session.flavorNotes.indexOf(category);
     if (index > -1) {
       this.session.flavorNotes.splice(index, 1);
     } else {
       this.session.flavorNotes.push(category);
     }
+    this.updateTotal(); // Ensure total is updated if logic depends on it
+    this.checkSuggestions();
   }
 
   stepScore(key: keyof SensoryScores, delta: number) {

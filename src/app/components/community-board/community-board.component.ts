@@ -18,7 +18,7 @@ import { SeoService } from '../../services/seo.service';
   template: `
     <main class="community-container animate-fade" role="main">
       <!-- HERO DASHBOARD SECTION -->
-      <section class="discovery-hero glass-card" aria-labelledby="discovery-title">
+      <section class="discovery-hero glass-card luminescent-border" aria-labelledby="discovery-title">
         <div class="hero-content">
           <h1 id="discovery-title" class="brand-font">{{ t('DISCOVERY_TITLE') }}</h1>
           <p class="subtitle">{{ t('DISCOVERY_SUBTITLE') }}</p>
@@ -100,7 +100,7 @@ import { SeoService } from '../../services/seo.service';
 
       <!-- DISCOVERY FEED -->
       <section class="feed-grid" *ngIf="filteredCuppings$ | async as cuppings; else loading" aria-live="polite">
-        <article class="cupping-card glass-card animate-fade" 
+        <article class="cupping-card glass-card luminescent-border animate-fade" 
              *ngFor="let session of cuppings; let i = index" 
              [class]="getCardSize(session, i)"
              [style.animation-delay]="i * 0.05 + 's'"
@@ -156,6 +156,7 @@ import { SeoService } from '../../services/seo.service';
           <div class="flavor-cloud" aria-label="Flavor Notes">
             <span class="flavor-tag" *ngFor="let note of session.flavorNotes | slice:0:3">#{{ note }}</span>
             <span class="more-count" *ngIf="session.flavorNotes.length > 3">+{{ session.flavorNotes.length - 3 }}</span>
+            <span class="ai-sparkle-mini" *ngIf="session.isAiAssisted" title="AI Assisted Evaluation">✨</span>
           </div>
 
           <footer class="card-footer">
@@ -424,9 +425,15 @@ import { SeoService } from '../../services/seo.service';
       border-radius: 15px;
       border: 1px solid var(--glass-border);
     }
-    .score-display.specialty { background: var(--primary-gradient); border: none; }
+    .score-display.specialty { 
+      background: var(--primary-gradient); 
+      border: none;
+      box-shadow: 0 0 20px var(--primary-glow);
+    }
     .score-display .num { font-size: 1.3rem; font-weight: 950; color: var(--text-main); font-family: var(--font-brand); }
     .score-display.specialty .num { color: #0c0c0e; }
+    
+    .ai-sparkle-mini { margin-left: auto; font-size: 1rem; filter: drop-shadow(0 0 5px var(--accent-neon)); }
 
     .sensory-strip { display: flex; gap: 15px; z-index: 1; }
     .sensory-badge {
