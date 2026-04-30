@@ -379,37 +379,43 @@ Chart.register(RadarController, RadialLinearScale, PointElement, LineElement, Fi
       box-shadow: 0 0 10px var(--primary-glow);
     }
     .chart-section {
-      margin: 60px 0;
-      background: rgba(0,0,0,0.3);
-      padding: 60px;
-      border-radius: var(--radius-lg);
-      border: 1px solid var(--glass-border);
+      margin: 60px auto;
+      background: transparent;
+      padding: 20px;
       position: relative;
-      overflow: hidden;
-      box-shadow: 0 30px 60px rgba(0,0,0,0.4);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      max-width: 600px;
+    }
+    .chart-wrapper {
+      position: relative;
+      height: 500px;
+      width: 500px;
+      max-width: 100%;
+      z-index: 1;
+      background: radial-gradient(circle at center, rgba(12, 12, 14, 0.8) 0%, rgba(22, 22, 26, 0.95) 70%, rgba(12, 12, 14, 1) 100%);
+      border-radius: 50%;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 40px;
+      box-shadow: 
+        0 40px 100px rgba(0, 0, 0, 0.8),
+        inset 0 0 80px rgba(0, 0, 0, 0.6);
     }
     .chart-glow-layer {
       position: absolute;
       top: 50%;
       left: 50%;
       transform: translate(-50%, -50%);
-      width: 150%;
-      height: 150%;
-      background: radial-gradient(circle, rgba(189, 142, 98, 0.08) 0%, transparent 70%);
+      width: 100%;
+      height: 100%;
+      background: radial-gradient(circle, rgba(189, 142, 98, 0.05) 0%, transparent 70%);
       pointer-events: none;
       z-index: 0;
-      animation: chartPulse 8s infinite alternate ease-in-out;
-    }
-    @keyframes chartPulse {
-      from { opacity: 0.3; transform: translate(-50%, -50%) scale(0.9); }
-      to { opacity: 0.8; transform: translate(-50%, -50%) scale(1.1); }
-    }
-    .chart-wrapper {
-      position: relative;
-      height: 450px;
-      width: 100%;
-      z-index: 1;
-      filter: drop-shadow(0 0 15px rgba(189, 142, 98, 0.2));
+      border-radius: 50%;
     }
     .sensory-summary {
       text-align: left;
@@ -688,6 +694,15 @@ Chart.register(RadarController, RadialLinearScale, PointElement, LineElement, Fi
     }
     .btn-download-image:disabled { opacity: 0.5; cursor: wait; }
 
+    @media (max-width: 600px) {
+      .chart-wrapper {
+        height: 340px;
+        width: 340px;
+        padding: 25px;
+      }
+      .chart-section { margin: 30px auto; padding: 5px; }
+    }
+
     @media (max-width: 768px) {
       .result-container { padding: 0 15px; margin: 30px auto; }
       .result-card { padding: 40px 20px; }
@@ -888,104 +903,125 @@ export class CuppingResultComponent implements OnInit, AfterViewInit, OnDestroy 
     const ctx = canvas.getContext('2d');
     if (!ctx) return;
 
-    const scores = this.session.scores;
-    const labels = [
-      'Aroma', 'Flavor', 'Aftertaste', 'Acidity', 
-      'Body', 'Balance', 'Uniformity', 'Clean Cup', 'Sweetness', 'Overall'
-    ];
+    const s = this.session.scores;
+    // Map to the 5 core attributes shown in the requested image
+    const labels = ['AROMA', 'FLAVOR', 'ACIDITY', 'BODY', 'AFTERTASTE'];
     const data = [
-      scores.fragranceAroma, scores.flavor, scores.aftertaste, scores.acidity,
-      scores.mouthfeel, scores.balance, scores.uniformity, scores.cleanCup, scores.sweetness, scores.overall
+      s.fragranceAroma,
+      s.flavor,
+      s.acidity,
+      s.mouthfeel,
+      s.aftertaste
+    ];
+
+    const pointColors = [
+      '#ff5252', // Aroma - Red
+      '#ffab40', // Flavor - Orange
+      '#40c4ff', // Acidity - Blue
+      '#69f0ae', // Body - Green
+      '#b388ff'  // Aftertaste - Purple
     ];
 
     if (this.sensoryChart) {
       this.sensoryChart.destroy();
     }
 
-    // Create Gradient for Glow Effect
-    const gradient = ctx.createRadialGradient(
-      canvas.width / 2, canvas.height / 2, 0,
-      canvas.width / 2, canvas.height / 2, canvas.width / 2
-    );
-    gradient.addColorStop(0, 'rgba(189, 142, 98, 0.4)');
-    gradient.addColorStop(1, 'rgba(189, 142, 98, 0.02)');
-
     this.sensoryChart = new Chart(canvas, {
       type: 'radar',
       data: {
         labels: labels,
-        datasets: [
-          {
-            label: 'Sensory Signature',
-            data: data,
-            fill: true,
-            backgroundColor: gradient,
-            borderColor: '#bd8e62',
-            borderWidth: 4,
-            pointBackgroundColor: labels.map((_, i) => {
-              const keys = ['fragranceAroma', 'flavor', 'aftertaste', 'acidity', 'mouthfeel', 'balance', 'uniformity', 'cleanCup', 'sweetness', 'overall'];
-              return this.getScoreColor(keys[i]);
-            }),
-            pointBorderColor: '#0c0c0e',
-            pointBorderWidth: 3,
-            pointRadius: 6,
-            pointHoverRadius: 9,
-            tension: 0.15 // Slightly curved for premium feel
-          },
-          // Invisible Dataset for "Outer Glow"
-          {
-             data: data,
-             fill: false,
-             borderColor: 'rgba(189, 142, 98, 0.3)',
-             borderWidth: 12,
-             pointRadius: 0,
-             tension: 0.15
-          }
-        ]
+        datasets: [{
+          label: 'Sensory Profile',
+          data: data,
+          fill: true,
+          backgroundColor: 'rgba(22, 22, 26, 0.6)',
+          borderColor: 'rgba(255, 255, 255, 0.2)',
+          borderWidth: 2,
+          pointBackgroundColor: pointColors,
+          pointBorderColor: '#fff',
+          pointBorderWidth: 2,
+          pointRadius: 12, // Larger for the "bubble" look
+          pointHoverRadius: 15,
+          tension: 0.1
+        }]
       },
       options: {
         responsive: true,
         maintainAspectRatio: false,
+        layout: {
+          padding: 30
+        },
         scales: {
           r: {
-            angleLines: { 
-              color: 'rgba(255, 255, 255, 0.08)',
-              lineWidth: 1
+            grid: {
+              circular: true, // Key for the circular look
+              color: 'rgba(255, 255, 255, 0.1)',
             },
-            grid: { 
-              color: 'rgba(255, 255, 255, 0.08)',
-              lineWidth: 1
+            angleLines: {
+              color: 'rgba(255, 255, 255, 0.1)'
             },
             suggestedMin: 0,
             suggestedMax: 10,
-            pointLabels: {
-              color: 'rgba(255, 255, 255, 0.6)',
-              font: {
-                size: 11,
-                weight: 'bold',
-                family: "'Outfit', sans-serif"
-              },
-              padding: 20
-            },
             ticks: {
-              display: false,
-              stepSize: 2
+              display: true,
+              stepSize: 2,
+              color: 'rgba(255, 255, 255, 0.3)',
+              backdropColor: 'transparent',
+              font: { size: 10 }
+            },
+            pointLabels: {
+              color: 'rgba(255, 255, 255, 0.7)',
+              font: {
+                family: "'Outfit', sans-serif",
+                size: 13,
+                weight: 'bold'
+              },
+              padding: 15
             }
           }
         },
         plugins: {
           legend: { display: false },
-          tooltip: {
-            backgroundColor: 'rgba(12, 12, 14, 0.95)',
-            titleFont: { family: "'Outfit', sans-serif", size: 14 },
-            bodyFont: { family: "'Outfit', sans-serif", size: 12 },
-            padding: 15,
-            borderColor: 'rgba(189, 142, 98, 0.3)',
-            borderWidth: 1,
-            displayColors: true
-          }
+          tooltip: { enabled: false } // We'll show values on points
         }
-      }
+      },
+      plugins: [{
+        id: 'glowPoints',
+        afterDraw: (chart) => {
+          const { ctx } = chart;
+          chart.data.datasets.forEach((dataset, datasetIndex) => {
+            const meta = chart.getDatasetMeta(datasetIndex);
+            meta.data.forEach((point: any, index: number) => {
+              const val = dataset.data[index] as number;
+              const color = pointColors[index];
+              
+              ctx.save();
+              // Outer Glow
+              ctx.shadowBlur = 20;
+              ctx.shadowColor = color;
+              ctx.fillStyle = color;
+              ctx.beginPath();
+              ctx.arc(point.x, point.y, 11, 0, Math.PI * 2);
+              ctx.fill();
+              
+              // White Inner Core
+              ctx.shadowBlur = 0;
+              ctx.fillStyle = '#fff';
+              ctx.beginPath();
+              ctx.arc(point.x, point.y, 9, 0, Math.PI * 2);
+              ctx.fill();
+
+              // Score Text
+              ctx.fillStyle = '#0c0c0e';
+              ctx.font = 'bold 10px Outfit';
+              ctx.textAlign = 'center';
+              ctx.textBaseline = 'middle';
+              ctx.fillText(val.toFixed(1), point.x, point.y);
+              ctx.restore();
+            });
+          });
+        }
+      }]
     });
   }
 
