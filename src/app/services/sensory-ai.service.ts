@@ -45,6 +45,40 @@ export class SensoryAiService {
   }
 
   /**
+   * Generates a poetic "Archetype" name based on the flavor profile.
+   */
+  predictArchetype(profile: SensoryProfile): { name: string, description: string } {
+    if (profile.acidity >= 8.5 && profile.flavor >= 8.5) {
+      return { 
+        name: 'The Radiant Flare', 
+        description: 'A brilliant explosion of high-altitude acidity and complex aromatics.' 
+      };
+    }
+    if (profile.body >= 8.5 && profile.sweetness >= 8.5) {
+      return { 
+        name: 'The Velvet Forge', 
+        description: 'Deep, syrupy body with intense caramelized sweetness and a lingering finish.' 
+      };
+    }
+    if (profile.acidity >= 8.0 && profile.sweetness >= 8.5) {
+      return { 
+        name: 'The Nectarine Stream', 
+        description: 'Perfectly balanced fruit-forward profile with honey-like sweetness.' 
+      };
+    }
+    if (profile.acidity < 7.5 && profile.body >= 8.0) {
+      return { 
+        name: 'The Obsidian Core', 
+        description: 'Solid, grounded profile with heavy mouthfeel and chocolatey foundations.' 
+      };
+    }
+    return { 
+      name: 'The Balanced Horizon', 
+      description: 'A harmonious blend of specialty attributes without a single dominant peak.' 
+    };
+  }
+
+  /**
    * Calculates the "Specialty Potential" of a profile.
    */
   calculateSpecialtyGrade(totalScore: number): { grade: string, color: string } {

@@ -15,6 +15,7 @@ import { SeoService } from '../../services/seo.service';
 import { SocialShareComponent } from '../social-share/social-share.component';
 import { environment } from '../../../environments/environment';
 import { OgService } from '../../services/og.service';
+import { SensoryAiService } from '../../services/sensory-ai.service';
 
 Chart.register(RadarController, RadialLinearScale, PointElement, LineElement, Filler, Tooltip, Legend);
 
@@ -40,6 +41,15 @@ Chart.register(RadarController, RadialLinearScale, PointElement, LineElement, Fi
 
         <section class="product-visual" aria-label="Product Appearance">
            <img [src]="session.productImageUrl || '/assets/default-coffee.png'" alt="Visual representation of {{ session.beanName }}" class="product-photo">
+        </section>
+
+        <!-- AI ARCHETYPE SECTION -->
+        <section class="ai-archetype-section animate-fade" *ngIf="archetype()">
+           <div class="archetype-card luminescent-border">
+              <span class="ai-sparkle-label">✨ AI Sensory Archetype</span>
+              <h2 class="archetype-name">{{ archetype()?.name }}</h2>
+              <p class="archetype-desc">{{ archetype()?.description }}</p>
+           </div>
         </section>
 
         <section class="score-display" aria-label="Final Assessment Score">
@@ -624,6 +634,12 @@ Chart.register(RadarController, RadialLinearScale, PointElement, LineElement, Fi
        color: #8b5e34;
     }
 
+    .ai-archetype-section { margin-top: 40px; }
+    .archetype-card { padding: 32px; background: rgba(189, 142, 98, 0.05); border-radius: 20px; border-color: rgba(189, 142, 98, 0.3); }
+    .ai-sparkle-label { font-size: 0.75rem; font-weight: 800; color: var(--primary-color); text-transform: uppercase; letter-spacing: 2px; display: block; margin-bottom: 12px; }
+    .archetype-name { font-size: 2.2rem; font-weight: 900; background: var(--primary-gradient); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 10px; }
+    .archetype-desc { color: var(--text-dim); font-size: 1rem; line-height: 1.6; }
+
     .btn-download-image {
       margin-top: 20px;
       width: 100%;
@@ -695,6 +711,8 @@ export class CuppingResultComponent implements OnInit, AfterViewInit, OnDestroy 
   membership$ = this.membershipService.getCurrentMembership();
   selectedTheme = signal<'obsidian' | 'radiant'>('obsidian');
   private ogService = inject(OgService);
+  private aiService = inject(SensoryAiService);
+  archetype = signal<{name: string, description: string} | null>(null);
   private sensoryChart: Chart | null = null;
 
   isLiked() {
@@ -783,6 +801,17 @@ export class CuppingResultComponent implements OnInit, AfterViewInit, OnDestroy 
     }
   }
 
+  updateArchetype() {
+    if (!this.session) return;
+    const arch = this.aiService.predictArchetype({
+      acidity: this.session.scores.acidity,
+      body: this.session.scores.mouthfeel,
+      flavor: this.session.scores.flavor,
+      sweetness: this.session.scores.sweetness
+    });
+    this.archetype.set(arch);
+  }
+
   async loadSession(id: string) {
     try {
       const data = await this.cuppingService.getCuppingById(id);
@@ -801,6 +830,7 @@ export class CuppingResultComponent implements OnInit, AfterViewInit, OnDestroy 
         }
         
         this.session = data;
+        this.updateArchetype();
         this.prepareSensoryItems();
         this.updateMetaTags();
         this.generateStructuredData(data);

@@ -19,7 +19,7 @@ import { CuppingSession } from '../../models/cupping.model';
           <img src="/assets/hero-dashboard.png" alt="Hero" class="hero-image">
           <div class="hero-overlay"></div>
         </div>
-        <div class="hero-content">
+        <div class="hero-content luminescent-border" style="padding: 40px; border-radius: var(--radius-lg); background: rgba(12,12,14,0.4); backdrop-filter: blur(20px);">
           <div class="greeting-row">
             <div class="user-meta">
               <span class="greeting-text">{{ getGreeting() }}</span>
@@ -45,6 +45,32 @@ import { CuppingSession } from '../../models/cupping.model';
         <div class="glass-card stat-card specialty">
           <span class="stat-label">Specialty Ratio</span>
           <div class="stat-value">{{ getSpecialtyCount() }}</div>
+        </div>
+      </section>
+
+      <!-- AI INSIGHTS QUICK SECTION -->
+      <section class="ai-insights-section animate-fade" *ngIf="userCuppings()?.length">
+        <div class="glass-card ai-insight-card luminescent-border">
+          <div class="ai-header">
+            <span class="ai-sparkle">✨</span>
+            <h3>AI Sensory Insights</h3>
+          </div>
+          <p class="ai-text">{{ getAiInsight() }}</p>
+        </div>
+      </section>
+
+      <!-- GLOBAL FLAVOR HEATMAP -->
+      <section class="heatmap-section animate-fade">
+        <div class="section-header">
+          <h2 class="section-title">GLOBAL FLAVOR TRENDS</h2>
+        </div>
+        <div class="heatmap-grid glass-card">
+          <div class="heatmap-item" *ngFor="let note of heatmap()">
+             <span class="note-name">#{{ note }}</span>
+             <div class="note-bar-bg">
+               <div class="note-bar-fill" [style.width.%]="80 - (heatmap().indexOf(note) * 10)"></div>
+             </div>
+          </div>
         </div>
       </section>
 
@@ -159,6 +185,19 @@ import { CuppingSession } from '../../models/cupping.model';
       margin-top: 20px;
       max-width: 500px;
     }
+    .ai-insights-section { margin-bottom: 60px; }
+    .ai-insight-card { padding: 32px; background: rgba(212, 225, 87, 0.05); border-color: rgba(212, 225, 87, 0.2); }
+    .ai-header { display: flex; align-items: center; gap: 12px; margin-bottom: 15px; }
+    .ai-header h3 { font-size: 1.2rem; color: var(--accent-neon); text-transform: uppercase; letter-spacing: 1px; }
+    .ai-text { color: var(--text-main); font-size: 1.1rem; line-height: 1.6; }
+    .ai-sparkle { font-size: 1.5rem; filter: drop-shadow(0 0 8px var(--accent-neon)); }
+
+    .heatmap-section { margin-bottom: 80px; }
+    .heatmap-grid { padding: 40px; display: grid; grid-template-columns: repeat(2, 1fr); gap: 24px; }
+    .heatmap-item { display: flex; align-items: center; gap: 20px; }
+    .note-name { flex: 0 0 120px; font-weight: 800; color: var(--primary-color); font-size: 0.9rem; }
+    .note-bar-bg { flex: 1; height: 8px; background: rgba(255,255,255,0.05); border-radius: 10px; overflow: hidden; }
+    .note-bar-fill { height: 100%; background: var(--primary-gradient); border-radius: 10px; box-shadow: 0 0 15px var(--primary-glow); }
     .stats-carousel {
       display: grid;
       grid-template-columns: repeat(3, 1fr);
@@ -311,6 +350,8 @@ export class DashboardComponent {
     limit: 6 
   }));
 
+  heatmap = signal<string[]>(['Chocolate', 'Berry', 'Citrus', 'Caramel', 'Floral', 'Nutty', 'Stone Fruit', 'Spices']);
+
   userCuppings = toSignal(this.auth.user$.pipe(
     switchMap(user => user ? this.cuppingService.getUserCuppings(user.uid) : of([]))
   ));
@@ -341,5 +382,21 @@ export class DashboardComponent {
   getBarColor(attr: string) {
     const colors: any = { flavor: '#FFA000', acidity: '#40C4FF', mouthfeel: '#69F0AE' };
     return colors[attr] || 'var(--primary-color)';
+  }
+
+  getAiInsight() {
+    const list = this.userCuppings() as any[];
+    if (!list || list.length === 0) return 'Start your first cupping session to unlock AI sensory insights.';
+    
+    const avgScore = parseFloat(this.calculateAvg());
+    if (avgScore >= 85) return "Your palate is exceptionally tuned for specialty coffee. Consider exploring complex Anaerobic processes to further challenge your sensory acuity.";
+    if (avgScore >= 80) return "You're consistently identifying specialty grades. Try focusing more on 'Aftertaste' and 'Balance' to refine your scoring precision.";
+    
+    return "Great start! Focus on identifying basic flavor groups like 'Nutty' vs 'Fruity' to build your sensory foundation.";
+  }
+
+  async ngOnInit() {
+    const trends = await this.cuppingService.getSmartSuggestions({});
+    if (trends.length > 0) this.heatmap.set(trends);
   }
 }

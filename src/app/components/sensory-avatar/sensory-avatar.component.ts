@@ -7,7 +7,7 @@ import { UserProfile, LEVEL_THRESHOLDS } from '../../models/user-profile.model';
   standalone: true,
   imports: [CommonModule],
   template: `
-    <div class="avatar-container glass-card animate-fade animate-float">
+    <div class="avatar-container glass-card luminescent-border animate-fade animate-float">
       <div class="avatar-aura" [class]="profile.avatarStage"></div>
       
       <div class="avatar-image-wrapper">
@@ -56,16 +56,22 @@ import { UserProfile, LEVEL_THRESHOLDS } from '../../models/user-profile.model';
     }
     .avatar-aura {
       position: absolute;
-      top: 50%;
+      top: 40%;
       left: 50%;
       transform: translate(-50%, -50%);
-      width: 250px;
-      height: 250px;
+      width: 280px;
+      height: 280px;
       border-radius: 50%;
-      filter: blur(60px);
-      opacity: 0.3;
+      filter: blur(80px);
+      opacity: 0.4;
       z-index: 0;
       transition: all 1s ease;
+      animation: auraPulse 8s ease-in-out infinite;
+    }
+
+    @keyframes auraPulse {
+      0%, 100% { transform: translate(-50%, -50%) scale(1); opacity: 0.3; }
+      50% { transform: translate(-50%, -50%) scale(1.2); opacity: 0.5; }
     }
     .avatar-aura.seedling { background: #d4e157; }
     .avatar-aura.sprout { background: #9ccc65; }
