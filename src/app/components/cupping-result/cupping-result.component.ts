@@ -99,10 +99,11 @@ Chart.register(RadarController, RadialLinearScale, PointElement, LineElement, Fi
           </div>
         </section>
 
-        <section class="chart-section" aria-label="Sensory Radar Chart">
+        <section class="chart-section luminescent-border animate-fade" aria-label="Sensory Radar Chart">
            <div class="chart-wrapper">
               <canvas id="sensoryChart"></canvas>
            </div>
+           <div class="chart-glow-layer"></div>
         </section>
 
         <section class="cva-result-section" aria-label="Detailed Attributes">
@@ -379,15 +380,36 @@ Chart.register(RadarController, RadialLinearScale, PointElement, LineElement, Fi
     }
     .chart-section {
       margin: 60px 0;
-      background: rgba(0,0,0,0.2);
-      padding: 40px;
+      background: rgba(0,0,0,0.3);
+      padding: 60px;
       border-radius: var(--radius-lg);
       border: 1px solid var(--glass-border);
+      position: relative;
+      overflow: hidden;
+      box-shadow: 0 30px 60px rgba(0,0,0,0.4);
+    }
+    .chart-glow-layer {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 150%;
+      height: 150%;
+      background: radial-gradient(circle, rgba(189, 142, 98, 0.08) 0%, transparent 70%);
+      pointer-events: none;
+      z-index: 0;
+      animation: chartPulse 8s infinite alternate ease-in-out;
+    }
+    @keyframes chartPulse {
+      from { opacity: 0.3; transform: translate(-50%, -50%) scale(0.9); }
+      to { opacity: 0.8; transform: translate(-50%, -50%) scale(1.1); }
     }
     .chart-wrapper {
       position: relative;
-      height: 400px;
+      height: 450px;
       width: 100%;
+      z-index: 1;
+      filter: drop-shadow(0 0 15px rgba(189, 142, 98, 0.2));
     }
     .sensory-summary {
       text-align: left;
@@ -860,88 +882,107 @@ export class CuppingResultComponent implements OnInit, AfterViewInit, OnDestroy 
 
   initChart() {
     if (!this.session) return;
-    const ctx = document.getElementById('sensoryChart') as HTMLCanvasElement;
+    const canvas = document.getElementById('sensoryChart') as HTMLCanvasElement;
+    if (!canvas) return;
+
+    const ctx = canvas.getContext('2d');
     if (!ctx) return;
 
     const scores = this.session.scores;
     const labels = [
       'Aroma', 'Flavor', 'Aftertaste', 'Acidity', 
-      'Sweetness', 'Mouthfeel', 'Balance', 'Overall'
+      'Body', 'Balance', 'Uniformity', 'Clean Cup', 'Sweetness', 'Overall'
     ];
     const data = [
       scores.fragranceAroma, scores.flavor, scores.aftertaste, scores.acidity,
-      scores.sweetness, scores.mouthfeel, scores.balance, scores.overall
+      scores.mouthfeel, scores.balance, scores.uniformity, scores.cleanCup, scores.sweetness, scores.overall
     ];
 
     if (this.sensoryChart) {
       this.sensoryChart.destroy();
     }
 
-    this.sensoryChart = new Chart(ctx, {
+    // Create Gradient for Glow Effect
+    const gradient = ctx.createRadialGradient(
+      canvas.width / 2, canvas.height / 2, 0,
+      canvas.width / 2, canvas.height / 2, canvas.width / 2
+    );
+    gradient.addColorStop(0, 'rgba(189, 142, 98, 0.4)');
+    gradient.addColorStop(1, 'rgba(189, 142, 98, 0.02)');
+
+    this.sensoryChart = new Chart(canvas, {
       type: 'radar',
       data: {
         labels: labels,
-        datasets: [{
-          label: 'Quality Score',
-          data: data,
-          fill: true,
-          backgroundColor: 'rgba(255, 255, 255, 0.08)',
-          borderColor: 'rgba(255, 255, 255, 0.3)',
-          pointBackgroundColor: [
-            this.getScoreColor('fragranceAroma'),
-            this.getScoreColor('flavor'),
-            this.getScoreColor('aftertaste'),
-            this.getScoreColor('acidity'),
-            this.getScoreColor('sweetness'),
-            this.getScoreColor('mouthfeel'),
-            this.getScoreColor('balance'),
-            this.getScoreColor('overall')
-          ],
-          pointBorderColor: '#0c0c0e',
-          pointHoverBackgroundColor: '#0c0c0e',
-          pointHoverBorderColor: [
-            this.getScoreColor('fragranceAroma'),
-            this.getScoreColor('flavor'),
-            this.getScoreColor('aftertaste'),
-            this.getScoreColor('acidity'),
-            this.getScoreColor('sweetness'),
-            this.getScoreColor('mouthfeel'),
-            this.getScoreColor('balance'),
-            this.getScoreColor('overall')
-          ],
-          borderWidth: 3,
-          pointRadius: 6,
-          pointHoverRadius: 8,
-          pointBorderWidth: 2,
-          tension: 0.3
-        }]
+        datasets: [
+          {
+            label: 'Sensory Signature',
+            data: data,
+            fill: true,
+            backgroundColor: gradient,
+            borderColor: '#bd8e62',
+            borderWidth: 4,
+            pointBackgroundColor: labels.map((_, i) => {
+              const keys = ['fragranceAroma', 'flavor', 'aftertaste', 'acidity', 'mouthfeel', 'balance', 'uniformity', 'cleanCup', 'sweetness', 'overall'];
+              return this.getScoreColor(keys[i]);
+            }),
+            pointBorderColor: '#0c0c0e',
+            pointBorderWidth: 3,
+            pointRadius: 6,
+            pointHoverRadius: 9,
+            tension: 0.15 // Slightly curved for premium feel
+          },
+          // Invisible Dataset for "Outer Glow"
+          {
+             data: data,
+             fill: false,
+             borderColor: 'rgba(189, 142, 98, 0.3)',
+             borderWidth: 12,
+             pointRadius: 0,
+             tension: 0.15
+          }
+        ]
       },
       options: {
         responsive: true,
         maintainAspectRatio: false,
         scales: {
           r: {
-            angleLines: { color: 'rgba(255, 255, 255, 0.05)' },
-            grid: { color: 'rgba(255, 255, 255, 0.05)' },
-            suggestedMin: 1,
-            suggestedMax: 9,
+            angleLines: { 
+              color: 'rgba(255, 255, 255, 0.08)',
+              lineWidth: 1
+            },
+            grid: { 
+              color: 'rgba(255, 255, 255, 0.08)',
+              lineWidth: 1
+            },
+            suggestedMin: 0,
+            suggestedMax: 10,
             pointLabels: {
-              color: '#8e8e93',
+              color: 'rgba(255, 255, 255, 0.6)',
               font: {
-                size: 12,
-                weight: 'bold',
+                size: 11,
+                weight: '800',
                 family: "'Outfit', sans-serif"
-              }
+              },
+              padding: 20
             },
             ticks: {
               display: false,
-              stepSize: 1
+              stepSize: 2
             }
           }
         },
         plugins: {
-          legend: {
-            display: false
+          legend: { display: false },
+          tooltip: {
+            backgroundColor: 'rgba(12, 12, 14, 0.95)',
+            titleFont: { family: "'Outfit', sans-serif", size: 14 },
+            bodyFont: { family: "'Outfit', sans-serif", size: 12 },
+            padding: 15,
+            borderColor: 'rgba(189, 142, 98, 0.3)',
+            borderWidth: 1,
+            displayColors: true
           }
         }
       }
