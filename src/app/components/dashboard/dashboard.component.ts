@@ -100,119 +100,84 @@ import { CuppingSession } from '../../models/cupping.model';
   `,
   styles: [`
     .dashboard-container {
-      max-width: 1200px;
+      max-width: 1400px;
       margin: 0 auto;
-      padding: 60px 40px;
+      padding: 40px;
       padding-bottom: 120px;
     }
     .hero {
-      text-align: left;
-      margin-bottom: 60px;
       position: relative;
       border-radius: var(--radius-lg);
       overflow: hidden;
-      min-height: 420px;
+      min-height: 500px;
       display: flex;
-      align-items: flex-end;
+      flex-direction: column;
+      justify-content: flex-end;
       padding: 60px;
+      margin-bottom: 60px;
       border: 1px solid var(--glass-border);
-      box-shadow: 0 20px 80px rgba(0,0,0,0.6);
+      box-shadow: 0 40px 100px rgba(0,0,0,0.8);
     }
     .hero-visual {
       position: absolute;
-      top: 0; left: 0; right: 0; bottom: 0;
+      inset: 0;
       z-index: 0;
     }
     .hero-image {
       width: 100%;
       height: 100%;
       object-fit: cover;
-      filter: brightness(0.7) contrast(1.1);
-      transition: transform 10s linear;
-    }
-    .hero:hover .hero-image {
-      transform: scale(1.1);
+      filter: brightness(0.6) contrast(1.2);
     }
     .hero-overlay {
       position: absolute;
       inset: 0;
-      background: linear-gradient(to bottom, transparent 0%, rgba(12, 12, 14, 0.4) 40%, var(--bg-color) 100%);
+      background: linear-gradient(to top, var(--bg-color) 0%, rgba(12, 12, 14, 0.4) 60%, transparent 100%);
     }
     .hero-content {
       position: relative;
       z-index: 1;
-      width: 100%;
-    }
-    .greeting-row {
-      display: flex;
-      justify-content: space-between;
-      align-items: flex-end;
-      margin-bottom: 25px;
     }
     .greeting-text {
       color: var(--primary-color);
       font-weight: 800;
       text-transform: uppercase;
-      letter-spacing: 3px;
-      font-size: 0.9rem;
-      text-shadow: 0 2px 10px rgba(0,0,0,0.5);
+      letter-spacing: 4px;
+      font-size: 0.75rem;
+      margin-bottom: 12px;
+      display: block;
     }
-    .mini-profile {
-      width: 65px;
-      height: 65px;
-      border-radius: 20px;
-      overflow: hidden;
-      border: 2px solid var(--primary-color);
-      box-shadow: 0 12px 30px rgba(189, 142, 98, 0.4);
-      cursor: pointer;
-      backdrop-filter: blur(10px);
-    }
-    .mini-profile img { width: 100%; height: 100%; object-fit: cover; }
     .hero h1 {
-      font-size: 4.5rem;
-      color: var(--text-main);
-      margin-top: 5px;
-      line-height: 0.9;
-      text-shadow: 0 10px 30px rgba(0,0,0,0.8);
+      font-size: 5rem;
+      margin: 0;
+      line-height: 1;
+      letter-spacing: -3px;
     }
     .hero-sub {
-      color: var(--text-main);
+      color: var(--text-dim);
       font-size: 1.1rem;
-      letter-spacing: 4px;
-      text-transform: uppercase;
-      font-weight: 700;
-      opacity: 0.8;
-      text-shadow: 0 2px 4px rgba(0,0,0,0.5);
+      margin-top: 20px;
+      max-width: 500px;
     }
     .stats-carousel {
-      display: flex;
-      gap: 20px;
-      margin-bottom: 60px;
-      overflow-x: auto;
-      padding-bottom: 10px;
-      padding-right: 20px;
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 24px;
+      margin-bottom: 80px;
     }
     .stat-card {
-      min-width: 200px;
-      flex: 1;
-      text-align: center;
-      padding: 30px;
-    }
-    .stat-card.specialty {
-      border-color: var(--accent-neon);
-      background: linear-gradient(135deg, rgba(212, 225, 87, 0.05), transparent);
-    }
-    .stat-card {
-      text-align: center;
       padding: 40px;
-      background: var(--surface-color);
+      text-align: center;
+      border-radius: var(--radius-lg);
     }
     .stat-label {
-      font-size: 0.8rem;
+      font-size: 0.7rem;
       text-transform: uppercase;
       letter-spacing: 3px;
       color: var(--text-dim);
-      font-weight: 700;
+      font-weight: 800;
+      margin-bottom: 12px;
+      display: block;
     }
     .stat-value {
       font-size: 4rem;
@@ -220,175 +185,118 @@ import { CuppingSession } from '../../models/cupping.model';
       background: var(--primary-gradient);
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
-      margin-top: 10px;
-      font-family: var(--font-brand);
+      line-height: 1;
     }
     .section-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
       margin-bottom: 40px;
     }
     .section-title {
-      font-size: 1.8rem;
-      border-left: 6px solid var(--primary-color);
-      padding-left: 20px;
-      font-weight: 800;
-      color: var(--text-main);
-      letter-spacing: -1px;
-    }
-    .count-badge {
-      background: var(--surface-hover);
-      padding: 10px 24px;
-      border-radius: 100px;
-      font-size: 0.8rem;
-      color: var(--text-dim);
-      font-weight: 700;
-      border: 1px solid var(--glass-border);
+      font-size: 2.5rem;
+      letter-spacing: -1.5px;
     }
     .sessions-list {
       display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-      gap: 30px;
+      grid-template-columns: repeat(auto-fill, minmax(380px, 1fr));
+      gap: 32px;
     }
     .session-item {
-      background: var(--surface-color);
-      border-radius: var(--radius-lg);
-      padding: 30px;
-      cursor: pointer;
+      padding: 0;
+      overflow: hidden;
       display: flex;
       flex-direction: column;
-      gap: 25px;
-      border: 1px solid var(--glass-border);
-      transition: all 0.5s cubic-bezier(0.16, 1, 0.3, 1);
-    }
-    .session-item:hover {
-      box-shadow: 0 20px 50px rgba(0,0,0,0.5);
     }
     .session-image {
-      width: calc(100% + 60px);
-      margin: -30px -30px 0 -30px;
-      height: 180px;
+      width: 100%;
+      height: 240px;
       overflow: hidden;
-      border-bottom: 1px solid var(--glass-border);
+      position: relative;
     }
     .session-image img {
       width: 100%;
       height: 100%;
       object-fit: cover;
-      transition: transform 0.5s;
+      transition: transform 0.8s cubic-bezier(0.16, 1, 0.3, 1);
     }
     .session-item:hover .session-image img {
       transform: scale(1.1);
     }
+    .session-main {
+      padding: 32px;
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 24px;
+    }
     .tag {
       font-size: 0.65rem;
-      text-transform: uppercase;
-      letter-spacing: 2px;
+      font-weight: 900;
       padding: 6px 14px;
-      border-radius: 100px;
-      font-weight: 800;
+      border-radius: 8px;
+      text-transform: uppercase;
+      letter-spacing: 1.5px;
     }
     .type-tag {
-      background: var(--primary-gradient);
-      color: #0c0c0e;
-    }
-    .method-tag {
-      background: var(--surface-hover);
-      color: var(--text-dim);
-      border: 1px solid var(--glass-border);
+      background: rgba(189, 142, 98, 0.1);
+      color: var(--primary-color);
+      border: 1px solid rgba(189, 142, 98, 0.2);
     }
     .session-info h3 {
-      font-size: 1.6rem;
-      margin-top: 15px;
-      font-weight: 800;
-      color: var(--text-main);
+      font-size: 1.8rem;
+      margin: 12px 0 8px;
+      line-height: 1.1;
     }
     .metadata {
-      margin-top: 8px;
-      font-size: 0.9rem;
       color: var(--text-dim);
+      font-size: 0.85rem;
       display: flex;
       align-items: center;
-      gap: 8px;
+      gap: 10px;
     }
     .session-performance {
+      background: rgba(0, 0, 0, 0.3);
+      padding: 20px;
+      border-radius: 20px;
       display: flex;
       align-items: center;
       justify-content: space-between;
-      gap: 20px;
-      background: rgba(0,0,0,0.2);
-      padding: 15px 20px;
-      border-radius: var(--radius-md);
     }
     .mini-sensory {
       display: flex;
       align-items: flex-end;
-      gap: 6px;
-      height: 40px;
+      gap: 4px;
+      height: 32px;
     }
     .mini-bar {
-      width: 10px;
-      background: var(--primary-color);
-      border-radius: 3px 3px 0 0;
-      opacity: 0.4;
-      transition: all 0.5s;
-    }
-    .session-item:hover .mini-bar {
-      opacity: 1;
-      background: var(--primary-gradient);
+      width: 8px;
+      border-radius: 2px;
+      opacity: 0.3;
     }
     .session-score {
-      font-size: 2.2rem;
-      font-weight: 900;
-      font-family: var(--font-brand);
+      font-size: 2.5rem;
+      font-weight: 800;
       color: var(--primary-color);
     }
     .high-score {
-      color: var(--accent-neon) !important;
-      text-shadow: 0 0 20px rgba(212, 225, 87, 0.4);
-    }
-    .session-social {
-      font-size: 0.75rem;
-      font-weight: 700;
-      color: var(--primary-color);
-      background: rgba(189, 142, 98, 0.1);
-      padding: 10px;
-      border-radius: 12px;
-      text-align: center;
+      color: var(--accent-neon);
     }
     .session-footer {
+      padding: 20px 32px;
+      background: rgba(255, 255, 255, 0.02);
+      border-top: 1px solid var(--glass-border);
       display: flex;
       justify-content: space-between;
-      font-size: 0.8rem;
+      align-items: center;
+      font-size: 0.75rem;
       color: var(--text-dim);
-      padding-top: 15px;
-      border-top: 1px solid var(--glass-border);
     }
-    .empty-state {
-      text-align: center;
-      padding: 120px 20px;
+    @media (max-width: 1024px) {
+      .stats-carousel { grid-template-columns: 1fr; }
+      .hero h1 { font-size: 3.5rem; }
     }
-
     @media (max-width: 768px) {
-      .dashboard-container { padding: 40px 20px; }
-      .hero { min-height: 300px; padding: 30px; margin-bottom: 40px; }
-      .hero h1 { font-size: 3rem; }
-      .hero-sub { font-size: 0.9rem; letter-spacing: 2px; }
-      .stat-card { min-width: 160px; padding: 25px; }
-      .stat-value { font-size: 3rem; }
-      .sessions-list { grid-template-columns: 1fr; gap: 20px; }
-      .session-item { padding: 20px; }
-      .session-image { width: calc(100% + 40px); margin: -20px -20px 0 -20px; height: 140px; }
-    }
-
-    @media (max-width: 480px) {
-      .dashboard-container { padding: 30px 15px; }
-      .hero { min-height: 250px; padding: 20px; }
-      .hero h1 { font-size: 2.5rem; }
-      .mini-profile { width: 50px; height: 50px; }
-      .stat-value { font-size: 2.5rem; }
-      .section-title { font-size: 1.4rem; }
+      .dashboard-container { padding: 20px; }
+      .hero { min-height: 400px; padding: 40px; }
+      .sessions-list { grid-template-columns: 1fr; }
     }
   `]
 })
