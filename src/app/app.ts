@@ -209,23 +209,22 @@ import { ToastService } from './services/toast.service';
     .mobile-bottom-nav {
       display: none;
       position: fixed;
-      bottom: calc(15px + env(safe-area-inset-bottom, 0px));
-      left: 15px;
-      right: 15px;
-      height: 68px;
+      bottom: calc(20px + env(safe-area-inset-bottom, 0px));
+      left: 20px;
+      right: 20px;
+      height: 74px;
       z-index: var(--z-nav);
       justify-content: space-around;
       align-items: center;
-      background: rgba(15, 15, 18, 0.85);
-      backdrop-filter: blur(40px) saturate(200%);
-      -webkit-backdrop-filter: blur(40px) saturate(200%);
-      border: 1px solid rgba(255, 255, 255, 0.1);
-      border-radius: 24px;
-      padding: 0 4px;
+      background: rgba(12, 12, 14, 0.75);
+      backdrop-filter: blur(var(--glass-blur)) saturate(180%);
+      -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(180%);
+      border: 1px solid var(--glass-border);
+      border-radius: 28px;
+      padding: 0 10px;
       box-shadow: 
-        0 15px 35px rgba(0, 0, 0, 0.6),
+        0 25px 50px -12px rgba(0, 0, 0, 0.7),
         0 0 0 1px rgba(255, 255, 255, 0.05) inset;
-      transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
     }
     .bottom-nav-link {
       display: flex;
@@ -234,77 +233,76 @@ import { ToastService } from './services/toast.service';
       justify-content: center;
       color: var(--text-dim);
       text-decoration: none;
-      font-size: 0.6rem;
+      font-size: 0.65rem;
       font-weight: 800;
-      gap: 4px;
-      transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+      gap: 5px;
+      transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
       flex: 1;
-      height: 52px;
+      height: 100%;
       position: relative;
-      border-radius: 18px;
     }
-    .bottom-nav-link span {
-      opacity: 0.6;
-      transition: all 0.3s;
-      letter-spacing: 0.3px;
-      text-transform: uppercase;
+    .bottom-nav-link svg {
+      width: 22px;
+      height: 22px;
+      stroke-width: 2.2px;
+      transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
     }
     .bottom-nav-link.active {
       color: var(--primary-color);
-      background: rgba(189, 142, 98, 0.08);
-    }
-    .bottom-nav-link.active span {
-      opacity: 1;
-      transform: translateY(-1px);
-      text-shadow: 0 0 8px rgba(189, 142, 98, 0.2);
-    }
-    .bottom-nav-link svg {
-      width: 20px;
-      height: 20px;
-      stroke-width: 2.5px;
-      transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
     }
     .bottom-nav-link.active svg {
-      transform: translateY(-2px) scale(1.1);
-      stroke: var(--primary-color);
-      filter: drop-shadow(0 4px 6px rgba(189, 142, 98, 0.3));
+      transform: translateY(-4px) scale(1.15);
+      filter: drop-shadow(0 0 10px var(--primary-glow));
+    }
+    .bottom-nav-link.active::after {
+      content: '';
+      position: absolute;
+      bottom: 12px;
+      width: 4px;
+      height: 4px;
+      background: var(--primary-color);
+      border-radius: 50%;
+      box-shadow: 0 0 10px var(--primary-color);
+      animation: navPulse 2s infinite;
+    }
+    @keyframes navPulse {
+      0%, 100% { opacity: 0.5; transform: scale(1); }
+      50% { opacity: 1; transform: scale(1.5); }
     }
     .nav-center-action {
       position: relative;
-      width: 64px;
+      width: 80px;
       height: 100%;
       display: flex;
       justify-content: center;
       align-items: center;
     }
     .center-fab {
-      width: 56px;
-      height: 56px;
+      width: 64px;
+      height: 64px;
       background: var(--primary-gradient);
-      border-radius: 18px;
+      border-radius: 22px;
       display: flex;
       align-items: center;
       justify-content: center;
       color: #0c0c0e;
       border: 1px solid rgba(255, 255, 255, 0.2);
       box-shadow: 
-        0 8px 20px rgba(189, 142, 98, 0.4),
-        0 0 15px rgba(189, 142, 98, 0.1);
+        0 15px 35px var(--primary-glow),
+        0 0 20px rgba(189, 142, 98, 0.2);
       cursor: pointer;
-      transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+      transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
       position: absolute;
-      top: -24px;
+      top: -32px;
     }
     .center-fab:hover {
-      transform: translateY(-4px) scale(1.05);
-      filter: brightness(1.1);
-    }
-    .center-fab:active {
-      transform: translateY(-2px) scale(0.92);
+      transform: translateY(-6px) scale(1.08);
+      box-shadow: 0 20px 45px var(--primary-glow);
     }
     .center-fab svg {
-      width: 26px;
-      height: 26px;
+      width: 30px;
+      height: 30px;
+      stroke-width: 3.5px;
     }
     .main-footer {
       padding: 60px 40px 140px;
