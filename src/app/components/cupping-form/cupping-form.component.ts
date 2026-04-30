@@ -545,6 +545,7 @@ export class CuppingFormComponent implements OnInit {
       else if (text.includes('robusta')) this.session.type = 'Robusta';
 
       // IMPROVED LOGIC: Origin (Expanded)
+      // IMPROVED LOGIC: Origin (Expanded)
       const origins = [
         'ethiopia', 'colombia', 'brazil', 'indonesia', 'kenya', 'rwanda', 
         'panama', 'costa rica', 'sumatra', 'jawa', 'gayo', 'toraja', 'aceh',
@@ -557,6 +558,23 @@ export class CuppingFormComponent implements OnInit {
           break;
         }
       }
+
+      // IMPROVED LOGIC: Roast Date (Regex)
+      const dateRegex = /(\d{2}[\/\-]\d{2}[\/\-]\d{2,4})|(\d{4}[\/\-]\d{2}[\/\-]\d{2})/;
+      const dateMatch = text.match(dateRegex);
+      if (dateMatch) {
+         try {
+           const d = new Date(dateMatch[0]);
+           if (!isNaN(d.getTime())) {
+             this.session.productionDate = d.toISOString().split('T')[0];
+           }
+         } catch(e) {}
+      }
+
+      // EXPERIMENTAL LOGIC: Varietal
+      if (text.includes('geisha') || text.includes('gesha')) this.session.notes = (this.session.notes || '') + ' [Varietal: Geisha]';
+      if (text.includes('bourbon')) this.session.notes = (this.session.notes || '') + ' [Varietal: Bourbon]';
+      if (text.includes('typica')) this.session.notes = (this.session.notes || '') + ' [Varietal: Typica]';
 
     } catch (err) {
       console.error('OCR Error:', err);

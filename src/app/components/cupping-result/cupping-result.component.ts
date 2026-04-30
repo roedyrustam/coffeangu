@@ -985,9 +985,33 @@ export class CuppingResultComponent implements OnInit, AfterViewInit, OnDestroy 
         }
       });
 
+      const finalCanvas = document.createElement('canvas');
+      finalCanvas.width = canvas.width;
+      finalCanvas.height = canvas.height;
+      const ctx = finalCanvas.getContext('2d');
+      if (ctx) {
+        ctx.drawImage(canvas, 0, 0);
+        
+        // Add Watermark
+        ctx.save();
+        ctx.font = 'bold 80px "Outfit", sans-serif';
+        ctx.fillStyle = 'rgba(189, 142, 98, 0.4)';
+        ctx.textAlign = 'right';
+        ctx.translate(finalCanvas.width - 100, finalCanvas.height - 100);
+        ctx.rotate(-Math.PI / 12);
+        ctx.fillText('VERIFIED SCA PROTOCOL', 0, 0);
+        ctx.restore();
+
+        // Add App Logo/Branding
+        ctx.font = '60px "Outfit", sans-serif';
+        ctx.fillStyle = 'rgba(255, 255, 255, 0.6)';
+        ctx.textAlign = 'left';
+        ctx.fillText('CuppingNotes v2.0', 100, finalCanvas.height - 100);
+      }
+
       const link = document.createElement('a');
       link.download = `cupping-result-${this.session?.beanName.replace(/\s+/g, '-').toLowerCase()}.png`;
-      link.href = canvas.toDataURL('image/png');
+      link.href = finalCanvas.toDataURL('image/png');
       link.click();
     } catch (e) {
       console.error('Download failed', e);

@@ -23,17 +23,17 @@ import { SeoService } from '../../services/seo.service';
           <h1 id="discovery-title" class="brand-font">{{ t('DISCOVERY_TITLE') }}</h1>
           <p class="subtitle">{{ t('DISCOVERY_SUBTITLE') }}</p>
           
-          <div class="community-stats" *ngIf="stats$ | async as stats" role="group" aria-label="Community Statistics">
+          <div class="community-stats" *ngIf="stats() as s" role="group" aria-label="Community Statistics">
             <div class="stat-pill">
-              <span class="val">{{ stats.total }}</span>
+              <span class="val">{{ s.total }}</span>
               <span class="lab">Sessions</span>
             </div>
             <div class="stat-pill">
-              <span class="val">{{ stats.avg.toFixed(1) }}</span>
+              <span class="val">{{ s.avg.toFixed(1) }}</span>
               <span class="lab">Avg Score</span>
             </div>
             <div class="stat-pill specialty">
-              <span class="val">{{ stats.specialty }}</span>
+              <span class="val">{{ s.specialty }}</span>
               <span class="lab">Q-Grades</span>
             </div>
           </div>
@@ -74,7 +74,7 @@ import { SeoService } from '../../services/seo.service';
         <div class="search-box glass-card">
           <label for="discoverySearch" class="visually-hidden">Search coffee evaluations</label>
           <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
-          <input id="discoverySearch" type="text" [placeholder]="t('SEARCH_PLACEHOLDER')" [(ngModel)]="searchQuery" (ngModelChange)="onSearchChange($event)">
+          <input id="discoverySearch" type="text" [placeholder]="t('SEARCH_PLACEHOLDER')" [ngModel]="searchQuery()" (ngModelChange)="onSearchChange($event)">
         </div>
 
         <div class="filters-row">
@@ -89,7 +89,7 @@ import { SeoService } from '../../services/seo.service';
 
           <div class="sort-selector">
             <label for="sortBy" class="visually-hidden">Sort by</label>
-            <select id="sortBy" [(ngModel)]="sortBy" (change)="onSortChange()">
+            <select id="sortBy" [ngModel]="sortBy()" (ngModelChange)="onSortChange($event)">
               <option value="timestamp">{{ t('SORT_NEWEST') }}</option>
               <option value="finalScore">{{ t('SORT_TOP_RATED') }}</option>
               <option value="likesCount">Most Liked</option>
@@ -99,7 +99,7 @@ import { SeoService } from '../../services/seo.service';
       </section>
 
       <!-- DISCOVERY FEED -->
-      <section class="feed-grid" *ngIf="filteredCuppings$ | async as cuppings; else loading" aria-live="polite">
+      <section class="feed-grid" *ngIf="filteredCuppings() as cuppings; else loading" aria-live="polite">
         <article class="cupping-card glass-card luminescent-border animate-fade" 
              *ngFor="let session of cuppings; let i = index" 
              [class]="getCardSize(session, i)"
@@ -635,103 +635,92 @@ export class CommunityBoardComponent implements OnInit {
   t = this.ts.t();
   errorMessage = '';
 
-  // Filter State
-  searchQuery = '';
+  // Filter State (Signals)
+  searchQuery = signal('');
   activeProcess = signal<string>('all');
-  sortBy: 'timestamp' | 'finalScore' | 'likesCount' = 'timestamp';
+  sortBy = signal<'timestamp' | 'finalScore' | 'likesCount'>('timestamp');
   processes = ['Wash', 'Natural', 'Honey', 'Anaerobic'];
 
+  // Base Data (Signals)
+  private allCuppings = toSignal(this.cuppingService.getPublicCuppings({ limit: 100 }), { initialValue: [] });
   topCuppers$ = this.cuppingService.getPublicProfiles(12);
 
-  private refreshTrigger = new BehaviorSubject<void>(undefined);
-
-  // Stats Signal
-  stats$ = this.refreshTrigger.pipe(
-    switchMap(() => this.cuppingService.getPublicCuppings({ limit: 100 })),
-    map(cuppings => ({
+  // Computed State (Orchestration)
+  stats = computed(() => {
+    const cuppings = this.allCuppings();
+    if (cuppings.length === 0) return { total: 0, avg: 0, specialty: 0 };
+    return {
       total: cuppings.length,
-      avg: cuppings.reduce((acc, c) => acc + c.finalScore, 0) / (cuppings.length || 1),
+      avg: cuppings.reduce((acc, c) => acc + c.finalScore, 0) / cuppings.length,
       specialty: cuppings.filter(c => c.finalScore >= 80).length
-    }))
-  );
+    };
+  });
 
-  // Main Data Stream
-  filteredCuppings$!: Observable<CuppingSession[]>;
+  filteredCuppings = computed(() => {
+    let result = [...this.allCuppings()];
+    const query = this.searchQuery().toLowerCase();
+    const process = this.activeProcess();
+    const sort = this.sortBy();
+
+    if (process !== 'all') {
+      result = result.filter(c => c.postHarvest === process);
+    }
+
+    if (query) {
+      result = result.filter(c => 
+        c.beanName.toLowerCase().includes(query) || 
+        c.roastery.toLowerCase().includes(query)
+      );
+    }
+
+    return result.sort((a, b) => {
+      if (sort === 'finalScore') return b.finalScore - a.finalScore;
+      if (sort === 'likesCount') return (b.likesCount || 0) - (a.likesCount || 0);
+      const dateA = a.timestamp?.toDate ? a.timestamp.toDate() : new Date(a.timestamp);
+      const dateB = b.timestamp?.toDate ? b.timestamp.toDate() : new Date(b.timestamp);
+      return dateB.getTime() - dateA.getTime();
+    });
+  });
 
   ngOnInit() {
     this.updateSeo();
-    this.filteredCuppings$ = combineLatest([
-      this.refreshTrigger.pipe(
-        switchMap(() => this.cuppingService.getPublicCuppings({ 
-          sortBy: this.sortBy,
-          process: this.activeProcess() === 'all' ? undefined : this.activeProcess()
-        }))
-      ),
-      new BehaviorSubject<string>('').pipe(
-        debounceTime(300),
-        startWith('')
-      ) // This would be the search input if done server-side, but we do it client-side for now
-    ]).pipe(
-      map(([cuppings, _]) => {
-        if (!this.searchQuery) return cuppings;
-        const q = this.searchQuery.toLowerCase();
-        return cuppings.filter(c => 
-          c.beanName.toLowerCase().includes(q) || 
-          c.roastery.toLowerCase().includes(q)
-        );
-      }),
-      catchError(err => {
-        console.error('Discovery Feed Error:', err);
-        this.errorMessage = err.message || 'Gagal memuat data. Periksa koneksi atau index database.';
-        return of([]);
-      })
-    );
   }
 
   onSearchChange(val: string) {
-    this.searchQuery = val;
-    this.refresh(); 
-  }
-
-  refresh() {
-    this.refreshTrigger.next();
+    this.searchQuery.set(val);
   }
 
   setProcess(process: string) {
     this.activeProcess.set(process);
-    this.refreshTrigger.next();
   }
 
-  onSortChange() {
-    this.refreshTrigger.next();
+  onSortChange(val: any) {
+    this.sortBy.set(val);
   }
 
   toggleLike(session: CuppingSession) {
     const userId = this.auth.getUserId();
     if (!userId || !session.id) return;
-    
     const isLiked = this.hasLiked(session);
     this.cuppingService.toggleLike(session.id, userId, isLiked);
+    // Note: Local update omitted for brevity, usually handled via service re-fetch or Signal update
   }
 
   toggleSave(session: CuppingSession) {
     const userId = this.auth.getUserId();
     if (!userId || !session.id) return;
-    
     const isSaved = this.hasSaved(session);
     this.cuppingService.toggleSave(session.id, userId, isSaved);
   }
 
   hasLiked(session: CuppingSession): boolean {
     const userId = this.auth.getUserId();
-    if (!userId) return false;
-    return !!session.likedBy?.includes(userId);
+    return !!session.likedBy?.includes(userId || '');
   }
 
   hasSaved(session: CuppingSession): boolean {
     const userId = this.auth.getUserId();
-    if (!userId) return false;
-    return !!session.savedBy?.includes(userId);
+    return !!session.savedBy?.includes(userId || '');
   }
 
   getBarColor(attr: string) {
@@ -749,22 +738,13 @@ export class CommunityBoardComponent implements OnInit {
   }
 
   openUrl(url: string) {
-    if (url) {
-      window.open(url, '_blank');
-    }
+    if (url) window.open(url, '_blank');
   }
 
   getCardSize(session: CuppingSession, index: number): string {
-    // Priority 1: High Score -> Large (2x2)
     if (session.finalScore >= 84) return 'size-large';
-    
-    // Priority 2: Verified Roastery or Mid-High Score -> Wide (2x1)
     if (session.isVerifiedRoastery || session.finalScore >= 82) return 'size-wide';
-
-    // Priority 3: Tall variety
     if (index % 5 === 0) return 'size-tall';
-    
-    // Default: Normal
     return 'size-normal';
   }
 }
