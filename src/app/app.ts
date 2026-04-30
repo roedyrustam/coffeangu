@@ -82,7 +82,7 @@ import { ToastService } from './services/toast.service';
     </main>
 
     <nav class="mobile-bottom-nav" aria-label="Mobile Navigation">
-      <div class="nav-blur-bg"></div>
+      <div class="nav-blur-bg" aria-hidden="true"></div>
       
       <a routerLink="/" class="bottom-nav-link" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}">
         <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
@@ -90,7 +90,7 @@ import { ToastService } from './services/toast.service';
       </a>
       
       <a routerLink="/community" class="bottom-nav-link" routerLinkActive="active">
-        <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M17 8h1a4 4 0 1 1 0 8h-1"/><path d="M3 8h14v9a4 4 0 0 1-4 4H7a4 4 0 0 1-4-4Z"/><line x1="6" y1="2" x2="6" y2="4"/><line x1="10" y1="2" x2="10" y2="4"/><line x1="14" y1="2" x2="14" y2="4"/></svg>
+        <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
         <span>{{ t('NAV_DISCOVER') }}</span>
       </a>
       
@@ -100,9 +100,9 @@ import { ToastService } from './services/toast.service';
         </button>
       </div>
 
-      <a routerLink="/profile" class="bottom-nav-link" routerLinkActive="active" [routerLinkActiveOptions]="{queryParams: 'exact'}">
-        <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2C7 2 3 7 3 12s4 10 9 10 9-4.5 9-10S17 2 12 2z"/><path d="M12 22c-2.5-2.5-4-6-4-10s1.5-7.5 4-10c2.5 2.5 4 6 4 10s-1.5 7.5-4 10z"/><path d="M3 12h18"/></svg>
-        <span>{{ t('NAV_HISTORY') }}</span>
+      <a routerLink="/analytics" class="bottom-nav-link" routerLinkActive="active" *ngIf="auth.currentUser()">
+        <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"/><path d="m19 9-5 5-4-4-3 3"/></svg>
+        <span>{{ t('NAV_INSIGHTS') }}</span>
       </a>
 
       <a [routerLink]="auth.currentUser() ? '/profile' : '/login'" class="bottom-nav-link" routerLinkActive="active">
@@ -208,62 +208,115 @@ import { ToastService } from './services/toast.service';
     .mobile-bottom-nav {
       display: none;
       position: fixed;
-      bottom: 20px;
+      bottom: 25px;
       left: 20px;
       right: 20px;
-      height: 72px;
+      height: 76px;
       z-index: var(--z-nav);
       justify-content: space-around;
       align-items: center;
-      background: rgba(22, 22, 26, 0.8);
-      backdrop-filter: blur(40px);
-      -webkit-backdrop-filter: blur(40px);
-      border: 1px solid var(--glass-border);
-      border-radius: 28px;
-      padding: 0 10px;
-      box-shadow: 0 20px 50px rgba(0,0,0,0.5);
+      background: rgba(18, 18, 22, 0.75);
+      backdrop-filter: blur(30px) saturate(180%);
+      -webkit-backdrop-filter: blur(30px) saturate(180%);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 32px;
+      padding: 0 8px;
+      box-shadow: 
+        0 20px 40px rgba(0, 0, 0, 0.4),
+        0 0 0 1px rgba(255, 255, 255, 0.05) inset;
     }
     .bottom-nav-link {
       display: flex;
       flex-direction: column;
       align-items: center;
+      justify-content: center;
       color: var(--text-dim);
       text-decoration: none;
       font-size: 0.65rem;
-      font-weight: 700;
-      gap: 4px;
+      font-weight: 800;
+      gap: 6px;
+      transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+      flex: 1;
+      height: 100%;
+      position: relative;
+      z-index: 1;
+    }
+    .bottom-nav-link span {
+      opacity: 0.6;
       transition: all 0.3s;
+      letter-spacing: 0.5px;
     }
     .bottom-nav-link.active {
       color: var(--primary-color);
     }
+    .bottom-nav-link.active span {
+      opacity: 1;
+      transform: translateY(-2px);
+      text-shadow: 0 0 10px rgba(189, 142, 98, 0.3);
+    }
+    .bottom-nav-link.active::before {
+      content: '';
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 45px;
+      height: 45px;
+      background: radial-gradient(circle, rgba(189, 142, 98, 0.15) 0%, transparent 70%);
+      border-radius: 50%;
+      z-index: -1;
+      animation: navPulse 2s infinite;
+    }
+    @keyframes navPulse {
+      0% { transform: translate(-50%, -50%) scale(0.8); opacity: 0.5; }
+      50% { transform: translate(-50%, -50%) scale(1.1); opacity: 0.8; }
+      100% { transform: translate(-50%, -50%) scale(0.8); opacity: 0.5; }
+    }
     .bottom-nav-link svg {
-      width: 24px;
-      height: 24px;
-      stroke-width: 2px;
+      width: 22px;
+      height: 22px;
+      stroke-width: 2.2px;
+      transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    }
+    .bottom-nav-link.active svg {
+      transform: translateY(-4px) scale(1.1);
+      filter: drop-shadow(0 4px 8px rgba(189, 142, 98, 0.4));
     }
     .nav-center-action {
       position: relative;
-      width: 60px;
-      height: 60px;
-      margin-top: -40px;
+      width: 70px;
+      height: 100%;
+      display: flex;
+      justify-content: center;
+      align-items: center;
     }
     .center-fab {
-      width: 64px;
-      height: 64px;
+      width: 58px;
+      height: 58px;
       background: var(--primary-gradient);
-      border-radius: 22px;
+      border-radius: 20px;
       display: flex;
       align-items: center;
       justify-content: center;
       color: #0c0c0e;
-      border: 4px solid var(--bg-color);
-      box-shadow: 0 15px 30px var(--primary-glow);
+      border: 1px solid rgba(255, 255, 255, 0.3);
+      box-shadow: 
+        0 12px 24px rgba(189, 142, 98, 0.4),
+        0 0 20px rgba(189, 142, 98, 0.2);
       cursor: pointer;
-      transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+      transition: all 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+      position: absolute;
+      top: -25px;
     }
     .center-fab:hover {
-      transform: translateY(-5px) rotate(5deg);
+      transform: translateY(-8px) scale(1.05) rotate(5deg);
+      box-shadow: 0 15px 35px rgba(189, 142, 98, 0.6);
+    }
+    .center-fab:active {
+      transform: translateY(-2px) scale(0.95);
+    }
+    .center-fab svg {
+      filter: drop-shadow(0 2px 4px rgba(0,0,0,0.3));
     }
     .main-footer {
       padding: 60px 40px 120px;
