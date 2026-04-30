@@ -904,119 +904,95 @@ export class CuppingResultComponent implements OnInit, AfterViewInit, OnDestroy 
     if (!ctx) return;
 
     const s = this.session.scores;
-    // Map to the 5 core attributes shown in the requested image
     const labels = ['AROMA', 'FLAVOR', 'ACIDITY', 'BODY', 'AFTERTASTE'];
     const data = [
-      s.fragranceAroma,
-      s.flavor,
-      s.acidity,
-      s.mouthfeel,
-      s.aftertaste
+      s.fragranceAroma || 0,
+      s.flavor || 0,
+      s.acidity || 0,
+      s.mouthfeel || 0,
+      s.aftertaste || 0
     ];
 
-    const pointColors = [
-      '#ff5252', // Aroma - Red
-      '#ffab40', // Flavor - Orange
-      '#40c4ff', // Acidity - Blue
-      '#69f0ae', // Body - Green
-      '#b388ff'  // Aftertaste - Purple
-    ];
+    const pointColors = ['#ff5252', '#ffab40', '#40c4ff', '#69f0ae', '#b388ff'];
 
-    if (this.sensoryChart) {
-      this.sensoryChart.destroy();
-    }
+    if (this.sensoryChart) this.sensoryChart.destroy();
 
     this.sensoryChart = new Chart(canvas, {
       type: 'radar',
       data: {
         labels: labels,
         datasets: [{
-          label: 'Sensory Profile',
           data: data,
           fill: true,
-          backgroundColor: 'rgba(22, 22, 26, 0.6)',
-          borderColor: 'rgba(255, 255, 255, 0.2)',
+          backgroundColor: 'rgba(189, 142, 98, 0.15)',
+          borderColor: 'rgba(189, 142, 98, 0.5)',
           borderWidth: 2,
-          pointBackgroundColor: pointColors,
-          pointBorderColor: '#fff',
-          pointBorderWidth: 2,
-          pointRadius: 12, // Larger for the "bubble" look
-          pointHoverRadius: 15,
-          tension: 0.1
+          pointRadius: 0,
+          tension: 0.15
         }]
       },
       options: {
         responsive: true,
         maintainAspectRatio: false,
-        layout: {
-          padding: 30
-        },
+        animation: { duration: 1500, easing: 'easeOutQuart' },
+        layout: { padding: 40 },
         scales: {
           r: {
+            min: 0,
+            max: 10,
+            beginAtZero: true,
             grid: {
-              circular: true, // Key for the circular look
+              circular: true,
               color: 'rgba(255, 255, 255, 0.1)',
             },
-            angleLines: {
-              color: 'rgba(255, 255, 255, 0.1)'
-            },
-            suggestedMin: 0,
-            suggestedMax: 10,
+            angleLines: { color: 'rgba(255, 255, 255, 0.1)' },
             ticks: {
               display: true,
               stepSize: 2,
               color: 'rgba(255, 255, 255, 0.3)',
               backdropColor: 'transparent',
-              font: { size: 10 }
+              font: { size: 10, weight: 700 }
             },
             pointLabels: {
-              color: 'rgba(255, 255, 255, 0.7)',
-              font: {
-                family: "'Outfit', sans-serif",
-                size: 13,
-                weight: 'bold'
-              },
-              padding: 15
+              color: 'rgba(255, 255, 255, 0.9)',
+              font: { family: "'Outfit', sans-serif", size: 14, weight: 900 },
+              padding: 25
             }
           }
         },
         plugins: {
           legend: { display: false },
-          tooltip: { enabled: false } // We'll show values on points
+          tooltip: { enabled: false }
         }
       },
       plugins: [{
         id: 'glowPoints',
-        afterDraw: (chart) => {
-          const { ctx } = chart;
-          chart.data.datasets.forEach((dataset, datasetIndex) => {
-            const meta = chart.getDatasetMeta(datasetIndex);
-            meta.data.forEach((point: any, index: number) => {
-              const val = dataset.data[index] as number;
+        afterDraw: (chart: any) => {
+          const { ctx, scales: { r } } = chart;
+          chart.data.datasets.forEach((dataset: any) => {
+            dataset.data.forEach((val: number, index: number) => {
+              const pos = r.getPointPositionForValue(index, val);
               const color = pointColors[index];
               
               ctx.save();
-              // Outer Glow
-              ctx.shadowBlur = 20;
+              ctx.shadowBlur = 30;
               ctx.shadowColor = color;
               ctx.fillStyle = color;
               ctx.beginPath();
-              ctx.arc(point.x, point.y, 11, 0, Math.PI * 2);
+              ctx.arc(pos.x, pos.y, 13, 0, Math.PI * 2);
               ctx.fill();
               
-              // White Inner Core
               ctx.shadowBlur = 0;
               ctx.fillStyle = '#fff';
               ctx.beginPath();
-              ctx.arc(point.x, point.y, 9, 0, Math.PI * 2);
+              ctx.arc(pos.x, pos.y, 11, 0, Math.PI * 2);
               ctx.fill();
 
-              // Score Text
               ctx.fillStyle = '#0c0c0e';
-              ctx.font = 'bold 10px Outfit';
+              ctx.font = '950 11px Outfit';
               ctx.textAlign = 'center';
               ctx.textBaseline = 'middle';
-              ctx.fillText(val.toFixed(1), point.x, point.y);
+              ctx.fillText(val.toFixed(1), pos.x, pos.y);
               ctx.restore();
             });
           });
